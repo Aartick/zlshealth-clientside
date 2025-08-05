@@ -96,7 +96,7 @@ const reviews = [
     name: "Bhanu Priya",
     designation: "Yoga Instructor, Hyderabad",
     review:
-      "I bought the Dibio supplement for my diabetic father after trying multiple alternatives. Within a few weeks, his enery levels improved noticeably. The fact that it's herbal and free from side effects gives us real peace of mind. Definitely...",
+      "I bought the Dibio supplement for my diabetic father after trying multiple alternatives. Within a few weeks, his enery levels improved noticeably. The fact that it's herbal and free from side effects gives us real peace of mind. Definitely..",
   },
   {
     img: "/reviewImg2.jpg",
