@@ -8,30 +8,30 @@ import Image from "next/image";
 
 function Footer() {
     return (
-        <div className="border-t border-[#000000] py-20 px-16">
-            <div className="flex gap-[412px] bg-white">
+        <div className="border-t border-[#000000] p-5 sm:py-20 sm:px-16">
+            <div className="flex flex-col sm:flex-row gap-6 sm:gap-[412px] bg-white">
                 {/* LEFT PART */}
                 <div className="space-y-6">
                     <Image src="/logo.png" width={165} height={85} alt="logo" />
-                    <p className="text-[#36810B] text-xl font-medium italic">
+                    <p className="text-[#36810B] sm:text-xl font-medium italic">
                         Herbal Solutions For Your Health
                     </p>
-                    <div className="text-xl text-nowrap">
+                    <div className="sm:text-xl text-nowrap">
                         <p>Sy.no.312, H.no.3-14/2, 2nd Floor Narsingi Village,</p>
                         <p> Rajendra Nagar Mandal Hyderabad - 500089</p>
                     </div>
-                    <div className="flex items-center gap-5">
+                    <div className="flex items-center gap-1.5 sm:gap-5">
                         <div className="bg-[#093C16] p-[3px] rounded-[30px] text-white">
                             <MdOutlineCall size={12} />
                         </div>
-                        <p className="font-medium text-xl text-[#333333]">+91 9705868032</p>
+                        <p className="font-medium sm:text-xl text-[#333333]">+91 9705868032</p>
                     </div>
                 </div>
 
                 {/* RIGHT PART */}
                 <div className="flex gap-10">
-                    <div className="space-y-4">
-                        <p className="font-medium text-base whitespace-nowrap">
+                    <div className="space-y-4 text-sm sm:text-base">
+                        <p className="font-medium whitespace-nowrap">
                             <span className="underline decoration-solid decoration-[#36810B] decoration-[11%] underline-offset-[50%]">
                                 Quick L
                             </span>
@@ -45,37 +45,38 @@ function Footer() {
                         <Link href="/" className="flex whitespace-nowrap">About Us</Link>
                         <Link href="/" className="flex whitespace-nowrap">Contact Us</Link>
                     </div>
-                    <div className="space-y-4">
-                        <p className="font-medium text-base whitespace-nowrap">
+                    <div className="space-y-4 text-sm sm:text-base">
+                        <p className="font-medium whitespace-nowrap">
                             <span className="underline decoration-solid decoration-[#36810B] decoration-[11%] underline-offset-[50%]">
                                 Connect Wi
                             </span>
                             th Us
                         </p>
                         <Link href="/" className="flex items-center gap-3">
-                            <LuInstagram size={24} className="text-[#36810B]" />
+                            <LuInstagram className="text-[#36810B] sm:text-2xl" />
                             <p>Instagram</p>
                         </Link>
                         <Link href="/" className="flex items-center gap-3">
-                            <GrFacebookOption size={24} className="text-[#36810B]" />
+                            <GrFacebookOption className="text-[#36810B] sm:text-2xl" />
                             <p>Facebook</p>
                         </Link>
                         <Link href="/" className="flex items-center gap-3">
-                            <BsLinkedin size={24} className="text-[#36810B]" />
+                            <BsLinkedin className="text-[#36810B] sm:text-2xl" />
                             <p>LinkedIn</p>
                         </Link>
                     </div>
                 </div>
             </div>
 
-            <hr className="border-[#000000] my-8" />
+            <hr className="border-[#000000] my-4 sm:my-8" />
 
-            <div className="flex justify-between items-center">
-                <p>
+            {/* BOTTOM PART */}
+            <div className="flex flex-col sm:flex-row gap-2 sm:justify-between items-center">
+                <p className="text-sm sm:text-base">
                     Copyrights © ZEALOUS HEALTH PRIVATE LIMITED | Powered by AfterMarkett
                 </p>
 
-                <div className="flex gap-6 items-center">
+                <div className="flex gap-12 sm:gap-6 items-center text-xs sm:text-base">
                     <Link href="/">
                         <p className="underline decoration-solid">Privacy Policy</p>
                     </Link>

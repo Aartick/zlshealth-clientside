@@ -13,6 +13,16 @@ import ProductCard from "@/components/ProductCard";
 import BenefitsCard from "@/components/BenefitsCard";
 import ReviewCard from "@/components/ReviewCard";
 import ShopLink from "@/components/topBar/ShopLink";
+import { VscSettings } from "react-icons/vsc";
+import { IoSearchOutline } from "react-icons/io5";
+
+const placeholderTexts = [
+  "Stress Relief Syrup",
+  "Immunity Booster Capsules",
+  "Ashwagandha Supplements",
+  "Diabetes Management",
+  "Anti-Acne Cream",
+];
 
 const tabs = [
   "Trending Now",
@@ -117,24 +127,47 @@ const reviews = [
 ];
 
 export default function Home() {
+  const [inputValue, setInputValue] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
   const [open, setOpen] = useState(false);
 
-  const containerRef = useRef(null);
-  const tabRefs = useRef([]);
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (tabRefs.current[activeTab]) {
-      const tabRect = tabRefs.current[activeTab].getBoundingClientRect();
-      const containerRect = containerRef.current?.getBoundingClientRect();
+    const currentTab = tabRefs.current[activeTab]
+    const scrollContainer = scrollRef.current;
+
+    if (currentTab && scrollContainer) {
+      const tabRect = currentTab.getBoundingClientRect()
 
       setUnderlineStyle({
-        left: tabRect.left - containerRect.left,
-        width: tabRect.width,
-      });
+        left: currentTab.offsetLeft - scrollContainer.scrollLeft,
+        width: tabRect.width
+      })
+
+      currentTab.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest"
+      })
     }
   }, [activeTab]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsAnimating(true);
+      setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % placeholderTexts.length);
+        setIsAnimating(false);
+      }, 500);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="bg-white space-y-[60px] mb-8">
@@ -182,74 +215,123 @@ export default function Home() {
         </div>
       </div>
 
-      {/* CAROUSEL */}
-      <Carousel />
-
-      {/* CATEGORIES */}
-      <p className="font-normal px-[60px] text-[32px] whitespace-nowrap">
-        <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
-          Categ
-        </span>
-        ories
-      </p>
-
-      <div className="grid grid-cols-4 gap-3 px-[60px]">
-        {categories.map((cat, idx) => (
-          <div key={idx} className="group flex items-center gap-3 border-[#e0e0e0] hover:border-[#71BF45] transition-colors duration-300 p-3 border-2 rounded-lg cursor-pointer">
-            <p>{cat.icon}</p>
-            <p className="text-base font-medium text-[#093C16] group-hover:text-[#71BF45] transition-colors text-nowrap">
-              {cat.title}
-            </p>
+      {/* SEARCH BAR FOR MOBILE VIEW */}
+      <div className="relative sm:hidden flex justify-between bg-[#f3f3f3] border-[0.5px] border-[#71BF45] rounded-[10px] mx-6 py-5 px-[10px] drop-shadow-[0px_4px_15.8px_rgba(132, 132, 132, 0.2)]">
+        <div className="flex items-center gap-[10px] relative">
+          <div className="p-[2px] rounded-lg bg-[#71bf45] text-[#ffffff]">
+            <IoSearchOutline size={15} />
           </div>
-        ))}
+          <div className="relative">
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              className="bg-[#f3f3f3] text-[#2e2e2e] text-xs w-[244px] focus:outline-none"
+            />
+            {/* Animated Placeholder */}
+            {inputValue === "" && (
+              <div className="absolute left-0 top-0 w-full h-full pointer-events-none flex items-center text-[#a3a3a3] text-xs overflow-hidden">
+                <p>Search for&nbsp; </p>
+                <div
+                  className={`transition-transform duration-500 ${isAnimating
+                    ? "-translate-y-full"
+                    : "translate-y-0 opacity-100"
+                    }`}
+                  key={currentIndex}
+                >
+                  "{placeholderTexts[currentIndex]}"
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="text-[#848484]">
+          <VscSettings size={24} />
+        </div>
       </div>
 
-      <div className="space-y-10 px-[60px]">
-        <p className="font-normal text-[32px] whitespace-nowrap">
+      {/* CAROUSEL */}
+      <div className="mx-6">
+        <Carousel />
+      </div>
+
+      {/* CATEGORIES */}
+      <div className="flex justify-between items-center px-6 sm:px-[60px]">
+        <p className="font-normal text-2xl sm:text-[32px] whitespace-nowrap">
+          <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
+            Categ
+          </span>
+          ories
+        </p>
+
+        <Link href="/" className="sm:hidden flex items-center gap-[10px] text-[#71BF45]">
+          <p className="text-base font-normal underline decoration-solid decoration-[#71BF45]">
+            View All
+          </p>
+          <MdKeyboardArrowRight size={18} />
+        </Link>
+      </div>
+
+      <div className="flex items-center overflow-x-scroll scrollbar-hide">
+        <div className="flex items-center w-max sm:w-auto sm:grid grid-cols-4 gap-3 px-[10px] sm:px-[60px]">
+          {categories.map((cat, idx) => (
+            <div key={idx} className="group flex flex-col sm:flex-row items-center gap-3 border-[#e0e0e0] hover:border-[#71BF45] transition-colors duration-300 p-3 border-2 rounded-lg cursor-pointer w-[92px] min-h-[100px] sm:w-auto sm:min-h-auto">
+              <p className="text-2xl">{cat.icon}</p>
+              <p className="text-xs sm:text-base text-center font-medium text-[#093C16] group-hover:text-[#71BF45] transition-colors sm:text-nowrap">
+                {cat.title}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-8 sm:space-y-10 px-6 sm:px-[60px]">
+        <p className="font-normal text-2xl sm:text-[32px] whitespace-nowrap">
           <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
             Our Pr
           </span>
           oducts
         </p>
 
-        <div className="rounded-[40px] bg-white shadow-2xl shadow-[#bdbdbd] py-6 space-y-6">
-          <div
-            className="relative border-b border-b-[#e3e3e3]"
-            ref={containerRef}
-          >
-            <div className="flex justify-around items-center py-4">
+        <div className="rounded-[40px] bg-white sm:shadow-2xl sm:shadow-[#bdbdbd] pt-6 sm:py-6 space-y-6">
+          <div className="relative border-b border-b-[#e3e3e3]">
+            <div
+              className="relative flex justify-around items-center py-4 overflow-x-auto scrollbar-hide whitespace-nowrap"
+              ref={scrollRef}
+            >
               {tabs.map((tab, idx) => (
                 <button
                   key={idx}
-                  ref={(el) => (tabRefs.current[idx] = el)}
+                  ref={(el) => { tabRefs.current[idx] = el }}
                   onClick={() => setActiveTab(idx)}
-                  className={`font-medium text-base text-[#2e2e2e] ${activeTab === idx ? "text-[#093C16]" : ""
+                  className={`font-medium text-base text-[#2e2e2e] px-4 flex-shrink-0 ${activeTab === idx ? "text-[#093C16]" : ""
                     }`}
                 >
                   {tab}
                 </button>
               ))}
+
+              <div
+                className="absolute bottom-0 h-[4px] bg-[#093C16] transition-all duration-300 ease-in-out"
+                style={{
+                  left: underlineStyle.left,
+                  width: underlineStyle.width,
+                }}
+              />
             </div>
-            <div
-              className="absolute bottom-0 h-[4px] bg-[#093C16] transition-all duration-300 ease-in-out"
-              style={{
-                left: `${underlineStyle.left}px`,
-                width: `${underlineStyle.width}px`,
-              }}
-            />
           </div>
 
-          <div className="flex justify-between items-center px-12">
-            <p className="font-medium text-xl">See What's Hot Right Now!</p>
-            <Link href="/" className="flex items-center gap-[10px]">
-              <p className="text-[#093C16] text-base font-normal underline decoration-solid decoration-[#093C16]">
+          <div className="flex justify-between items-center sm:px-12">
+            <p className="font-medium text-base sm:text-xl">See What's Hot Right Now!</p>
+            <Link href="/" className="text-base flex items-center gap-[10px]">
+              <p className="text-[#093C16] font-normal underline decoration-solid decoration-[#093C16]">
                 View All
               </p>
-              <MdKeyboardArrowRight size={12} color="#1C1B1F" />
+              <MdKeyboardArrowRight color="#1C1B1F" />
             </Link>
           </div>
 
-          <div className="flex items-center gap-4 px-12">
+          <div className="grid grid-cols-2 w-max sm:w-auto sm:flex items-center gap-4 sm:px-12">
             {[...Array(4)].map((_, idx) => (
               <ProductCard key={idx} />
             ))}
@@ -258,14 +340,14 @@ export default function Home() {
       </div>
 
       <div className="space-y-10">
-        <p className="font-normal text-[32px] whitespace-nowrap px-[60px]">
+        <p className="font-normal text-2xl sm:text-[32px] whitespace-nowrap px-6 sm:px-[60px]">
           <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
             Benefi
           </span>
           ts of our Products
         </p>
 
-        <div className="flex items-center gap-[30px] overflow-x-scroll py-[10px] pr-5 pl-[60px] scrollbar-hide">
+        <div className="flex items-center gap-[30px] overflow-x-scroll py-[10px] pl-6 sm:pl-[60px] scrollbar-hide">
           <div className="flex items-center gap-[30px] w-max">
             {benefitsOfProducts.map((data, idx) => (
               <BenefitsCard key={idx} data={data} />
@@ -274,189 +356,185 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="flex items-center justify-center gap-[60px]">
-        <div className="border-r border-[#71BF45] py-[10px] pr-10 pl-[10px] space-y-[10px]">
-          <p className="text-[#36810B] font-normal text-[62px]">50 +</p>
-          <p className="text-2xl font-normal">Herbal Wellness Products</p>
+      <div className="flex items-center justify-center sm:gap-[60px]">
+        <div className="border-r border-[#71BF45] sm:py-[10px] p-[10px] sm:pr-10 sm:pl-[10px] space-y-[8px] sm:space-y-[10px]">
+          <p className="text-[#36810B] font-normal text-[42px] sm:text-[62px]">50 +</p>
+          <p className="text-xs sm:text-2xl font-normal">Herbal Wellness Products</p>
         </div>
-        <div className="border-r border-[#71BF45] py-[10px] pr-10 pl-[10px] space-y-[10px]">
-          <p className="text-[#36810B] font-normal text-[62px]">10k +</p>
-          <p className="text-2xl font-normal">Happy Customers Served</p>
+        <div className="border-r border-[#71BF45] sm:py-[10px] p-[10px] sm:pr-10 sm:pl-[10px] space-y-[8px] sm:space-y-[10px]">
+          <p className="text-[#36810B] font-normal text-[42px] sm:text-[62px]">10k +</p>
+          <p className="text-xs sm:text-2xl font-normal">Happy Customers Served</p>
         </div>
-        <div className="py-[10px] pr-5 pl-[10px] space-y-[10px]">
-          <p className="text-[#36810B] font-normal text-[62px]">8 +</p>
-          <p className="text-2xl font-normal">Years of Herbal Expertise</p>
+        <div className="sm:py-[10px] p-[10px] sm:pr-5 sm:pl-[10px] space-y-[8px] sm:space-y-[10px]">
+          <p className="text-[#36810B] font-normal text-[42px] sm:text-[62px]">8 +</p>
+          <p className="text-xs sm:text-2xl font-normal">Years of Herbal Expertise</p>
         </div>
       </div>
 
       <div className="space-y-10">
-        <p className="font-normal text-[32px] whitespace-nowrap px-[60px]">
+        <p className="font-normal text-2xl sm:text-[32px] whitespace-nowrap px-6 sm:px-[60px]">
           <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
             Our Pr
           </span>
           ocess
         </p>
 
-        <div className="flex gap-[30px] px-[60px]">
-          <div className="relative">
+        <div className="flex flex-col sm:flex-row gap-[30px] px-6 sm:px-[60px]">
+          <div className="relative w-full max-w-[634px] aspect-[634/775] mx-auto">
             <Image
-              src='/Process.png'
+              src="/Process.png"
               alt="img"
-              width={634}
-              height={775}
-              className="rounded-[40px]"
+              fill
+              className="rounded-3xl sm:rounded-[40px] object-cover"
             />
-            <div className="absolute flex gap-[30px] items-center left-1/2 transform -translate-x-1/2 top-[698px]  text-[#093C16]">
-              <p className="rounded-[30px] px-10 py-[10px] bg-white font-medium text-2xl text-nowrap">
+
+            {/* Overlay button group positioned at the bottom center */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-4 items-center text-[#093C16]">
+              <p className="rounded-[30px] px-9 sm:px-32 py-2 sm:py-[10px] bg-white font-medium text-base sm:text-2xl whitespace-nowrap">
                 Fast & Reliable Delivery
               </p>
-              <p className="p-[10px] bg-white rounded-[30px]">
-                <GoArrowUpRight size={26} />
+              <p className="p-2 sm:p-[10px] bg-white rounded-[30px]">
+                <GoArrowUpRight size={22} className="sm:size-[26px]" />
               </p>
             </div>
           </div>
-          <div className="space-y-[30px]">
-            <p className="font-normal text-[32px]">Why Choose Zealous?</p>
-            <p className="font-normal text-2xl">
+
+          <div className="space-y-[12px] sm:space-y-[30px]">
+            <p className="font-normal text-center sm:text-left text-xl sm:text-[32px] text-[#093C16]">Why Choose Zealous?</p>
+            <p className="font-normal text-center sm:text-left text-base sm:text-2xl">
               Natural wellness backed by tradition, science, and trust.
             </p>
 
-            <div className="flex items-center gap-5">
-              <div className="space-y-[10px]">
-                <div className="py-[15px] px-5 rounded-[20px] space-y-[10px]">
-                  <div className="flex items-center gap-[10px]">
-                    <div className="p-5 rounded-[60px] shadow-inner shadow-[#dadada]">
-                      <Image
-                        src="/🌿.png"
-                        alt="sourcedImg"
-                        width={30}
-                        height={30}
-                        className="size-[30px]"
-                      />
-                    </div>
-                    <p className="text-[#36810B] text-2xl font-normal">
-                      Sourced
-                    </p>
+            {/* FIRST ROW */}
+            <div className="flex justify-between">
+              <div className="py-[15px] px-5 rounded-[20px] space-y-[10px]">
+                <div className="flex flex-col sm:flex-row items-center gap-[10px]">
+                  <div className="p-5 rounded-[60px] shadow-inner shadow-[#dadada]">
+                    <Image
+                      src="/🌿.png"
+                      alt="sourcedImg"
+                      width={30}
+                      height={30}
+                    />
                   </div>
-                  <p className="px-[10px] font-normal text-base text-[#999999]">
-                    Natural herbs selected from trusted farms
+                  <p className="text-[#36810B] text-base sm:text-2xl font-normal">
+                    Sourced
                   </p>
                 </div>
-
-                <div className="py-[15px] px-5 rounded-[20px] space-y-[10px]">
-                  <div className="flex items-center gap-[10px]">
-                    <div className="p-5 rounded-[60px] shadow-inner shadow-[#dadada]">
-                      <Image
-                        src="/🔬.png"
-                        alt="formulatedImg"
-                        width={30}
-                        height={30}
-                        className="size-[30px]"
-                      />
-                    </div>
-                    <p className="text-[#36810B] text-2xl font-normal">
-                      Formulated
-                    </p>
-                  </div>
-                  <p className="px-[10px] font-normal text-base text-[#999999]">
-                    Expert blend crafted fro targeted health
-                  </p>
-                </div>
-
-                <div className="py-[15px] px-5 rounded-[20px] space-y-[10px]">
-                  <div className="flex items-center gap-[10px]">
-                    <div className="p-5 rounded-[60px] shadow-inner shadow-[#dadada]">
-                      <Image
-                        src="/📦.png"
-                        alt="packedImg"
-                        width={30}
-                        height={30}
-                        className="size-[30px]"
-                      />
-                    </div>
-                    <p className="text-[#36810B] text-2xl font-normal">
-                      Packed
-                    </p>
-                  </div>
-                  <p className="px-[10px] font-normal text-base text-[#999999]">
-                    Sealed for freshness and purity
-                  </p>
-                </div>
+                <p className="px-[10px] text-center sm:text-left font-normal text-base text-[#999999]">
+                  Natural herbs selected from trusted farms
+                </p>
               </div>
-
-              <div className="space-y-[10px]">
-                <div className="py-[15px] px-5 rounded-[20px] space-y-[10px]">
-                  <div className="flex items-center gap-[10px]">
-                    <div className="p-5 rounded-[60px] shadow-inner shadow-[#dadada]">
-                      <Image
-                        src="/🧪.png"
-                        alt="testedImg"
-                        width={30}
-                        height={30}
-                        className="size-[30px]"
-                      />
-                    </div>
-                    <p className="text-[#36810B] text-2xl font-normal">
-                      Tested
-                    </p>
+              <div className="py-[15px] px-5 rounded-[20px] space-y-[10px]">
+                <div className="flex flex-col sm:flex-row items-center gap-[10px]">
+                  <div className="p-5 rounded-[60px] shadow-inner shadow-[#dadada]">
+                    <Image
+                      src="/🧪.png"
+                      alt="testedImg"
+                      width={30}
+                      height={30}
+                    />
                   </div>
-                  <p className="px-[10px] font-normal text-base text-[#999999]">
-                    Every ingredient quality-checked for safety
+                  <p className="text-[#36810B] text-base sm:text-2xl font-normal">
+                    Tested
                   </p>
                 </div>
+                <p className="px-[10px] text-center sm:text-left font-normal text-base text-[#999999]">
+                  Every ingredient quality-checked for safety
+                </p>
+              </div>
+            </div>
 
-                <div className="py-[15px] px-5 rounded-[20px] space-y-[10px]">
-                  <div className="flex items-center gap-[10px]">
-                    <div className="p-5 rounded-[60px] shadow-inner shadow-[#dadada]">
-                      <Image
-                        src="/🏭.png"
-                        alt="manufacturedImg"
-                        width={30}
-                        height={30}
-                        className="size-[30px]"
-                      />
-                    </div>
-                    <p className="text-[#36810B] text-2xl font-normal">
-                      Manufactured
-                    </p>
+            {/* SECOND ROW */}
+            <div className="flex justify-between">
+              <div className="py-[15px] px-5 rounded-[20px] space-y-[10px]">
+                <div className="flex flex-col sm:flex-row items-center gap-[10px]">
+                  <div className="p-5 rounded-[60px] shadow-inner shadow-[#dadada]">
+                    <Image
+                      src="/🔬.png"
+                      alt="formulatedImg"
+                      width={30}
+                      height={30}
+                    />
                   </div>
-                  <p className="px-[10px] font-normal text-base text-[#999999]">
-                    In certified, hygenic production units
+                  <p className="text-[#36810B] text-base sm:text-2xl font-normal">
+                    Formulated
                   </p>
                 </div>
-
-                <div className="py-[15px] px-5 rounded-[20px] space-y-[10px]">
-                  <div className="flex items-center gap-[10px]">
-                    <div className="p-5 rounded-[60px] shadow-inner shadow-[#dadada]">
-                      <Image
-                        src="/🚚.png"
-                        alt="deliveredImg"
-                        width={30}
-                        height={30}
-                        className="size-[30px]"
-                      />
-                    </div>
-                    <p className="text-[#36810B] text-2xl font-normal">
-                      Delivered
-                    </p>
+                <p className="px-[10px] text-center sm:text-left font-normal text-base text-[#999999]">
+                  Expert blend crafted fro targeted health
+                </p>
+              </div>
+              <div className="py-[15px] px-5 rounded-[20px] space-y-[10px]">
+                <div className="flex flex-col sm:flex-row items-center gap-[10px]">
+                  <div className="p-5 rounded-[60px] shadow-inner shadow-[#dadada]">
+                    <Image
+                      src="/🏭.png"
+                      alt="manufacturedImg"
+                      width={30}
+                      height={30}
+                    />
                   </div>
-                  <p className="px-[10px] font-normal text-base text-[#999999]">
-                    Shipped quickly across India
+                  <p className="text-[#36810B] text-base sm:text-2xl font-normal">
+                    Manufactured
                   </p>
                 </div>
+                <p className="px-[10px] font-normal text-center sm:text-left text-base text-[#999999]">
+                  In certified, hygenic production units
+                </p>
+              </div>
+            </div>
+
+            {/* THIRD ROW */}
+            <div className="flex justify-between">
+              <div className="py-[15px] px-5 rounded-[20px] space-y-[10px]">
+                <div className="flex flex-col sm:flex-row items-center gap-[10px]">
+                  <div className="p-5 rounded-[60px] shadow-inner shadow-[#dadada]">
+                    <Image
+                      src="/📦.png"
+                      alt="packedImg"
+                      width={30}
+                      height={30}
+                    />
+                  </div>
+                  <p className="text-[#36810B] text-base sm:text-2xl font-normal">
+                    Packed
+                  </p>
+                </div>
+                <p className="px-[10px] text-center sm:text-left font-normal text-base text-[#999999]">
+                  Sealed for freshness and purity
+                </p>
+              </div>
+              <div className="py-[15px] px-5 rounded-[20px] space-y-[10px]">
+                <div className="flex flex-col sm:flex-row items-center gap-[10px]">
+                  <div className="p-5 rounded-[60px] shadow-inner shadow-[#dadada]">
+                    <Image
+                      src="/🚚.png"
+                      alt="deliveredImg"
+                      width={30}
+                      height={30}
+                    />
+                  </div>
+                  <p className="text-[#36810B] text-base sm:text-2xl font-normal">
+                    Delivered
+                  </p>
+                </div>
+                <p className="px-[10px] text-center sm:text-left font-normal text-base text-[#999999]">
+                  Shipped quickly across India
+                </p>
               </div>
             </div>
 
             <Link href="/" className="flex items-center gap-1">
-              <IoIosLink size={24} />
-              <p className="text-2xl underline text-[#36810B] font-light">
+              <IoIosLink className="text-base sm:text-2xl" />
+              <p className="text-base sm:text-2xl underline text-[#36810B] font-light">
                 Vitinano <span className="align-super">TM</span>
               </p>
             </Link>
 
             <Link href="/" className="flex items-center gap-1">
-              <IoIosLink size={24} />
-              <p className="text-2xl underline text-[#36810B] font-light">
+              <IoIosLink className="text-base sm:text-2xl" />
+              <p className="text-base sm:text-2xl underline text-[#36810B] font-light">
                 Phyquantrix <span className="align-super">TM</span>
               </p>
             </Link>
@@ -464,8 +542,8 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="space-y-10 px-[60px]">
-        <p className="font-normal text-[32px] whitespace-nowrap">
+      <div className="hidden sm:block space-y-6 sm:space-y-10 px-6 sm:px-[60px]">
+        <p className="font-normal text-2xl sm:text-[32px] whitespace-nowrap">
           <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
             Our
           </span>
@@ -473,7 +551,7 @@ export default function Home() {
         </p>
 
         <div className="space-y-[30px]">
-          <p className="px-5 font-normal text-2xl">
+          <p className="px-5 font-normal text-base sm:text-2xl">
             At Zealous, we believe wellness should be natural, effective, and
             accessible. Our mission is to empower every household with safe,
             herbal solutions rooted in ancient wisdom and backed by modern
@@ -485,13 +563,13 @@ export default function Home() {
             alt="Our Mission Img"
             height={700}
             width={100}
-            className="rounded-[40px] w-full h-[700px] shadow-lg shadow-[#bdbdbd]"
+            className="rounded-[40px] w-full sm:h-[700px] shadow-lg shadow-[#bdbdbd]"
           />
 
           <div className="flex gap-[152px]">
             <div className="space-y-10">
               <div className="flex items-center gap-2">
-                <p className="font-normal text-[32px] text-nowrap">
+                <p className="font-normal text-2xl sm:text-[32px] text-nowrap">
                   From Nature to Nurture
                 </p>
                 <Image src="/🌿.png" alt="sourceImg" width={8} height={8} className="size-8" />
@@ -522,15 +600,15 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="space-y-5 px-[60px]">
-        <p className="font-normal text-[32px] whitespace-nowrap">
+      <div className="hidden sm:block space-y-3 sm:space-y-5 px-6 sm:px-[60px]">
+        <p className="font-normal text-2xl sm:text-[32px] whitespace-nowrap">
           <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
             Our B
           </span>
           logs
         </p>
 
-        <div className="space-y-4">
+        <div className="space-y-1 sm:space-y-4">
           <div className="flex items-center justify-end gap-[10px] text-[#093C16]">
             <Link href="/">
               <p className="underline decoration-solid">Read All Blogs</p>
@@ -653,16 +731,16 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="space-y-[30px]">
-        <p className="font-normal text-[32px] whitespace-nowrap px-[60px]">
+      <div className="space-y-4 sm:space-y-[30px]">
+        <p className="font-normal text-2xl sm:text-[32px] whitespace-nowrap px-6 sm:px-[60px]">
           <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
             What Our
           </span>{" "}
           Customers Say?
         </p>
 
-        <div className="flex items-center w-full overflow-x-scroll scrollbar-hide gap-[30px] py-[10px] pr-5 pl-[60px]">
-          <div className="flex items-center gap-[40px] w-max">
+        <div className="flex items-center w-full overflow-x-scroll scrollbar-hide gap-[30px] py-[10px] pr-5 pl-6 sm:pl-[60px]">
+          <div className="flex items-center gap-5 sm:gap-[40px] w-max">
             {reviews.map((data, idx) => (
               <ReviewCard data={data} key={idx} />
             ))}

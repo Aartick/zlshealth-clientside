@@ -3,6 +3,7 @@ import { TbMedicineSyrup } from "react-icons/tb";
 import { BiCapsule } from "react-icons/bi";
 import { RiShieldCrossLine, RiMentalHealthLine, RiLungsLine } from "react-icons/ri";
 import Link from 'next/link';
+import Image from 'next/image';
 
 function ShopLink() {
     const firstCol = [
@@ -17,11 +18,12 @@ function ShopLink() {
             desc: "Easy daily wellness doses"
         },
         {
-            img: <img src="/Oils.png" />,
+            img: <Image alt='img' src="/Oils.png" width={24} height={24} />,
             title: "Oils & Creams",
             desc: "External care with herbal actives"
-        }, {
-            img: <img src="/essential.png" className='size-6' />,
+        },
+        {
+            img: <Image alt='img' src="/essential.png" width={24} height={24} />,
             title: "Essential Oils & Blends",
             desc: "Aromatic and healing extracts"
         }
@@ -34,17 +36,17 @@ function ShopLink() {
             desc: "Boost your natural defenses"
         },
         {
-            img: <img src="/diabetes.png" className='size-6' />,
+            img: <Image src="/diabetes.png" alt='img' width={24} height={24} />,
             title: "Diabetes Management",
             desc: "Balanced sugar support"
         },
         {
-            img: <img src="/sleep.png" className='size-6' />,
+            img: <Image src="/sleep.png" alt='img' width={24} height={24} />,
             title: "Stress & Sleep Relief",
             desc: "Calm your mind, rest better"
         },
         {
-            img: <img src="/balance.png" className='size-6' />,
+            img: <Image src="/balance.png" alt='img' width={24} height={24} />,
             title: "Hormonal Balance",
             desc: "Regulate cycles and energy"
         }
@@ -57,18 +59,19 @@ function ShopLink() {
             desc: "Focus, clarity, mood uplift"
         },
         {
-            img: <img src="/girl.png" className='size-6' />,
+            img: <Image src="/girl.png" alt='img' width={24} height={24} />,
             title: "PCOS & Menstrual Health",
-            desc: "Natural hormonal hormony"
+            desc: "Natural hormonal harmony"
         },
         {
             img: <RiLungsLine className='text-[#71BF45]' size={24} />,
             title: "Respiratory Health",
-            desc: "Breath easier, feel stronger"
+            desc: "Breathe easier, feel stronger"
         }
     ]
+
     return (
-        <div className='flex py-10 gap-[35px] px-10 bg-white'>
+        <div className='flex flex-wrap lg:flex-nowrap py-10 gap-[35px] px-10 bg-white'>
 
             {/* FIRST COLUMN */}
             <div className="space-y-5">
@@ -82,7 +85,7 @@ function ShopLink() {
                     <div className="space-y-4">
                         {firstCol.map((item, idx) => (
                             <div key={idx} className='p-[10px] space-y-[10px] rounded-xl cursor-pointer transition-shadow duration-300 hover:shadow-xs hover:shadow-[#71BF45] group'>
-                                <div className='flex items-center gap-[12px]'>
+                                <div className='relative flex items-center gap-[12px]'>
                                     {item.img}
                                     <p className='font-semibold text-lg whitespace-nowrap transition-colors duration-300 group-hover:text-[#71BF45]'>
                                         {item.title}
@@ -113,7 +116,7 @@ function ShopLink() {
                         <div className="space-y-4">
                             {secondCol.map((item, idx) => (
                                 <div key={idx} className='p-[10px] space-y-[10px] rounded-xl cursor-pointer transition-shadow duration-300 hover:shadow-xs hover:shadow-[#71BF45] group'>
-                                    <div className='flex items-center gap-[12px]'>
+                                    <div className='relative flex items-center gap-[12px]'>
                                         {item.img}
                                         <p className='font-semibold text-lg whitespace-nowrap transition-colors duration-300 group-hover:text-[#71BF45]'>
                                             {item.title}
@@ -134,7 +137,7 @@ function ShopLink() {
                         <div className="space-y-4">
                             {thirdCol.map((item, idx) => (
                                 <div key={idx} className='p-[10px] space-y-[10px] rounded-xl cursor-pointer transition-shadow duration-300 hover:shadow-xs hover:shadow-[#71BF45] group'>
-                                    <div className='flex items-center gap-[12px]'>
+                                    <div className='relative flex items-center gap-[12px]'>
                                         {item.img}
                                         <p className='font-semibold text-lg whitespace-nowrap transition-colors duration-300 group-hover:text-[#71BF45]'>
                                             {item.title}
@@ -151,15 +154,17 @@ function ShopLink() {
             </div>
 
             {/* THIRD COLUMN */}
-            <div className='w-[351px] h-[492px]'>
-                <img
+            <div className='relative w-[351px] h-[492px]'>
+                <Image
                     src="/shopLink.jpg"
                     alt='img'
-                    className='size-full rounded-3xl'
+                    fill
+                    className='object-cover rounded-3xl'
+                    sizes="(max-width: 768px) 100vw, 351px"
                 />
             </div>
         </div>
     )
 }
 
-export default ShopLink
+export default ShopLink;

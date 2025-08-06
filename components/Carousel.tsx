@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React, { useState } from "react";
 import {
   MdOutlineKeyboardArrowLeft,
@@ -40,48 +41,48 @@ export default function Carousel() {
   };
 
   return (
-    <div className="relative overflow-hidden w-[1264px] h-[624px] rounded-3xl">
+    <div className="relative w-full max-w-[1264px] aspect-[2/1] sm:aspect-[2.3/1] mx-auto rounded-3xl overflow-hidden">
       <div className="relative w-full h-full">
         <div
           key={slides[currentIndex].id}
-          className={`absolute w-full h-full transition-transform duration-700 ease-in-out ${
+          className={`absolute w-full h-full transition-all duration-700 ease-in-out ${
             direction === "right"
               ? "translate-x-0 animate-slide-in-right"
               : "translate-x-0 animate-slide-in-left"
           }`}
         >
-          <img
+          <Image
             src={slides[currentIndex].image}
             alt={slides[currentIndex].title}
-            className="w-full h-full object-fill border-2 border-[#f3f3f3] rounded-3xl"
+            fill
+            sizes="100vw"
+            className="object-fill rounded-3xl"
+            priority
           />
 
-          {/* Content on top-left */}
-          <div className="absolute top-10 left-[50px] space-y-[30px]">
-            <h2 className="text-[50px] font-normal">
+          <div className="absolute top-6 sm:top-10 left-4 sm:left-10 space-y-4 sm:space-y-[30px] max-w-[90%] sm:max-w-[60%]">
+            <h2 className="text-2xl sm:text-4xl md:text-[50px] font-normal text-white drop-shadow-lg">
               {slides[currentIndex].title}
             </h2>
-            <p className="text-2xl font-normal">
+            <p className="text-base sm:text-xl md:text-2xl font-normal text-white drop-shadow">
               {slides[currentIndex].subTitle}
             </p>
-            <button className="py-[10px] px-5 rounded-[10px] bg-[#093C16] font-semibold text-2xl text-white">
+            <button className="py-2 sm:py-[10px] px-4 sm:px-5 rounded-[10px] bg-[#093C16] font-semibold text-white text-base sm:text-xl cursor-pointer">
               Shop Now
             </button>
           </div>
         </div>
 
-        {/* Left Button */}
         <button
           onClick={prevSlide}
-          className="absolute top-1/2 left-2 transform -translate-y-1/2 text-black p-2 rounded-full shadow-md transition backdrop-blur-sm cursor-pointer"
+          className="absolute top-1/2 left-1 sm:left-4 transform -translate-y-1/2 text-white p-2 rounded-full shadow-md transition backdrop-blur-sm cursor-pointer"
         >
           <MdOutlineKeyboardArrowLeft size={30} />
         </button>
 
-        {/* Right Button */}
         <button
           onClick={nextSlide}
-          className="absolute top-1/2 right-2 transform -translate-y-1/2 text-black p-2 rounded-full shadow-md transition backdrop-blur-sm cursor-pointer"
+          className="absolute top-1/2 right-1 sm:right-4 transform -translate-y-1/2 text-white p-2 rounded-full shadow-md transition backdrop-blur-sm cursor-pointer"
         >
           <MdOutlineKeyboardArrowRight size={30} />
         </button>

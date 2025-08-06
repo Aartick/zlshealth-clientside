@@ -36,10 +36,10 @@ function Navbar() {
 
     return (
         <div className="z-40 fixed w-full flex justify-between items-center sm:gap-[40px] py-[10px] sm:py-2 px-4 sm:px-10 drop-shadow-[0px_4px_15.8px_rgba(0,0,0,0.06)] bg-white">
-            <div className="flex flex-col sm:flex-row items-center gap-[21px]">
-                <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row gap-[21px]">
+                <div className="relative flex items-center gap-3">
                     <RxHamburgerMenu size={24} className="text-[#71BF45] sm:hidden" />
-                    <img src="/logo.png" alt="logo" className="w-[68px] h-[37px] sm:w-[85px] sm:h-[47px]" width={85} height={47} />
+                    <Image src="/logo.png" alt="logo" className="w-[68px] h-[37px] sm:w-[85px] sm:h-[47px]" width={85} height={47} />
                 </div>
 
                 {/* Location */}
@@ -94,15 +94,15 @@ function Navbar() {
 
             {/* Login */}
             <div className="flex items-center gap-3 sm:gap-5">
-                <div className="flex items-center gap-3">
-                    <div className="p-5 rounded-[60px] text-[#71BF45] bg-[#f3f3f3]">
-                        <BsCart2 size={24} />
+                <div className="flex items-center gap-3 text-lg sm:text-2xl">
+                    <div className="p-2 sm:p-5 rounded-[60px] text-[#71BF45] bg-[#f3f3f3]">
+                        <BsCart2 />
                     </div>
-                    <div className="p-5 rounded-[60px] text-[#71BF45] bg-[#f3f3f3]">
-                        <BsSuitHeart size={24} />
+                    <div className="p-2 sm:p-5 rounded-[60px] text-[#71BF45] bg-[#f3f3f3]">
+                        <BsSuitHeart />
                     </div>
                 </div>
-                <button className="flex items-center gap-[6px] rounded-[10px] p-4 bg-[#093C16] text-[#ffffff]">
+                <button className="flex items-center gap-[6px] text-xs sm:text-base rounded-[4px] sm:rounded-[10px] p-2 sm:p-4 bg-[#093C16] text-[#ffffff]">
                     <p className="font-semibold">Login</p>
                     <CgProfile size={16} />
                 </button>
