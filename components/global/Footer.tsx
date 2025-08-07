@@ -9,15 +9,15 @@ import Image from "next/image";
 function Footer() {
     return (
         <div className="border-t border-[#000000] p-5 sm:py-20 sm:px-16">
-            <div className="flex flex-col sm:flex-row gap-6 sm:gap-[412px] bg-white">
+            <div className="flex flex-col lg:flex-row gap-6 md:gap-[50px] lg:gap-[412px] bg-white">
                 {/* LEFT PART */}
                 <div className="space-y-6">
                     <Image src="/logo.png" width={165} height={85} alt="logo" />
                     <p className="text-[#36810B] sm:text-xl font-medium italic">
                         Herbal Solutions For Your Health
                     </p>
-                    <div className="sm:text-xl text-nowrap">
-                        <p>Sy.no.312, H.no.3-14/2, 2nd Floor Narsingi Village,</p>
+                    <div className="text-sm sm:text-xl text-nowrap">
+                        <p >Sy.no.312, H.no.3-14/2, 2nd Floor Narsingi Village,</p>
                         <p> Rajendra Nagar Mandal Hyderabad - 500089</p>
                     </div>
                     <div className="flex items-center gap-1.5 sm:gap-5">
@@ -71,7 +71,7 @@ function Footer() {
             <hr className="border-[#000000] my-4 sm:my-8" />
 
             {/* BOTTOM PART */}
-            <div className="flex flex-col sm:flex-row gap-2 sm:justify-between items-center">
+            <div className="flex flex-col md:flex-row gap-2 md:justify-between items-center">
                 <p className="text-sm sm:text-base">
                     Copyrights © ZEALOUS HEALTH PRIVATE LIMITED | Powered by AfterMarkett
                 </p>

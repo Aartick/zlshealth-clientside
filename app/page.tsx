@@ -170,11 +170,11 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="bg-white space-y-[60px] mb-8">
+    <div className="bg-white space-y-10 lg:space-y-[60px] mb-8">
 
       {/* TOP BAR */}
       <div className="relative z-30">
-        <div className="hidden sm:flex justify-center">
+        <div className="hidden lg:flex justify-center">
           <div className="flex items-center gap-[50px] rounded-br-[40px] rounded-bl-[40px] bg-[#72bf451d] py-5 px-[10px] font-normal text-xl">
             <Link href="/">Home</Link>
 
@@ -216,7 +216,7 @@ export default function Home() {
       </div>
 
       {/* SEARCH BAR FOR MOBILE VIEW */}
-      <div className="relative sm:hidden flex justify-between bg-[#f3f3f3] border-[0.5px] border-[#71BF45] rounded-[10px] mx-6 py-5 px-[10px] drop-shadow-[0px_4px_15.8px_rgba(132, 132, 132, 0.2)]">
+      <div className="relative lg:hidden flex justify-between bg-[#f3f3f3] border-[0.5px] border-[#71BF45] rounded-[10px] mx-6 py-5 px-[10px] drop-shadow-[0px_4px_15.8px_rgba(132, 132, 132, 0.2)]">
         <div className="flex items-center gap-[10px] relative">
           <div className="p-[2px] rounded-lg bg-[#71bf45] text-[#ffffff]">
             <IoSearchOutline size={15} />
@@ -272,18 +272,22 @@ export default function Home() {
         </Link>
       </div>
 
-      <div className="flex items-center overflow-x-scroll scrollbar-hide">
-        <div className="flex items-center w-max sm:w-auto sm:grid grid-cols-4 gap-3 px-[10px] sm:px-[60px]">
+      <div className="overflow-x-auto scrollbar-hide px-4">
+        <div className="flex lg:grid lg:grid-cols-4 gap-3 min-w-max lg:min-w-0">
           {categories.map((cat, idx) => (
-            <div key={idx} className="group flex flex-col sm:flex-row items-center gap-3 border-[#e0e0e0] hover:border-[#71BF45] transition-colors duration-300 p-3 border-2 rounded-lg cursor-pointer w-[92px] min-h-[100px] sm:w-auto sm:min-h-auto">
+            <div
+              key={idx}
+              className="group flex-shrink-0 flex flex-col lg:flex-row items-center gap-3 border-[#e0e0e0] hover:border-[#71BF45] transition-colors duration-300 p-3 border-2 rounded-lg cursor-pointer w-[92px] sm:w-auto"
+            >
               <p className="text-2xl">{cat.icon}</p>
-              <p className="text-xs sm:text-base text-center font-medium text-[#093C16] group-hover:text-[#71BF45] transition-colors sm:text-nowrap">
+              <p className="text-xs md:text-base text-center font-medium text-[#093C16] group-hover:text-[#71BF45] transition-colors lg:whitespace-nowrap">
                 {cat.title}
               </p>
             </div>
           ))}
         </div>
       </div>
+
 
       <div className="space-y-8 sm:space-y-10 px-6 sm:px-[60px]">
         <p className="font-normal text-2xl sm:text-[32px] whitespace-nowrap">
@@ -331,11 +335,12 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 w-max sm:w-auto sm:flex items-center gap-4 sm:px-12">
+          <div className="grid grid-cols-2 gap-4 sm:w-auto sm:flex sm:flex-wrap sm:justify-center items-center">
             {[...Array(4)].map((_, idx) => (
               <ProductCard key={idx} />
             ))}
           </div>
+
         </div>
       </div>
 
@@ -356,17 +361,17 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="flex items-center justify-center sm:gap-[60px]">
-        <div className="border-r border-[#71BF45] sm:py-[10px] p-[10px] sm:pr-10 sm:pl-[10px] space-y-[8px] sm:space-y-[10px]">
-          <p className="text-[#36810B] font-normal text-[42px] sm:text-[62px]">50 +</p>
+      <div className="flex justify-center px-6 sm:gap-[60px]">
+        <div className="border-r border-[#71BF45] p-[8px] sm:py-[10px] sm:pr-10 sm:pl-[10px] space-y-[8px] sm:space-y-[10px]">
+          <p className="text-[#36810B] font-normal text-[38px] sm:text-[44px] lg:text-[62px]">50 +</p>
           <p className="text-xs sm:text-2xl font-normal">Herbal Wellness Products</p>
         </div>
-        <div className="border-r border-[#71BF45] sm:py-[10px] p-[10px] sm:pr-10 sm:pl-[10px] space-y-[8px] sm:space-y-[10px]">
-          <p className="text-[#36810B] font-normal text-[42px] sm:text-[62px]">10k +</p>
+        <div className="border-r border-[#71BF45] p-[8px] sm:py-[10px] sm:pr-10 sm:pl-[10px] space-y-[8px] sm:space-y-[10px]">
+          <p className="text-[#36810B] font-normal text-[38px] sm:text-[44px] lg:text-[62px]">10k +</p>
           <p className="text-xs sm:text-2xl font-normal">Happy Customers Served</p>
         </div>
-        <div className="sm:py-[10px] p-[10px] sm:pr-5 sm:pl-[10px] space-y-[8px] sm:space-y-[10px]">
-          <p className="text-[#36810B] font-normal text-[42px] sm:text-[62px]">8 +</p>
+        <div className="sm:py-[10px] p-[8px] sm:pr-5 sm:pl-[10px] space-y-[8px] sm:space-y-[10px]">
+          <p className="text-[#36810B] font-normal text-[38px] sm:text-[44px] lg:text-[62px]">8 +</p>
           <p className="text-xs sm:text-2xl font-normal">Years of Herbal Expertise</p>
         </div>
       </div>
@@ -379,7 +384,7 @@ export default function Home() {
           ocess
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-[30px] px-6 sm:px-[60px]">
+        <div className="flex flex-col lg:flex-row gap-[30px] px-6 md:px-[60px]">
           <div className="relative w-full max-w-[634px] aspect-[634/775] mx-auto">
             <Image
               src="/Process.png"
@@ -390,7 +395,7 @@ export default function Home() {
 
             {/* Overlay button group positioned at the bottom center */}
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-4 items-center text-[#093C16]">
-              <p className="rounded-[30px] px-9 sm:px-32 py-2 sm:py-[10px] bg-white font-medium text-base sm:text-2xl whitespace-nowrap">
+              <p className="rounded-[30px] px-9 sm:px-32 py-2 sm:py-[10px] bg-white font-medium text-base sm:text-lg lg:text-2xl whitespace-nowrap">
                 Fast & Reliable Delivery
               </p>
               <p className="p-2 sm:p-[10px] bg-white rounded-[30px]">
@@ -566,7 +571,7 @@ export default function Home() {
             className="rounded-[40px] w-full sm:h-[700px] shadow-lg shadow-[#bdbdbd]"
           />
 
-          <div className="flex gap-[152px]">
+          <div className="flex flex-col lg:flex-row gap-[50px] lg:gap-[152px]">
             <div className="space-y-10">
               <div className="flex items-center gap-2">
                 <p className="font-normal text-2xl sm:text-[32px] text-nowrap">

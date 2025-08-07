@@ -5,7 +5,7 @@ import { IoStarSharp } from "react-icons/io5";
 function ProductCard() {
     return (
         <div className="rounded-[10px] sm:rounded-[22px] p-[10px] border-2 border-[#d9d9d9] space-y-[15px]">
-            <div className="relative size-[150px] sm:size-[225px]">
+            <div className="relative h-[150px] sm:size-[225px]">
                 <Image
                     src='/prodImg.png'
                     fill
@@ -20,11 +20,11 @@ function ProductCard() {
             <div className="flex justify-between items-center">
                 <p className="flex items-center text-[#848484] font-medium text-xs sm:text-base">
                     <span className="flex items-center text-[#71BF45]">
-                        <IoStarSharp size={20} />
-                        <IoStarSharp size={20} />
-                        <IoStarSharp size={20} />
-                        <IoStarSharp size={20} />
-                        <IoStarSharp size={20} />
+                        <IoStarSharp />
+                        <IoStarSharp />
+                        <IoStarSharp />
+                        <IoStarSharp />
+                        <IoStarSharp />
                     </span>
                     4.5
                 </p>

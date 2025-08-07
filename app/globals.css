@@ -64,3 +64,29 @@ body {
     }
   }
 }
+
+@keyframes sidebarSlideIn {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes sidebarSlideOut {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.sidebar-slide-in {
+  animation: sidebarSlideIn 0.4s ease-in-out forwards;
+}
+
+.sidebar-slide-out {
+  animation: sidebarSlideOut 0.4s ease-in-out forwards;
+}
