@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     await dbConnect();
     if (type === "register") {
       const { email, password } = await req.json()
-      console.log(email, password);
+      
       if (!email || !password) {
         return NextResponse.json(error(400, "Email and Password are required"));
       }

@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     }
 
     const category = await Category.findOne({ name: categoryName });
-    console.log("Category", category);
+    
     if (!category) {
       return NextResponse.json(error(404, "No such category found."));
     }
