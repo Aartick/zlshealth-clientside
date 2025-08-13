@@ -88,9 +88,11 @@ function Navbar() {
 
     const handleLogout = async () => {
         try {
-            const response = await axiosClient.get("/api/auth?type=logout")
-            removeItem(KEY_ACCESS_TOKEN)
-            toast.success(response.data.result)
+            if (isUser) {
+                const response = await axiosClient.get("/api/auth?type=logout")
+                removeItem(KEY_ACCESS_TOKEN)
+                toast.success(response.data.result)
+            }
         } catch (e) {
             return
         }

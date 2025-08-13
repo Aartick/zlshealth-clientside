@@ -5,6 +5,10 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import dbConnect from "@/dbConnect/dbConnect";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "@/utils/generateTokens";
 
 export async function POST(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -17,8 +21,8 @@ export async function POST(req: NextRequest) {
   try {
     await dbConnect();
     if (type === "register") {
-      const { email, password } = await req.json()
-      
+      const { email, password } = await req.json();
+
       if (!email || !password) {
         return NextResponse.json(error(400, "Email and Password are required"));
       }
@@ -119,25 +123,3 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(error(500, "Something went wrong."));
   }
 }
-
-const generateAccessToken = (data: any) => {
-  try {
-    const token = jwt.sign(data, process.env.ACCESS_TOKEN_PRIVATE_KEY!, {
-      expiresIn: "1d",
-    });
-    return token;
-  } catch (e) {
-    return "Something went wrong while generating access token.";
-  }
-};
-
-const generateRefreshToken = (data: any) => {
-  try {
-    const token = jwt.sign(data, process.env.REFRESH_TOKEN_PRIVATE_KEY!, {
-      expiresIn: "1m",
-    });
-    return token;
-  } catch (e) {
-    return "something went wrong while generating refresh token";
-  }
-};

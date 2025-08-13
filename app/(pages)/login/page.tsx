@@ -1,5 +1,7 @@
 "use client"
 
+import { googleLogIn } from '@/app/actions';
+import { auth } from '@/app/auth';
 import { axiosClient } from '@/utils/axiosClient';
 import { KEY_ACCESS_TOKEN, setItem } from '@/utils/localStorageManager';
 import Image from 'next/image'
@@ -50,69 +52,79 @@ function Page() {
         }
     }
 
+    const handleGoogleLogin = async () => {
+        googleLogIn("google")
+    }
+
     return (
         <div className='flex flex-col md:flex-row items-center gap-6 md:gap-[42px] pt-[30px] px-4 sm:px-[30px] md:px-[60px] pb-[60px] bg'>
 
             {/* FIRST COLUMN */}
-            <form onSubmit={handleLogIn} className='w-full max-w-md space-y-[30px] rounded-[20px] border-3 border-[#e3e3e3] p-5 sm:p-[30px]'>
-                <p className="text-center font-semibold text-2xl">Log In</p>
+            <div className="w-full max-w-md space-y-[30px] rounded-[20px] border-3 border-[#e3e3e3] p-5 sm:p-[30px]">
+                <form onSubmit={handleLogIn} className='space-y-[30px]'>
+                    <p className="text-center font-semibold text-2xl">Log In</p>
 
-                <div className='space-y-2.5'>
-                    <input
-                        type="text"
-                        value={email}
-                        disabled={loading}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder='Enter mobile No. or Email'
-                        className={`py-2.5 px-4 rounded-[10px] border border-[#cdcdcd] w-full focus:outline-none ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
-                    />
-                    <p className='font-normal text-[#676767] text-xs'>*You will receive a code for confirmation.</p>
-                </div>
-
-                <div className='space-y-2.5'>
-
-                    <div
-                        className={`flex items-center justify-between px-4 py-2.5 border border-[#cdcdcd] rounded-[10px] w-full`}
-                    >
+                    <div className='space-y-2.5'>
                         <input
-                            type={togglePassword ? `text` : `password`}
-                            value={password}
+                            type="text"
+                            value={email}
                             disabled={loading}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Create Password"
-                            className={`w-full focus:outline-none ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder='Enter mobile No. or Email'
+                            className={`py-2.5 px-4 rounded-[10px] border border-[#cdcdcd] w-full focus:outline-none ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
                         />
-                        <p
-                            className="cursor-pointer"
-                            onClick={() => setTogglePassword(!togglePassword)}
-                        >
-                            {togglePassword ? <FiEye size={16} /> : <FiEyeOff size={16} />}
-                        </p>
+                        <p className='font-normal text-[#676767] text-xs'>*You will receive a code for confirmation.</p>
                     </div>
 
-                    <p className="text-center text-[#71BF45] font-medium text-sm sm:text-base cursor-pointer">Forgot password?</p>
-                </div>
+                    <div className='space-y-2.5'>
+
+                        <div
+                            className={`flex items-center justify-between px-4 py-2.5 border border-[#cdcdcd] rounded-[10px] w-full`}
+                        >
+                            <input
+                                type={togglePassword ? `text` : `password`}
+                                value={password}
+                                disabled={loading}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Create Password"
+                                className={`w-full focus:outline-none ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+                            />
+                            <p
+                                className="cursor-pointer"
+                                onClick={() => setTogglePassword(!togglePassword)}
+                            >
+                                {togglePassword ? <FiEye size={16} /> : <FiEyeOff size={16} />}
+                            </p>
+                        </div>
+
+                        <p className="text-center text-[#71BF45] font-medium text-sm sm:text-base cursor-pointer">Forgot password?</p>
+                    </div>
+
+                    <div className='space-y-2.5'>
+                        <input
+                            type="submit"
+                            value="Log In"
+                            disabled={loading}
+                            className={`bg-[#092C16] py-2.5 px-4 text-white border border-[#CDCDCD] rounded-[10px] w-full ${loading ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}
+                        />
+                        <div className="flex items-center justify-center gap-2.5 text-sm sm:text-base flex-wrap">
+                            <p className='text-[#71BF45] font-medium'>Don't have an account?</p>
+                            <Link
+                                href="/signup"
+                                className='font-semibold underline decoration-solid'
+                            >
+                                Sign Up
+                            </Link>
+                        </div>
+                    </div>
+                </form>
 
                 <div className='space-y-2.5'>
-                    <input
-                        type="submit"
-                        value="Log In"
+                    <button
                         disabled={loading}
-                        className={`bg-[#092C16] py-2.5 px-4 text-white border border-[#CDCDCD] rounded-[10px] w-full ${loading ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}
-                    />
-                    <div className="flex items-center justify-center gap-2.5 text-sm sm:text-base flex-wrap">
-                        <p className='text-[#71BF45] font-medium'>Don't have an account?</p>
-                        <Link
-                            href="/signup"
-                            className='font-semibold underline decoration-solid'
-                        >
-                            Sign Up
-                        </Link>
-                    </div>
-                </div>
-
-                <div className='space-y-2.5'>
-                    <button className='flex items-center justify-center gap-2.5 px-3 py-[11px] border-2 border-[#71BF45] rounded-lg drop-shadow-[0_2px_12px_rgba(63,137,249,0.08)] w-full'>
+                        onClick={handleGoogleLogin}
+                        className={`flex items-center justify-center gap-2.5 px-3 py-[11px] border-2 border-[#71BF45] rounded-lg drop-shadow-[0_2px_12px_rgba(63,137,249,0.08)] w-full ${loading ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}
+                    >
                         <p className="text-base font-semibold">Continue With Google</p>
                     </button>
                     <div className="flex items-center gap-2.5 justify-center text-sm sm:text-base flex-wrap">
@@ -120,7 +132,7 @@ function Page() {
                         <p className='text-[#71BF45] font-extrabold cursor-pointer'>Get Help</p>
                     </div>
                 </div>
-            </form>
+            </div>
 
             {/* SECOND COLUMN - Hidden on Mobile */}
             <div className='hidden md:block relative w-full md:w-[819px] h-[400px] md:h-[732px]'>

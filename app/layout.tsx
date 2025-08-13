@@ -6,6 +6,8 @@ import Footer from "@/components/global/Footer";
 import StoreProvider from "./StoreProvider";
 import ToastHandler from "@/components/global/ToastHandler";
 import { Toaster } from "react-hot-toast";
+import Providers from "./Providers";
+import { SessionProvider } from "next-auth/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,15 +34,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <StoreProvider>
-          <ToastHandler />
-          <Navbar />
-          <div className="pt-24 sm:pt-28 lg:pt-20">
-            <Toaster />
-            {children}
-          </div>
-          <Footer />
-        </StoreProvider>
+        <SessionProvider>
+          <StoreProvider>
+            <ToastHandler />
+            <Providers />
+            <Navbar />
+            <div className="pt-24 sm:pt-28 lg:pt-20">
+              <Toaster />
+              {children}
+            </div>
+            <Footer />
+          </StoreProvider>
+        </SessionProvider>
       </body>
     </html>
   );
