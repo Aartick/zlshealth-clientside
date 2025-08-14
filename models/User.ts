@@ -4,8 +4,10 @@ export interface IUser extends Document {
   firstName: string;
   lastName: string;
   displayName: string;
+  googleId: string;
   email: string;
   password: string;
+  hasAgreedToPrivacyPolicy: boolean;
   VAT_Number: string;
   SSN_Number: string;
   GSTIN_Number: string;
@@ -24,6 +26,7 @@ const userSchema: Schema<IUser> = new Schema({
   displayName: {
     type: String,
   },
+  googleId: String,
   email: {
     type: String,
     required: [true, "Email is required"],
@@ -34,7 +37,12 @@ const userSchema: Schema<IUser> = new Schema({
   },
   password: {
     type: String,
-    select: false
+    select: false,
+  },
+  hasAgreedToPrivacyPolicy: {
+    type: Boolean,
+    required: true,
+    default: false,
   },
   VAT_Number: {
     type: String,
@@ -53,8 +61,8 @@ const userSchema: Schema<IUser> = new Schema({
   },
   wishlist: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Wishlist"
-  }
+    ref: "Wishlist",
+  },
 });
 
 const User = mongoose.models.User || mongoose.model<IUser>("User", userSchema);
