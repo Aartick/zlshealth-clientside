@@ -1,5 +1,7 @@
+"use client"
+
 import Image from 'next/image'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { IoStarSharp } from 'react-icons/io5'
 import { LuPen } from "react-icons/lu";
 import { TbTruckDelivery } from "react-icons/tb";
@@ -8,8 +10,45 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import Link from 'next/link';
 import Product from '@/components/Product';
 import FAQ from '@/components/FAQ';
+import { useParams } from 'next/navigation';
+import { axiosClient } from '@/utils/axiosClient';
+
+interface product {
+    _id: string,
+    category: string;
+    imageUrl: string;
+    name: string;
+    about: string;
+    tags: string[];
+    price: number;
+    discount: number;
+    shortDescription: string;
+    quantity: number;
+    highlights: string[];
+    sku: string;
+    brand: string;
+    additionalInfo: string;
+    appliedFor: string[];
+}
 
 function Page() {
+    const [product, setProduct] = useState<product | null>(null)
+
+    const params = useParams()
+
+    useEffect(() => {
+        const getDetails = async () => {
+            try {
+                const details = await axiosClient.get(`/api/products?type=productId&id=${params.id}`)
+                setProduct(details.data.result)
+            } catch (e) {
+                console.log(e)
+                return
+            }
+        }
+        getDetails()
+    }, [])
+
     return (
         <div className='space-y-5 pb-10'>
             <div className="flex flex-col md:flex-row">
@@ -83,32 +122,28 @@ function Page() {
                         </div>
 
                         <div>
-                            <p className='font-medium text-2xl'>Diavinco</p>
-                            <p className="font-medium text-[#848484]">Blood Sugar Control Tablet - 30 Caplets</p>
+                            <p className='font-medium text-2xl'>{product?.name}</p>
+                            <p className="font-medium text-[#848484]">{product?.about} - 30 Caplets</p>
                         </div>
 
                         <div className="flex items-center gap-2.5 overflow-x-scroll scrollbar-hide">
-                            <div className="border-2 border-[#e3e3e3] py-[5px] px-2.5 rounded-[30px]">
-                                <p className='text-[#848484] text-nowrap font-medium'>Caplet</p>
-                            </div>
-                            <div className="border-2 border-[#e3e3e3] py-[5px] px-2.5 rounded-[30px]">
-                                <p className='text-[#848484] text-nowrap font-medium'>Blood Sugar</p>
-                            </div>
-                            <div className="border-2 border-[#e3e3e3] py-[5px] px-2.5 rounded-[30px]">
-                                <p className='text-[#848484] text-nowrap font-medium'>Mitochondria Boost</p>
-                            </div>
+                            {product?.tags.map((tag) => (
+                                <div key={tag} className="border-2 border-[#e3e3e3] py-[5px] px-2.5 rounded-[30px]">
+                                    <p className='text-[#848484] text-nowrap font-medium'>{tag}</p>
+                                </div>
+                            ))}
                         </div>
 
                         <p className='font-medium text-[#848484]'>Tablet for <span className='text-[#000000]'>Glucose</span> & <span className='text-[#000000]'>Lipid Metabolism</span></p>
-                        <p className='text-[#848484] font-medium'>Boosts mitochondrial function to reduce insulin resistance.</p>
+                        <p className='text-[#848484] font-medium'>{product?.shortDescription}</p>
 
                         <div>
                             <p className="font-semibold text-base sm:text-2xl">
-                                ₹ 1,300.00{" "}
+                                ₹ {product?.price! - (product?.price! * product?.discount! / 100)}{" "}
                                 <span className="font-normal text-xs line-through text-[#848484]">
-                                    ₹ 1,499.00
+                                    ₹ {product?.price}
                                 </span>{" "}
-                                <span className="font-medium text-sm text-[#71BF45]">(28% off)</span>
+                                <span className="font-medium text-sm text-[#71BF45]">({product?.discount}% off)</span>
                             </p>
                             <p className='text-[#71BF45]'>inclusice of all taxes</p>
                         </div>
@@ -274,9 +309,9 @@ function Page() {
                 <FAQ />
                 <p className="text-2xl font-semibold pt-10">Similar Products</p>
                 <div className="flex items-center overflow-x-scroll gap-5 scrollbar-hide">
-                    {[...Array(11)].map((_, idx) => (
-                        <Product key={idx} />
-                    ))}
+                    {/* {[...Array(11)].map((_, idx) => (
+                        // <Product key={idx} />
+                    ))} */}
                 </div>
             </div>
         </div>

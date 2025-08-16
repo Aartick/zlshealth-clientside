@@ -1,56 +1,127 @@
 'use client'
 
 import Product from '@/components/Product'
+import { axiosClient } from '@/utils/axiosClient'
 import Image from 'next/image'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Range } from 'react-range'
 
-const categories = [
-    "Digestive & Gut Health",
-    "Immunity & Respiratory",
-    "Joint, Bone & Mobility",
-    "Metabolic Health",
-    "Reproductive & Hormonal health",
-    "Haircare",
-    "Holistic Wellness"
-]
+interface products {
+    _id: string,
+    category: string;
+    imageUrl: string;
+    name: string;
+    about: string;
+    tags: string[];
+    price: number;
+    discount: number;
+    shortDescription: string;
+    quantity: number;
+    highlights: string[];
+    sku: string;
+    brand: string;
+    additionalInfo: string;
+    appliedFor: string[];
+}
 
-const productType = [
-    {
-        icon: "",
-        type: "Capsule & Tablets"
-    },
-    {
-        icon: "",
-        type: "Syrups & Tonics"
-    },
-    {
-        icon: "",
-        type: "Oils & Creams"
-    },
-    {
-        icon: "",
-        type: "Herbal Blends"
-    }
-]
-
-const benefitsAndConcerns = [
-    "Stress & Sleep",
-    "Blood Sugar Support",
-    "Hormonal Balance",
-    "Skin & Hair",
-    "Energy & Focus",
-]
+interface filters {
+    _id: string,
+    name: string,
+}
 
 function page() {
     const STEP = 10;
     const MIN = 300;
     const MAX = 1500;
 
-    const [values, setValues] = useState([300, 1500]);
+    const [values, setValues] = useState<number[]>([MIN, MAX]);
+    const [categories, setCategories] = useState<filters[]>([])
+    const [productTypes, setProductTypes] = useState<filters[]>([])
+    const [benefits, setBenefits] = useState<filters[]>([])
+
+    const [selectedCategory, setSelectedCategory] = useState<string>("")
+    const [selectedProductTypes, setSelectedProductTypes] = useState<string[]>([])
+    const [selectedBenefits, setSelectedBenefits] = useState<string[]>([])
+    const [products, setProducts] = useState<products[]>([])
+    const [filteredProducts, setFilteredProducts] = useState<products[]>([])
+
+    useEffect(() => {
+        const getCategories = async () => {
+            try {
+                const response = await axiosClient.get('/api/categories')
+                const fetchedCategories = response.data.result;
+                setCategories(fetchedCategories)
+
+                if (fetchedCategories.length > 0 && !selectedCategory) {
+                    setSelectedCategory(fetchedCategories[0]._id)
+                }
+            } catch (e) {
+                return
+            }
+        }
+
+        const getProductTypes = async () => {
+            try {
+                const response = await axiosClient.get("/api/productTypes")
+                setProductTypes(response.data.result)
+            } catch (e) {
+                return
+            }
+        }
+
+        const getBenefits = async () => {
+            try {
+                const response = await axiosClient.get("/api/benefits")
+                setBenefits(response.data.result)
+            } catch (e) {
+                return
+            }
+        }
+
+        getCategories()
+        getProductTypes()
+        getBenefits()
+    }, [selectedCategory])
+
+    useEffect(() => {
+        const getProducts = async () => {
+            try {
+                const queryParams = new URLSearchParams();
+
+                if (selectedCategory) queryParams.append("category", selectedCategory);
+                if (selectedProductTypes.length > 0) {
+                    queryParams.append("productTypes", selectedProductTypes.join(","));
+                }
+                if (selectedBenefits.length > 0) {
+                    queryParams.append("benefits", selectedBenefits.join(","));
+                }
+
+                const response = await axiosClient.get(
+                    `/api/products?type=all&${queryParams.toString()}`
+                );
+                setProducts(response.data.result);
+            } catch { }
+        };
+
+        getProducts();
+    }, [selectedCategory, selectedProductTypes, selectedBenefits]);
+
+    const toggleSelection = (id: string, setState: any) => {
+        setState((prev: string[]) =>
+            prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+        );
+    };
+
+    useEffect(() => {
+        const [min, max] = values;
+        const filtered = products.filter(
+            (p) => p.price >= min && p.price <= max
+        );
+        setFilteredProducts(filtered);
+    }, [values, products]);
 
     return (
-        <div>
+        <>
             <div className="relative w-full h-[200px] sm:h-[300px] md:h-[376px]">
                 <Image
                     src="/ProductsHeader.png"
@@ -70,10 +141,17 @@ function page() {
                         <div className="border border-[#e3e3e3] rounded-xl p-5 space-y-5">
                             <h3 className='font-medium text-xl'>Category</h3>
                             <div className="space-y-5">
-                                {categories.map((category, idx) => (
-                                    <div key={idx} className="flex items-center gap-2.5">
-                                        <input type="checkbox" name={category} id={category} />
-                                        <label htmlFor={category} className='text-[#848484]'>{category}</label>
+                                {categories.map((category) => (
+                                    <div key={category._id} className="flex items-center gap-2.5">
+                                        <input
+                                            type="checkbox"
+                                            id={category._id}
+                                            checked={selectedCategory === category._id}
+                                            onChange={() =>
+                                                setSelectedCategory(category._id)
+                                            }
+                                        />
+                                        <label htmlFor={category._id} className='text-[#848484]'>{category.name}</label>
                                     </div>
                                 ))}
                             </div>
@@ -83,12 +161,18 @@ function page() {
                         <div className="border border-[#e3e3e3] rounded-xl p-5 space-y-5">
                             <h3 className='font-medium text-xl'>Product Type</h3>
                             <div className="space-y-5">
-                                {productType.map((product, idx) => (
-                                    <div key={idx} className="flex items-center gap-5 border border-[#71BF45] rounded-lg p-2.5">
-                                        <input type="checkbox" name={product.type} id={product.type} />
-                                        <label htmlFor={product.type} className='text-[#848484]'>
-                                            <p>{product.icon}</p>
-                                            <p>{product.type}</p>
+                                {productTypes.map((product) => (
+                                    <div key={product._id} className="flex items-center gap-5 border border-[#71BF45] rounded-lg p-2.5">
+                                        <input
+                                            type="checkbox"
+                                            id={product._id}
+                                            checked={selectedProductTypes.includes(product._id)}
+                                            onChange={() =>
+                                                toggleSelection(product._id, setSelectedProductTypes)
+                                            }
+                                        />
+                                        <label htmlFor={product._id} className='text-[#848484]'>
+                                            <p>{product.name}</p>
                                         </label>
                                     </div>
                                 ))}
@@ -164,12 +248,19 @@ function page() {
 
                         {/* BENEFITS/CONCERNS */}
                         <div className="border border-[#e3e3e3] rounded-xl p-5 space-y-5">
-                            <h3 className='font-medium text-xl'>Category</h3>
+                            <h3 className='font-medium text-xl'>Benefits / Concerns</h3>
                             <div className="space-y-5">
-                                {benefitsAndConcerns.map((benefits, idx) => (
-                                    <div key={idx} className="flex items-center gap-2.5">
-                                        <input type="checkbox" name={benefits} id={benefits} />
-                                        <label htmlFor={benefits} className='text-[#848484]'>{benefits}</label>
+                                {benefits.map((benefit) => (
+                                    <div key={benefit._id} className="flex items-center gap-2.5">
+                                        <input
+                                            type="checkbox"
+                                            id={benefit._id}
+                                            checked={selectedBenefits.includes(benefit._id)}
+                                            onChange={() =>
+                                                toggleSelection(benefit._id, setSelectedBenefits)
+                                            }
+                                        />
+                                        <label htmlFor={benefit._id} className='text-[#848484]'>{benefit.name}</label>
                                     </div>
                                 ))}
                             </div>
@@ -193,13 +284,13 @@ function page() {
 
                     {/* Products */}
                     <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 md:gap-5 p-4 h-screen overflow-y-scroll scrollbar-hide">
-                        {[...Array(11)].map((_, idx) => (
-                            <Product key={idx} />
+                        {filteredProducts.map((data) => (
+                            <Product product={data} key={data._id} />
                         ))}
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     )
 }
 

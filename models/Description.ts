@@ -5,6 +5,7 @@ export interface IDescription extends Document {
   benefits: string[];
   dosage: string;
   productAttributes: string[];
+  form: string,
   packSize: string;
   ingredients: string[];
   safety: string;
@@ -27,6 +28,10 @@ const descriptionSchema: Schema<IDescription> = new Schema(
     productAttributes: {
       type: [String],
       required: true,
+    },
+    form: {
+      type: String,
+      required: true
     },
     packSize: {
       type: String,

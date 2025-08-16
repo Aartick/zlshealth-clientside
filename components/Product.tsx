@@ -6,9 +6,34 @@ import React, { useState } from 'react'
 import { BsSuitHeart, BsSuitHeartFill } from 'react-icons/bs';
 import { IoStarSharp } from 'react-icons/io5';
 
-function Product() {
+interface ProductType {
+    _id: string,
+    category: string;
+    imageUrl: string;
+    name: string;
+    about: string;
+    tags: string[];
+    price: number;
+    discount: number;
+    shortDescription: string;
+    quantity: number;
+    highlights: string[];
+    sku: string;
+    brand: string;
+    additionalInfo: string;
+    appliedFor: string[];
+}
+
+interface ProductProps {
+    product: ProductType
+}
+
+
+function Product({ product }: ProductProps) {
     const [favorite, setFavorite] = useState(false)
     let rating = 3.7
+
+    const discountedPrice = product.price - (product.price * product.discount / 100)
 
     const renderStars = () => {
         return Array.from({ length: 5 }, (_, index) => {
@@ -44,7 +69,7 @@ function Product() {
 
     return (
         <Link
-            href="/productDescription"
+            href={`/productDescription/${product._id}`}
             className="rounded-[10px] sm:rounded-[22px] p-[10px] border-2 border-[#d9d9d9] space-y-[15px]"
         >
             <div className="relative h-[150px] sm:h-[300px]">
@@ -95,15 +120,15 @@ function Product() {
 
             {/* Title */}
             <div>
-                <p className="font-medium text-base sm:text-2xl">Diavinco</p>
+                <p className="font-medium text-base sm:text-2xl">{product.name}</p>
                 <p className="font-medium text-xs sm:text-base text-[#848484]">
-                    Blood Sugar Control Tablet
+                    {product.about}
                 </p>
             </div>
 
             {/* Tags */}
             <div className="flex items-center gap-2.5 overflow-x-scroll scrollbar-hide">
-                {["Caplet", "Blood Sugar", "Ayurvedic"].map((tag) => (
+                {product.tags.map((tag) => (
                     <div
                         key={tag}
                         className="border-2 border-[#e3e3e3] py-[5px] px-2.5 rounded-[30px]"
@@ -113,14 +138,14 @@ function Product() {
                 ))}
             </div>
 
-            <p className="text-[#848484] font-medium">Boosts mitochondrial function</p>
+            <p className="text-[#848484] font-medium">{product.highlights[0]}</p>
 
             <p className="font-semibold text-base sm:text-2xl text-[#36810B]">
-                ₹ 1,300.00{" "}
+                ₹ {discountedPrice}{" "}
                 <span className="font-normal text-xs line-through text-[#848484]">
-                    ₹ 1,500.00
+                    ₹ {product.price}
                 </span>{" "}
-                <span className="font-medium text-sm text-[#71BF45]">(28% off)</span>
+                <span className="font-medium text-sm text-[#71BF45]">({product.discount}% off)</span>
             </p>
 
             <button
