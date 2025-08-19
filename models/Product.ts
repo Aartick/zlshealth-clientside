@@ -2,11 +2,16 @@ import mongoose, { Document, Schema } from "mongoose";
 
 export interface IProduct extends Document {
   category: mongoose.Types.ObjectId;
-  name: string;
+  productTypes: mongoose.Types.ObjectId;
+  benefits: mongoose.Types.ObjectId;
   imageUrl: string;
+  name: string;
+  about: string;
+  tags: string[];
   price: number;
-  quantity: number;
+  discount: number;
   shortDescription: string;
+  quantity: number;
   highlights: string[];
   sku: string;
   brand: string;
@@ -21,8 +26,22 @@ const productSchema: Schema<IProduct> = new Schema(
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
-      required: true
+      required: true,
     },
+    productTypes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ProductType",
+        required: true,
+      },
+    ],
+    benefits: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Benefit",
+        required: true,
+      },
+    ],
     name: {
       type: String,
       required: true,
@@ -31,9 +50,25 @@ const productSchema: Schema<IProduct> = new Schema(
       type: String,
       required: true,
     },
+    about: {
+      type: String,
+      required: true,
+    },
+    tags: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
     price: {
       type: Number,
       required: true,
+      default: 0,
+    },
+    discount: {
+      type: Number,
+      required: true,
+      default: 0,
     },
     quantity: {
       type: Number,
