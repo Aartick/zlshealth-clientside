@@ -9,6 +9,10 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { RxHamburgerMenu } from "react-icons/rx";
 import Sidebar from "./Sidebar";
+import Link from "next/link";
+import { getItem, KEY_ACCESS_TOKEN, removeItem } from "@/utils/localStorageManager";
+import { axiosClient } from "@/utils/axiosClient";
+import toast from "react-hot-toast";
 
 const placeholderTexts = [
     "Stress Relief Syrup",
@@ -68,6 +72,7 @@ function Navbar() {
     const [isAnimating, setIsAnimating] = useState(false);
     const [openSidebar, setOpenSidebar] = useState<boolean>(false)
     const [navLinks, setNavLinks] = useState(initialLinks)
+    const isUser = getItem(KEY_ACCESS_TOKEN)
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -81,18 +86,33 @@ function Navbar() {
         return () => clearInterval(interval);
     }, []);
 
+    const handleLogout = async () => {
+        try {
+            if (isUser) {
+                const response = await axiosClient.get("/api/auth?type=logout")
+                removeItem(KEY_ACCESS_TOKEN)
+                toast.success(response.data.result)
+            }
+        } catch (e) {
+            return
+        }
+    }
+
     return (
         <div className="z-40 fixed w-full py-[10px] sm:py-2 px-4 sm:px-10 drop-shadow-[0px_4px_15.8px_rgba(0,0,0,0.06)] bg-white">
             <div className="w-full flex justify-between items-center sm:gap-[40px]">
                 <div className="flex flex-col lg:flex-row gap-[21px]">
-                    <div className="relative flex items-center gap-3">
+                    <Link
+                        className="relative flex items-center gap-3"
+                        href="/"
+                    >
                         <RxHamburgerMenu
                             size={24}
                             className="text-[#71BF45] lg:hidden cursor-pointer"
                             onClick={() => setOpenSidebar(!openSidebar)}
                         />
                         <Image src="/logo.png" alt="logo" className="w-[68px] h-[37px] sm:w-[85px] sm:h-[47px]" width={85} height={47} />
-                    </div>
+                    </Link>
 
                     {/* Location */}
                     <div className="flex items-center gap-[10px]">
@@ -154,10 +174,14 @@ function Navbar() {
                             <BsSuitHeart />
                         </div>
                     </div>
-                    <button className="flex items-center gap-[6px] text-xs sm:text-base rounded-[4px] sm:rounded-[10px] p-2 sm:p-4 bg-[#093C16] text-[#ffffff]">
-                        <p className="font-semibold">Login</p>
+                    <Link
+                        className="flex items-center gap-[6px] text-xs sm:text-base rounded-[4px] sm:rounded-[10px] p-2 sm:p-4 bg-[#093C16] text-[#ffffff]"
+                        href={isUser ? "" : "/login"}
+                        onClick={handleLogout}
+                    >
+                        <p className="font-semibold">{isUser ? "Logout" : "Login"}</p>
                         <CgProfile size={16} />
-                    </button>
+                    </Link>
                 </div>
             </div>
 
