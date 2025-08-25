@@ -30,13 +30,14 @@ export async function POST(req: NextRequest) {
       additionalInfo,
       appliedFor,
     } = await req.json();
-
+    
     if (
       !categoryName ||
       !productType ||
       !benefits ||
       !name ||
-      !imageUrl ||
+      !imageUrl.url ||
+      !imageUrl.public_id ||
       !about ||
       !Array.isArray(tags) ||
       !price ||

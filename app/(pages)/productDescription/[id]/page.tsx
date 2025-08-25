@@ -8,15 +8,22 @@ import { TbTruckDelivery } from "react-icons/tb";
 import { LiaHandHoldingUsdSolid, LiaExchangeAltSolid } from "react-icons/lia";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import Link from 'next/link';
-import Product from '@/components/Product';
 import FAQ from '@/components/FAQ';
 import { useParams } from 'next/navigation';
 import { axiosClient } from '@/utils/axiosClient';
+import CartButton from '@/components/CartButton';
+import { BsSuitHeart, BsSuitHeartFill } from 'react-icons/bs';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { addToWishlist, removeFromWishlist } from '@/lib/features/wishlistSlice';
+import WishlistButton from '@/components/WishlistButton';
 
 interface product {
     _id: string,
     category: string;
-    imageUrl: string;
+    imageUrl: {
+        public_id: string,
+        url: string
+    };
     name: string;
     about: string;
     tags: string[];
@@ -31,9 +38,29 @@ interface product {
     appliedFor: string[];
 }
 
-function Page() {
-    const [product, setProduct] = useState<product | null>(null)
+const initialProduct = {
+    _id: "",
+    category: "",
+    imageUrl: {
+        public_id: "",
+        url: ""
+    },
+    name: "",
+    about: "",
+    tags: [],
+    price: 0,
+    discount: 0,
+    shortDescription: "",
+    quantity: 0,
+    highlights: [],
+    sku: "",
+    brand: "",
+    additionalInfo: "",
+    appliedFor: [],
+}
 
+function Page() {
+    const [product, setProduct] = useState<product>(initialProduct)
     const params = useParams()
 
     useEffect(() => {
@@ -57,13 +84,13 @@ function Page() {
                     <div className="flex space-x-4">
                         <div className="flex flex-col space-y-2.5">
                             <Image
-                                src="/DiavincoDesc.jpg"
+                                src={product.imageUrl.url}
                                 width={150}
                                 height={150}
                                 alt="DiavincoDescImg"
                             />
                             <Image
-                                src="/Diavinco.png"
+                                src={product.imageUrl.url}
                                 width={150}
                                 height={150}
                                 alt="DiavincoDescImg"
@@ -72,23 +99,31 @@ function Page() {
 
                         </div>
 
-                        <div className="flex-[2] relative w-[525px]  md:h-[492px]">
+                        <div className="flex-[2] relative w-[525px] md:h-[492px]">
+                            {/* Wishlist Heart Button */}
+                            <div className="absolute top-3 right-3 z-10">
+                                <WishlistButton product={product} />
+                            </div>
+
+                            {/* Product Image */}
                             <Image
-                                src="/prodImg.png"
+                                src={product.imageUrl?.url}
                                 fill
                                 alt="DiavincoDescImg"
+                                className="object-cover rounded-[12px]"
                             />
                         </div>
+
                     </div>
 
                     <Image
-                        src="/DiavincoHand.png"
+                        src={product.imageUrl.url}
                         width={689}
                         height={609}
                         alt="img"
                     />
                     <Image
-                        src="/DiavincoTable.png"
+                        src={product.imageUrl.url}
                         width={689}
                         height={609}
                         alt="img"
@@ -174,9 +209,7 @@ function Page() {
                         </p>
 
                         <div className="flex items-center gap-5">
-                            <button className='rounded-[10px] py-3 px-2.5 bg-[#093C16] text-white font-semibold w-full'>
-                                Add To Cart
-                            </button>
+                            <div className="w-full"><CartButton product={product} /></div>
                             <button className='rounded-[10px] py-3 px-2.5 border-2 border-[#093C16] bg-[#71BF45] text-[#093C16] font-semibold w-full'>
                                 Buy Now
                             </button>

@@ -14,8 +14,11 @@ export interface IComment {
 export interface IBlog extends Document {
   category: mongoose.Types.ObjectId;
   title: string;
-  content: IContentSection[]; 
-  imageUrl?: string;
+  content: IContentSection[];
+  imageUrl: {
+    public_id: string;
+    url: string;
+  };
   author: mongoose.Types.ObjectId;
   postedOn: Date;
   comments: IComment[];
@@ -47,7 +50,16 @@ const blogSchema: Schema<IBlog> = new Schema(
     },
     title: { type: String, required: true },
     content: { type: [contentSectionSchema], required: true },
-    imageUrl: { type: String },
+    imageUrl: {
+      public_id: {
+        type: String,
+        default: "",
+      },
+      url: {
+        type: String,
+        default: "",
+      },
+    },
     author: { type: Schema.Types.ObjectId, ref: "User", required: true },
     postedOn: { type: Date, default: Date.now },
     comments: { type: [commentSchema], default: [] },
