@@ -5,11 +5,18 @@ import Link from 'next/link';
 import React, { useState } from 'react'
 import { BsSuitHeart, BsSuitHeartFill } from 'react-icons/bs';
 import { IoStarSharp } from 'react-icons/io5';
+import CartButton from './CartButton';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { addToWishlist, removeFromWishlist } from '@/lib/features/wishlistSlice';
+import WishlistButton from './WishlistButton';
 
 interface ProductType {
     _id: string,
     category: string;
-    imageUrl: string;
+    imageUrl: {
+        public_id: string,
+        url: string
+    };
     name: string;
     about: string;
     tags: string[];
@@ -30,7 +37,6 @@ interface ProductProps {
 
 
 function Product({ product }: ProductProps) {
-    const [favorite, setFavorite] = useState(false)
     let rating = 3.7
 
     const discountedPrice = product.price - (product.price * product.discount / 100)
@@ -56,25 +62,13 @@ function Product({ product }: ProductProps) {
         });
     };
 
-    const toggleFavorite = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setFavorite(!favorite)
-    }
-
-    const handleAddToCart = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
     return (
-        <Link
-            href={`/productDescription/${product._id}`}
+        <div
             className="rounded-[10px] sm:rounded-[22px] p-[10px] border-2 border-[#d9d9d9] space-y-[15px]"
         >
             <div className="relative h-[150px] sm:h-[300px]">
                 <Image
-                    src='/prodImg.png'
+                    src={product.imageUrl.url}
                     fill
                     alt="productImg"
                     className="border-[3px] border-[#e3e3e3] rounded-[10px] sm:rounded-[20px]"
@@ -93,15 +87,8 @@ function Product({ product }: ProductProps) {
                 </div>
 
                 {/* Favorite Icon */}
-                <div
-                    onClick={toggleFavorite}
-                    className="absolute top-3 right-3 rounded-[30px] p-[10px] bg-[#ffffff] text-[18px] sm:text-2xl cursor-pointer transform transition-transform duration-300 hover:scale-110"
-                >
-                    {favorite ? (
-                        <BsSuitHeartFill className="text-red-500 transition-all duration-300 transform scale-110" />
-                    ) : (
-                        <BsSuitHeart className="text-[#2e2e2e] transition-all duration-300 transform scale-100" />
-                    )}
+                <div className="absolute top-3 right-3">
+                    <WishlistButton product={product} />
                 </div>
             </div>
 
@@ -119,12 +106,12 @@ function Product({ product }: ProductProps) {
             </div>
 
             {/* Title */}
-            <div>
+            <Link href={`/productDescription/${product._id}`}>
                 <p className="font-medium text-base sm:text-2xl">{product.name}</p>
                 <p className="font-medium text-xs sm:text-base text-[#848484]">
                     {product.about}
                 </p>
-            </div>
+            </Link>
 
             {/* Tags */}
             <div className="flex items-center gap-2.5 overflow-x-scroll scrollbar-hide">
@@ -148,12 +135,8 @@ function Product({ product }: ProductProps) {
                 <span className="font-medium text-sm text-[#71BF45]">({product.discount}% off)</span>
             </p>
 
-            <button
-                onClick={handleAddToCart}
-                className="bg-[#093C16] rounded-md sm:rounded-[10px] py-[5px] sm:py-3 px-[10px] text-[#ffffff] font-semibold text-base w-full">
-                Add To Cart
-            </button>
-        </Link>
+            <CartButton product={product} />
+        </div >
     );
 }
 

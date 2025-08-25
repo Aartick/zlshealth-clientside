@@ -1,6 +1,7 @@
 'use client'
 
 import Product from '@/components/Product'
+import ProductSkeleton from '@/components/ProductSkeleton'
 import { axiosClient } from '@/utils/axiosClient'
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
@@ -9,7 +10,10 @@ import { Range } from 'react-range'
 interface products {
     _id: string,
     category: string;
-    imageUrl: string;
+    imageUrl: {
+        url: string,
+        public_id: string,
+    };
     name: string;
     about: string;
     tags: string[];
@@ -35,19 +39,24 @@ function page() {
     const MAX = 1500;
 
     const [values, setValues] = useState<number[]>([MIN, MAX]);
+    const [loadingCategories, setLoadingCategories] = useState(false)
     const [categories, setCategories] = useState<filters[]>([])
+    const [loadingProductTypes, setLoadingProductTypes] = useState(false)
     const [productTypes, setProductTypes] = useState<filters[]>([])
+    const [loadingBenefits, setLoadingBenefits] = useState(false)
     const [benefits, setBenefits] = useState<filters[]>([])
 
-    const [selectedCategory, setSelectedCategory] = useState<string>("")
+    const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]?._id)
     const [selectedProductTypes, setSelectedProductTypes] = useState<string[]>([])
     const [selectedBenefits, setSelectedBenefits] = useState<string[]>([])
+    const [loadingProducts, setLoadingProducts] = useState(false);
     const [products, setProducts] = useState<products[]>([])
     const [filteredProducts, setFilteredProducts] = useState<products[]>([])
 
     useEffect(() => {
         const getCategories = async () => {
             try {
+                setLoadingCategories(true)
                 const response = await axiosClient.get('/api/categories')
                 const fetchedCategories = response.data.result;
                 setCategories(fetchedCategories)
@@ -58,34 +67,40 @@ function page() {
             } catch (e) {
                 return
             }
+            setLoadingCategories(false)
         }
 
         const getProductTypes = async () => {
             try {
+                setLoadingProductTypes(true)
                 const response = await axiosClient.get("/api/productTypes")
                 setProductTypes(response.data.result)
             } catch (e) {
                 return
             }
+            setLoadingProductTypes(false)
         }
 
         const getBenefits = async () => {
             try {
+                setLoadingBenefits(true)
                 const response = await axiosClient.get("/api/benefits")
                 setBenefits(response.data.result)
             } catch (e) {
                 return
             }
+            setLoadingBenefits(false)
         }
 
         getCategories()
         getProductTypes()
         getBenefits()
-    }, [selectedCategory])
+    }, [])
 
     useEffect(() => {
         const getProducts = async () => {
             try {
+                setLoadingProducts(true)
                 const queryParams = new URLSearchParams();
 
                 if (selectedCategory) queryParams.append("category", selectedCategory);
@@ -101,6 +116,7 @@ function page() {
                 );
                 setProducts(response.data.result);
             } catch { }
+            setLoadingProducts(false)
         };
 
         getProducts();
@@ -119,6 +135,15 @@ function page() {
         );
         setFilteredProducts(filtered);
     }, [values, products]);
+
+    function SkeletonCheckboxRow() {
+        return (
+            <div className="flex items-center gap-2.5 animate-pulse">
+                <div className="h-4 w-4 rounded-sm bg-gray-200 dark:bg-gray-600" />
+                <div className="h-3 w-full rounded bg-gray-200 dark:bg-gray-600" />
+            </div>
+        );
+    }
 
     return (
         <>
@@ -141,19 +166,23 @@ function page() {
                         <div className="border border-[#e3e3e3] rounded-xl p-5 space-y-5">
                             <h3 className='font-medium text-xl'>Category</h3>
                             <div className="space-y-5">
-                                {categories.map((category) => (
-                                    <div key={category._id} className="flex items-center gap-2.5">
-                                        <input
-                                            type="checkbox"
-                                            id={category._id}
-                                            checked={selectedCategory === category._id}
-                                            onChange={() =>
-                                                setSelectedCategory(category._id)
-                                            }
-                                        />
-                                        <label htmlFor={category._id} className='text-[#848484]'>{category.name}</label>
-                                    </div>
-                                ))}
+                                {loadingCategories
+                                    ? Array.from({ length: 9 }).map((_, i) => (
+                                        <SkeletonCheckboxRow key={i} />
+                                    ))
+                                    : categories.map((category) => (
+                                        <div key={category._id} className="flex items-center gap-2.5">
+                                            <input
+                                                type="checkbox"
+                                                id={category._id}
+                                                checked={selectedCategory === category._id}
+                                                onChange={() =>
+                                                    setSelectedCategory(category._id)
+                                                }
+                                            />
+                                            <label htmlFor={category._id} className='text-[#848484]'>{category.name}</label>
+                                        </div>
+                                    ))}
                             </div>
                         </div>
 
@@ -161,21 +190,25 @@ function page() {
                         <div className="border border-[#e3e3e3] rounded-xl p-5 space-y-5">
                             <h3 className='font-medium text-xl'>Product Type</h3>
                             <div className="space-y-5">
-                                {productTypes.map((product) => (
-                                    <div key={product._id} className="flex items-center gap-5 border border-[#71BF45] rounded-lg p-2.5">
-                                        <input
-                                            type="checkbox"
-                                            id={product._id}
-                                            checked={selectedProductTypes.includes(product._id)}
-                                            onChange={() =>
-                                                toggleSelection(product._id, setSelectedProductTypes)
-                                            }
-                                        />
-                                        <label htmlFor={product._id} className='text-[#848484]'>
-                                            <p>{product.name}</p>
-                                        </label>
-                                    </div>
-                                ))}
+                                {loadingProductTypes
+                                    ? Array.from({ length: 4 }).map((_, i) => (
+                                        <SkeletonCheckboxRow key={i} />
+                                    ))
+                                    : productTypes.map((product) => (
+                                        <div key={product._id} className="flex items-center gap-5 border border-[#71BF45] rounded-lg p-2.5">
+                                            <input
+                                                type="checkbox"
+                                                id={product._id}
+                                                checked={selectedProductTypes.includes(product._id)}
+                                                onChange={() =>
+                                                    toggleSelection(product._id, setSelectedProductTypes)
+                                                }
+                                            />
+                                            <label htmlFor={product._id} className='text-[#848484]'>
+                                                <p>{product.name}</p>
+                                            </label>
+                                        </div>
+                                    ))}
                             </div>
                         </div>
 
@@ -250,19 +283,23 @@ function page() {
                         <div className="border border-[#e3e3e3] rounded-xl p-5 space-y-5">
                             <h3 className='font-medium text-xl'>Benefits / Concerns</h3>
                             <div className="space-y-5">
-                                {benefits.map((benefit) => (
-                                    <div key={benefit._id} className="flex items-center gap-2.5">
-                                        <input
-                                            type="checkbox"
-                                            id={benefit._id}
-                                            checked={selectedBenefits.includes(benefit._id)}
-                                            onChange={() =>
-                                                toggleSelection(benefit._id, setSelectedBenefits)
-                                            }
-                                        />
-                                        <label htmlFor={benefit._id} className='text-[#848484]'>{benefit.name}</label>
-                                    </div>
-                                ))}
+                                {loadingBenefits
+                                    ? Array.from({ length: 5 }).map((_, i) => (
+                                        <SkeletonCheckboxRow key={i} />
+                                    ))
+                                    : benefits.map((benefit) => (
+                                        <div key={benefit._id} className="flex items-center gap-2.5">
+                                            <input
+                                                type="checkbox"
+                                                id={benefit._id}
+                                                checked={selectedBenefits.includes(benefit._id)}
+                                                onChange={() =>
+                                                    toggleSelection(benefit._id, setSelectedBenefits)
+                                                }
+                                            />
+                                            <label htmlFor={benefit._id} className='text-[#848484]'>{benefit.name}</label>
+                                        </div>
+                                    ))}
                             </div>
                         </div>
                     </div>
@@ -284,9 +321,13 @@ function page() {
 
                     {/* Products */}
                     <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 md:gap-5 p-4 h-screen overflow-y-scroll scrollbar-hide">
-                        {filteredProducts.map((data) => (
-                            <Product product={data} key={data._id} />
-                        ))}
+                        {loadingProducts
+                            ? Array.from({ length: 9 }).map((_, i) => (
+                                <ProductSkeleton key={i} />
+                            ))
+                            : filteredProducts.map((data) => (
+                                <Product product={data} key={data._id} />
+                            ))}
                     </div>
                 </div>
             </div>

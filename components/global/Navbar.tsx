@@ -13,6 +13,8 @@ import Link from "next/link";
 import { getItem, KEY_ACCESS_TOKEN, removeItem } from "@/utils/localStorageManager";
 import { axiosClient } from "@/utils/axiosClient";
 import toast from "react-hot-toast";
+import Cart from "../Cart";
+import { useAppSelector } from "@/lib/hooks";
 
 const placeholderTexts = [
     "Stress Relief Syrup",
@@ -72,7 +74,15 @@ function Navbar() {
     const [isAnimating, setIsAnimating] = useState(false);
     const [openSidebar, setOpenSidebar] = useState<boolean>(false)
     const [navLinks, setNavLinks] = useState(initialLinks)
+    const [openCart, setOpenCart] = useState(false);
+
     const isUser = getItem(KEY_ACCESS_TOKEN)
+    const cart = useAppSelector((state) => state.cartSlice.cart)
+    var totalProducts = 0;
+    cart.forEach((pro) => (totalProducts += pro.quantity))
+
+    const wishlist = useAppSelector((state) => state.wishlistSlice.products)
+    const totalWishlistProducts = wishlist.length;
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -167,12 +177,30 @@ function Navbar() {
                 {/* Login */}
                 <div className="flex items-center gap-3 sm:gap-5">
                     <div className="flex items-center gap-3 text-lg sm:text-2xl">
-                        <div className="p-2 sm:p-5 rounded-[60px] text-[#71BF45] bg-[#f3f3f3]">
+                        <div
+                            onClick={() => setOpenCart(!openCart)}
+                            className="relative p-2 sm:p-5 rounded-[60px] text-[#71BF45] bg-[#f3f3f3]">
                             <BsCart2 />
+                            {totalProducts > 0 && (
+                                <span className="absolute top-3 right-3 flex items-center justify-center">
+                                    <span className="absolute inline-flex h-5 w-5 rounded-full bg-red-500 opacity-75 animate-ping"></span>
+                                    <span className="relative inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white text-xs font-bold">
+                                        {totalProducts}
+                                    </span>
+                                </span>
+                            )}
                         </div>
-                        <div className="p-2 sm:p-5 rounded-[60px] text-[#71BF45] bg-[#f3f3f3]">
+                        <Link href="/wishlist" className="relative p-2 sm:p-5 rounded-[60px] text-[#71BF45] bg-[#f3f3f3]">
                             <BsSuitHeart />
-                        </div>
+                            {totalWishlistProducts > 0 && (
+                                <span className="absolute top-3 right-3 flex items-center justify-center">
+                                    <span className="absolute inline-flex h-5 w-5 rounded-full bg-red-500 opacity-75 animate-ping"></span>
+                                    <span className="relative inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white text-xs font-bold">
+                                        {totalWishlistProducts}
+                                    </span>
+                                </span>
+                            )}
+                        </Link>
                     </div>
                     <Link
                         className="flex items-center gap-[6px] text-xs sm:text-base rounded-[4px] sm:rounded-[10px] p-2 sm:p-4 bg-[#093C16] text-[#ffffff]"
@@ -184,6 +212,8 @@ function Navbar() {
                     </Link>
                 </div>
             </div>
+
+            {openCart && <Cart onClose={() => setOpenCart(false)} />}
 
             {openSidebar && (
                 <Sidebar

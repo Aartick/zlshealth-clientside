@@ -2,9 +2,12 @@ import mongoose, { Document, Schema } from "mongoose";
 
 export interface IProduct extends Document {
   category: mongoose.Types.ObjectId;
-  productTypes: mongoose.Types.ObjectId;
-  benefits: mongoose.Types.ObjectId;
-  imageUrl: string;
+  productTypes: mongoose.Types.ObjectId[];
+  benefits: mongoose.Types.ObjectId[];
+  imageUrl: {
+    public_id: string;
+    url: string;
+  };
   name: string;
   about: string;
   tags: string[];
@@ -47,8 +50,14 @@ const productSchema: Schema<IProduct> = new Schema(
       required: true,
     },
     imageUrl: {
-      type: String,
-      required: true,
+      public_id: {
+        type: String,
+        default: "",
+      },
+      url: {
+        type: String,
+        default: "",
+      },
     },
     about: {
       type: String,
