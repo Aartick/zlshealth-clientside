@@ -109,9 +109,6 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const { valid, response } = await verifyAccessToken(req);
-    if (!valid) return response!;
-
     if (type === "all") {
       const category = searchParams.get("category");
       const productTypes = searchParams.getAll("productTypes");

@@ -12,9 +12,6 @@ import FAQ from '@/components/FAQ';
 import { useParams } from 'next/navigation';
 import { axiosClient } from '@/utils/axiosClient';
 import CartButton from '@/components/CartButton';
-import { BsSuitHeart, BsSuitHeartFill } from 'react-icons/bs';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { addToWishlist, removeFromWishlist } from '@/lib/features/wishlistSlice';
 import WishlistButton from '@/components/WishlistButton';
 
 interface product {
@@ -69,7 +66,6 @@ function Page() {
                 const details = await axiosClient.get(`/api/products?type=productId&id=${params.id}`)
                 setProduct(details.data.result)
             } catch (e) {
-                console.log(e)
                 return
             }
         }

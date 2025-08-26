@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { addToCart, removeFromCart } from "../thunks/cartThunks";
 
 interface CartItemType {
   _id: string;
   name: string;
-  img: string;
+  img: string | undefined;
   price: number;
   quantity: number;
 }
@@ -20,7 +21,7 @@ const groceryCartSlice = createSlice({
   name: "cartSlice",
   initialState,
   reducers: {
-    addToCart: (state, action: PayloadAction<CartItemType>) => {
+    addToCartGuest: (state, action: PayloadAction<CartItemType>) => {
       const curProduct = action.payload;
       const index = state.cart.findIndex((item) => item._id === curProduct._id);
 
@@ -30,7 +31,7 @@ const groceryCartSlice = createSlice({
         state.cart[index].quantity += 1;
       }
     },
-    removeFromCart: (state, action: PayloadAction<string>) => {
+    removeFromCartGuest: (state, action: PayloadAction<string>) => {
       const index = state.cart.findIndex((item) => item._id === action.payload);
 
       if (index === -1) return;
@@ -45,9 +46,17 @@ const groceryCartSlice = createSlice({
       state.cart = [];
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(addToCart.fulfilled, (state, action) => {
+      state.cart = action.payload;
+    });
+    builder.addCase(removeFromCart.fulfilled, (state, action) => {
+      state.cart = action.payload;
+    });
+  },
 });
 
 export default groceryCartSlice.reducer;
 
-export const { addToCart, removeFromCart, resetCart } =
+export const { addToCartGuest, removeFromCartGuest, resetCart } =
   groceryCartSlice.actions;

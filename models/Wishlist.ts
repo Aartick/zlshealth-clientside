@@ -1,17 +1,15 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-interface IProductCart {
+interface IProductWishlist {
   productId: mongoose.Types.ObjectId;
-  items: number;
-  quantity: string;
 }
 
-interface ICart extends Document {
+interface IWishlist extends Document {
   customerId: mongoose.Types.ObjectId;
-  products: IProductCart[];
+  products: IProductWishlist[];
 }
 
-const CartSchema: Schema<ICart> = new Schema({
+const WishlistSchema: Schema<IWishlist> = new Schema({
   customerId: {
     type: Schema.Types.ObjectId,
     ref: "User",
@@ -24,15 +22,12 @@ const CartSchema: Schema<ICart> = new Schema({
         ref: "Product",
         required: true,
       },
-      quantity: {
-        type: Number,
-        required: true,
-        default: 1,
-      },
     },
   ],
 });
 
-const Cart = mongoose.models.Cart || mongoose.model<ICart>("Cart", CartSchema);
+const Wishlist =
+  mongoose.models.Wishlist ||
+  mongoose.model<IWishlist>("Wishlist", WishlistSchema);
 
-export default Cart;
+export default Wishlist;

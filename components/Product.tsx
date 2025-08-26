@@ -2,12 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useState } from 'react'
-import { BsSuitHeart, BsSuitHeartFill } from 'react-icons/bs';
+import React from 'react'
 import { IoStarSharp } from 'react-icons/io5';
 import CartButton from './CartButton';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { addToWishlist, removeFromWishlist } from '@/lib/features/wishlistSlice';
 import WishlistButton from './WishlistButton';
 
 interface ProductType {
