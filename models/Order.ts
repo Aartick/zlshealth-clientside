@@ -2,7 +2,6 @@ import mongoose, { Document, Schema } from "mongoose";
 
 interface IProductInOrder {
   productId: mongoose.Types.ObjectId;
-  items: number;
   quantity: string;
   totalAmount: number;
 }
@@ -10,13 +9,14 @@ interface IProductInOrder {
 interface IOrder extends Document {
   customerId: mongoose.Types.ObjectId;
   products: IProductInOrder[];
+  orderId: number;
   orderStatus:
     | "Pending"
     | "Packed"
     | "Shipped"
     | "Out for delivery"
     | "Delivered"
-    | "Cancelled"
+    | "Canceled"
     | "Returned";
   paymentStatus: "Pending" | "Completed" | "Failed";
   paymentMethod: string;
@@ -40,10 +40,6 @@ const orderSchema: Schema<IOrder> = new Schema(
           ref: "Product",
           required: true,
         },
-        items: {
-          type: Number,
-          required: true,
-        },
         quantity: {
           type: String,
           required: true,
@@ -54,6 +50,10 @@ const orderSchema: Schema<IOrder> = new Schema(
         },
       },
     ],
+    orderId: {
+      type: Number,
+      required: true,
+    },
     orderStatus: {
       type: String,
       enum: [
@@ -62,7 +62,7 @@ const orderSchema: Schema<IOrder> = new Schema(
         "Shipped",
         "Out for delivery",
         "Delivered",
-        "Cancelled",
+        "Canceled",
         "Returned",
       ],
       default: "Pending",

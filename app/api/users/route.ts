@@ -2,7 +2,6 @@ import dbConnect from "@/dbConnect/dbConnect";
 import User from "@/models/User";
 import { verifyAccessToken } from "@/utils/authMiddleware";
 import { error, success } from "@/utils/responseWrapper";
-import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -11,7 +10,6 @@ export async function GET(req: NextRequest) {
 
   try {
     const { valid, response, _id } = await verifyAccessToken(req);
-
     if (!valid) return response!;
 
     await dbConnect();
@@ -22,7 +20,22 @@ export async function GET(req: NextRequest) {
         return NextResponse.json(error(400, "No such user found."));
       }
 
-      return NextResponse.json(success(200, user));
+      const responseWrapper = {
+        _id: user._id || "",
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        country: user.country || "",
+        streetAddress: user.streetAddress || "",
+        houseNo: user.houseNo || "",
+        landmark: user.landmark || "",
+        city: user.city || "",
+        state: user.state || "",
+        phone: user.phone || "",
+        pinCode: user.pinCode || "",
+        email: user.email || "",
+      };
+
+      return NextResponse.json(success(200, responseWrapper));
     } else if (type === "") {
       const user = await User.find();
 
@@ -48,48 +61,52 @@ export async function PUT(req: NextRequest) {
     const {
       firstName,
       lastName,
-      displayName,
-      VAT_Number,
-      SSN_Number,
-      GSTIN_Number,
-      billingAddress,
-      shippingAddress,
+      country,
+      streetAddress,
+      houseNo,
+      landmark,
+      city,
+      state,
+      phone,
+      pinCode,
+      email,
     } = await req.json();
-
+    console.log(landmark);
     if (
       !firstName ||
       !lastName ||
-      !displayName ||
-      !VAT_Number ||
-      !SSN_Number ||
-      !GSTIN_Number ||
-      !billingAddress ||
-      !shippingAddress
+      !country ||
+      !streetAddress ||
+      !landmark ||
+      !city ||
+      !state ||
+      !phone ||
+      !pinCode ||
+      !email
     ) {
       return NextResponse.json(error(400, "All fields are required."));
     }
 
-    const updatedUser = await User.findByIdAndUpdate(
+    await User.findByIdAndUpdate(
       _id,
       {
         firstName,
         lastName,
-        displayName,
-        VAT_Number,
-        SSN_Number,
-        GSTIN_Number,
-        billingAddress,
-        shippingAddress,
+        country,
+        streetAddress,
+        houseNo,
+        landmark,
+        city,
+        state,
+        phone,
+        pinCode,
+        email,
       },
       {
         new: true,
         runValidators: true,
       }
     );
-
-    if (!updatedUser) {
-      return NextResponse.json(error(404, "User not found."));
-    }
 
     return NextResponse.json(success(200, "Profile updated successfully"));
   } catch (e) {

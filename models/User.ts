@@ -13,6 +13,15 @@ export interface IUser extends Document {
   GSTIN_Number: string;
   billingAddress: string;
   shippingAddress: string;
+  country: string;
+  streetAddress: string;
+  houseNo: string;
+  alternateAddress: string;
+  landmark: string;
+  city: string;
+  state: string;
+  phone: string;
+  pinCode: string;
   wishlist: mongoose.Types.ObjectId;
 }
 
@@ -59,6 +68,15 @@ const userSchema: Schema<IUser> = new Schema({
   shippingAddress: {
     type: String,
   },
+  country: String,
+  streetAddress: String,
+  houseNo: String,
+  alternateAddress: String,
+  landmark: String,
+  city: String,
+  state: String,
+  phone: String,
+  pinCode: String,
   wishlist: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Wishlist",
