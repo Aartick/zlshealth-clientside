@@ -14,7 +14,9 @@ import { getItem, KEY_ACCESS_TOKEN, removeItem } from "@/utils/localStorageManag
 import { axiosClient } from "@/utils/axiosClient";
 import toast from "react-hot-toast";
 import Cart from "../Cart";
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { getCart, mergeGuestCart } from "@/lib/thunks/cartThunks";
+import { resetCart } from "@/lib/features/cartSlice";
 
 const placeholderTexts = [
     "Stress Relief Syrup",
@@ -77,9 +79,10 @@ function Navbar() {
     const [openCart, setOpenCart] = useState(false);
 
     const isUser = getItem(KEY_ACCESS_TOKEN)
-    const cart = useAppSelector((state) => state.cartSlice.cart)
+    const dispatch = useAppDispatch()
+    const cart: any[] = useAppSelector((state) => state.cartSlice.cart) || []
     var totalProducts = 0;
-    cart.forEach((pro) => (totalProducts += pro.quantity))
+    Array.isArray(cart) && cart?.forEach((pro) => (totalProducts += pro.quantity))
 
     const wishlist = useAppSelector((state) => state.wishlistSlice.products)
     const totalWishlistProducts = wishlist.length;
@@ -95,6 +98,18 @@ function Navbar() {
 
         return () => clearInterval(interval);
     }, []);
+
+    useEffect(() => {
+        const syncCart = async () => {
+            if (isUser) {
+                // await dispatch(mergeGuestCart());
+                await dispatch(getCart());
+            } else {
+                dispatch(resetCart());
+            }
+        };
+        syncCart()
+    }, [isUser, dispatch])
 
     const handleLogout = async () => {
         try {

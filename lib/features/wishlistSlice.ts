@@ -1,6 +1,7 @@
 // src/redux/wishlistSlice.ts
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { addToWishlist, removeFromWishlist } from "../thunks/wishlistThunks";
 
 // Define your product type
 export interface ProductType {
@@ -23,8 +24,7 @@ const wishlistSlice = createSlice({
   name: "wishlist",
   initialState,
   reducers: {
-    addToWishlist: (state, action: PayloadAction<ProductType>) => {
-        console.log(action.payload)
+    addToWishlistGuest: (state, action: PayloadAction<ProductType>) => {
       const exists = state.products.find(
         (item) => item._id === action.payload._id
       );
@@ -32,7 +32,7 @@ const wishlistSlice = createSlice({
         state.products.push(action.payload);
       }
     },
-    removeFromWishlist: (state, action: PayloadAction<string>) => {
+    removeFromWishlistGuest: (state, action: PayloadAction<string>) => {
       state.products = state.products.filter(
         (item) => item._id !== action.payload
       );
@@ -41,9 +41,17 @@ const wishlistSlice = createSlice({
       state.products = [];
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(addToWishlist.fulfilled, (state, action) => {
+      state.products = action.payload;
+    });
+    builder.addCase(removeFromWishlist.fulfilled, (state, action) => {
+      state.products = action.payload;
+    });
+  },
 });
 
-export const { addToWishlist, removeFromWishlist, resetWishlist } =
+export const { addToWishlistGuest, removeFromWishlistGuest, resetWishlist } =
   wishlistSlice.actions;
 
 export default wishlistSlice.reducer;

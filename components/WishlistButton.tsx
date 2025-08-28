@@ -1,5 +1,5 @@
-import { addToWishlist, removeFromWishlist } from '@/lib/features/wishlistSlice'
 import { useAppDispatch, useAppSelector } from '@/lib/hooks'
+import { addToWishlist, removeFromWishlist } from '@/lib/thunks/wishlistThunks';
 import React from 'react'
 import { BsSuitHeart, BsSuitHeartFill } from 'react-icons/bs';
 
@@ -33,17 +33,11 @@ function WishlistButton({ product }: ProductProps) {
     const wishlist = useAppSelector((state) => state.wishlistSlice.products)
     const isInWishlist = wishlist.some((prod) => prod._id === product._id)
 
-    const toggleFavorite = (e: React.MouseEvent) => {
+    const toggleFavorite = () => {
         if (isInWishlist) {
-            dispatch(removeFromWishlist(product._id))
+            dispatch(removeFromWishlist({ productId: product._id }))
         } else {
-            dispatch(addToWishlist({
-                _id: product._id,
-                name: product.name,
-                img: product.imageUrl.url,
-                price: product.price,
-                discount: product.discount
-            }))
+            dispatch(addToWishlist({ productId: product._id }))
         }
     }
 
