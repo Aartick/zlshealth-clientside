@@ -3,6 +3,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import CartItem from "./CartItem";
 import { BsCartX } from "react-icons/bs";
 import { useAppSelector } from "@/lib/hooks";
+import Link from "next/link";
 
 interface CartProps {
     onClose: () => void;
@@ -73,11 +74,11 @@ function Cart({ onClose }: CartProps) {
                                                     </span>
                                                 </p>
                                             </div>
-                                            <p
-                                                className="bg-[#28A745] text-white text-center rounded py-1 cursor-pointer"
-                                            >
-                                                Proceed to Payment
-                                            </p>
+                                            <Link href="/checkout">
+                                                <p className="bg-[#28A745] text-white text-center rounded py-1 cursor-pointer">
+                                                    Proceed to Checkout
+                                                </p>
+                                            </Link>
                                         </div>
                                     )}
                                 </>
