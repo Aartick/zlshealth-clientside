@@ -11,11 +11,13 @@ const blogCategorySchema: Schema<IBlogsCategory> = new Schema(
       type: String,
       required: true,
     },
-    blogs: {
-      type: Schema.Types.ObjectId,
-      ref: "Blog",
-      required: true,
-    },
+    blogs: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Blog",
+        required: true,
+      },
+    ],
   },
   { timestamps: true }
 );

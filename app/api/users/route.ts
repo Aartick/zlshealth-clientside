@@ -2,7 +2,7 @@ import dbConnect from "@/dbConnect/dbConnect";
 import User from "@/models/User";
 import { verifyAccessToken } from "@/utils/authMiddleware";
 import { error, success } from "@/utils/responseWrapper";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
       const user = await User.findById(_id);
 
       if (!user) {
-        return NextResponse.json(error(400, "No such user found."));
+        return error(400, "No such user found.");
       }
 
       const responseWrapper = {
@@ -35,19 +35,19 @@ export async function GET(req: NextRequest) {
         email: user.email || "",
       };
 
-      return NextResponse.json(success(200, responseWrapper));
+      return success(200, responseWrapper);
     } else if (type === "") {
       const user = await User.find();
 
       if (!user) {
-        return NextResponse.json(error(400, "No user found."));
+        return error(400, "No user found.");
       }
 
-      return NextResponse.json(success(200, user));
+      return success(200, user);
     }
   } catch (e) {
     console.log(e);
-    return NextResponse.json(error(500, "Something went wrong."));
+    return error(500, "Something went wrong.");
   }
 }
 
@@ -71,7 +71,7 @@ export async function PUT(req: NextRequest) {
       pinCode,
       email,
     } = await req.json();
-    console.log(landmark);
+
     if (
       !firstName ||
       !lastName ||
@@ -84,7 +84,7 @@ export async function PUT(req: NextRequest) {
       !pinCode ||
       !email
     ) {
-      return NextResponse.json(error(400, "All fields are required."));
+      return error(400, "All fields are required.");
     }
 
     await User.findByIdAndUpdate(
@@ -108,10 +108,10 @@ export async function PUT(req: NextRequest) {
       }
     );
 
-    return NextResponse.json(success(200, "Profile updated successfully"));
+    return success(200, "Profile updated successfully");
   } catch (e) {
     console.log(e);
-    return NextResponse.json(error(500, "Something went wrong."));
+    return error(500, "Something went wrong.");
   }
 }
 
@@ -125,12 +125,12 @@ export async function DELETE(req: NextRequest) {
     const deletedUser = await User.findByIdAndDelete(_id);
 
     if (!deletedUser) {
-      return NextResponse.json(error(404, "User not found."));
+      return error(404, "User not found.");
     }
 
-    return NextResponse.json(success(200, "User deleted successfully."));
+    return success(200, "User deleted successfully.");
   } catch (e) {
     console.log(e);
-    return NextResponse.json(error(500, "Something went wrong."));
+    return error(500, "Something went wrong.");
   }
 }

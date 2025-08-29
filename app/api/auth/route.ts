@@ -1,6 +1,6 @@
 import User from "@/models/User";
 import { error, success } from "@/utils/responseWrapper";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   const type = searchParams.get("type");
 
   if (!type) {
-    return NextResponse.json(error(404, "Type is required."));
+    return error(404, "Type is required.");
   }
 
   try {
@@ -24,13 +24,13 @@ export async function POST(req: NextRequest) {
       const { email, password } = await req.json();
 
       if (!email || !password) {
-        return NextResponse.json(error(400, "Email and Password are required"));
+        return error(400, "Email and Password are required");
       }
 
       const oldUser = await User.findOne({ email });
 
       if (oldUser) {
-        return NextResponse.json(error(409, "User is already registered."));
+        return error(409, "User is already registered.");
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -40,26 +40,24 @@ export async function POST(req: NextRequest) {
         password: hashedPassword,
       });
 
-      return NextResponse.json(success(201, "Sign in successfully."));
+      return success(201, "Sign in successfully.");
     } else if (type === "login") {
       const { email, password } = await req.json();
 
       if (!email || !password) {
-        return NextResponse.json(
-          error(400, "Email and Password are required.")
-        );
+        return error(400, "Email and Password are required.");
       }
 
       const user = await User.findOne({ email }).select("+password");
 
       if (!user) {
-        return NextResponse.json(error(404, "User is not registered."));
+        return error(404, "User is not registered.");
       }
 
       const matched = await bcrypt.compare(password, user.password);
 
       if (!matched) {
-        return NextResponse.json(error(403, "Incorrect password."));
+        return error(403, "Incorrect password.");
       }
 
       const accessToken = generateAccessToken({
@@ -75,11 +73,11 @@ export async function POST(req: NextRequest) {
         secure: true,
       });
 
-      return NextResponse.json(success(201, { accessToken }));
+      return success(201, { accessToken });
     }
   } catch (e) {
     console.log(e);
-    return NextResponse.json(error(500, "Something went wrong."));
+    return error(500, "Something went wrong.");
   }
 }
 
@@ -92,9 +90,7 @@ export async function GET(req: NextRequest) {
       const cookie = req.cookies.get("jwt");
 
       if (!cookie) {
-        return NextResponse.json(
-          error(401, "Refresh token in cookie is required.")
-        );
+        return error(401, "Refresh token in cookie is required.");
       }
 
       const refreshToken = cookie.value;
@@ -107,7 +103,7 @@ export async function GET(req: NextRequest) {
       const _id = decoded._id;
       const accessToken = generateAccessToken({ _id });
 
-      return NextResponse.json(success(201, { accessToken }));
+      return success(201, { accessToken });
     } else if (type === "logout") {
       const cookieStore = cookies();
       (await cookieStore).set("jwt", "", {
@@ -116,10 +112,10 @@ export async function GET(req: NextRequest) {
         expires: new Date(0),
       });
 
-      return NextResponse.json(success(200, "Logged out successfully"));
+      return success(200, "Logged out successfully");
     }
   } catch (e) {
     console.log(e);
-    return NextResponse.json(error(500, "Something went wrong."));
+    return error(500, "Something went wrong.");
   }
 }

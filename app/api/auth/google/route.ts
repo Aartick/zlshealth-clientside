@@ -6,14 +6,14 @@ import {
 } from "@/utils/generateTokens";
 import { error, success } from "@/utils/responseWrapper";
 import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
     const { id, name, email } = await req.json();
 
     if (!email || !id) {
-      return NextResponse.json(error(400, "Email and googleId are required."));
+      return error(400, "Email and googleId are required.");
     }
 
     await dbConnect();
@@ -47,9 +47,9 @@ export async function POST(req: NextRequest) {
       secure: true,
     });
 
-    return NextResponse.json(success(201, { accessToken }));
+    return success(201, { accessToken });
   } catch (e) {
     console.log(e);
-    return NextResponse.json(error(500, "Something went wrong."));
+    return error(500, "Something went wrong.");
   }
 }

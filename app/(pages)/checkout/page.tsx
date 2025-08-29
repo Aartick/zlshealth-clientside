@@ -70,7 +70,6 @@ function Checkout() {
         try {
             const res = await axiosClient.put("/api/users", formData);
             toast.success(res.data.result)
-            console.log("cart: ", cart)
             const orderResponse = await axiosClient.post("/api/orders", { cart })
             toast.success(orderResponse.data.result)
         } catch (err) { }

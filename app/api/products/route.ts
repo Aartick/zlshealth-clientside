@@ -5,7 +5,7 @@ import ProductType from "@/models/ProductType";
 import { verifyAccessToken } from "@/utils/authMiddleware";
 import { error, success } from "@/utils/responseWrapper";
 import mongoose from "mongoose";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       additionalInfo,
       appliedFor,
     } = await req.json();
-    
+
     if (
       !categoryName ||
       !productType ||
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
       !appliedFor ||
       !Array.isArray(appliedFor)
     ) {
-      return NextResponse.json(error(400, "All fields are required."));
+      return error(400, "All fields are required.");
     }
 
     const category = await Category.findOne({ name: categoryName });
@@ -60,15 +60,15 @@ export async function POST(req: NextRequest) {
     const benefitDocs = await Benefit.find({ name: { $in: benefits } });
 
     if (!category) {
-      return NextResponse.json(error(404, "No such category found."));
+      return error(404, "No such category found.");
     }
 
     if (prodTypeDocs.length === 0) {
-      return NextResponse.json(error(404, "No such product types found."));
+      return error(404, "No such product types found.");
     }
 
     if (benefitDocs.length === 0) {
-      return NextResponse.json(error(404, "No such benefits found."));
+      return error(404, "No such benefits found.");
     }
 
     const product = await Product.create({
@@ -93,10 +93,10 @@ export async function POST(req: NextRequest) {
     category.products.push(product._id);
     await category.save();
 
-    return NextResponse.json(success(201, "Product created successfully."));
+    return success(201, "Product created successfully.");
   } catch (e) {
     console.log(e);
-    return NextResponse.json(error(500, "Something went wrong."));
+    return error(500, "Something went wrong.");
   }
 }
 
@@ -105,7 +105,7 @@ export async function GET(req: NextRequest) {
   const type = searchParams.get("type");
 
   if (!type) {
-    return NextResponse.json(error(404, "Type is required."));
+    return error(404, "Type is required.");
   }
 
   try {
@@ -146,13 +146,13 @@ export async function GET(req: NextRequest) {
         .populate("description")
         .populate("faqs");
 
-      return NextResponse.json(success(200, products));
+      return success(200, products);
     } else if (type === "productId") {
       const { searchParams } = new URL(req.url);
       const id = searchParams.get("id");
 
       if (!id) {
-        return NextResponse.json(error(400, "Invalid Product Id."));
+        return error(400, "Invalid Product Id.");
       }
 
       const product = await Product.findById(id)
@@ -160,14 +160,14 @@ export async function GET(req: NextRequest) {
         .populate("faqs");
 
       if (!product) {
-        return NextResponse.json(error(404, "Product not found."));
+        return error(404, "Product not found.");
       }
 
-      return NextResponse.json(success(200, product));
+      return success(200, product);
     }
   } catch (e) {
     console.log(e);
-    return NextResponse.json(error(500, "Something went wrong."));
+    return error(500, "Something went wrong.");
   }
 }
 
@@ -182,11 +182,11 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
 
     if (!id) {
-      return NextResponse.json(error(400, "Product Id is required."));
+      return error(400, "Product Id is required.");
     }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json(error(400, "Invalid Product ID."));
+      return error(400, "Invalid Product ID.");
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(id, body, {
@@ -195,13 +195,13 @@ export async function PUT(req: NextRequest) {
     });
 
     if (!updatedProduct) {
-      return NextResponse.json(error(404, "Product not found"));
+      return error(404, "Product not found");
     }
 
-    return NextResponse.json(success(200, "Product updated successfully"));
+    return success(200, "Product updated successfully");
   } catch (e) {
     console.log(e);
-    return NextResponse.json(error(500, "Something went wrong."));
+    return error(500, "Something went wrong.");
   }
 }
 
@@ -214,26 +214,26 @@ export async function DELETE(req: NextRequest) {
     const id = searchParams.get("id");
 
     if (!id) {
-      return NextResponse.json(error(400, "Product ID is required."));
+      return error(400, "Product ID is required.");
     }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json(error(400, "Invalid Product ID."));
+      return error(400, "Invalid Product ID.");
     }
 
     const deletedProduct = await Product.findByIdAndDelete(id);
 
     if (!deletedProduct) {
-      return NextResponse.json(error(404, "Product not found."));
+      return error(404, "Product not found.");
     }
 
     await Category.findByIdAndUpdate(deletedProduct.category, {
       $pull: { products: deletedProduct._id },
     });
 
-    return NextResponse.json(success(200, "Product deleted successfully."));
+    return success(200, "Product deleted successfully.");
   } catch (e) {
     console.log(e);
-    return NextResponse.json(error(500, "Something went wrong."));
+    return error(500, "Something went wrong.");
   }
 }

@@ -2,7 +2,7 @@ import dbConnect from "@/dbConnect/dbConnect";
 import Blog from "@/models/Blogs";
 import { verifyAccessToken } from "@/utils/authMiddleware";
 import { error, success } from "@/utils/responseWrapper";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export async function POST(
   req: NextRequest,
@@ -17,7 +17,7 @@ export async function POST(
 
     const blog = await Blog.findById(params.id);
     if (!blog) {
-      return NextResponse.json(error(404, "Blog not found."));
+      return error(404, "Blog not found.");
     }
 
     blog.comments.push({
@@ -28,9 +28,9 @@ export async function POST(
 
     await blog.save();
 
-    return NextResponse.json(success(200, "Comment added successfully."));
+    return success(200, "Comment added successfully.");
   } catch (e) {
     console.log(e);
-    return NextResponse.json(error(500, "Somthing went wrong."));
+    return error(500, "Somthing went wrong.");
   }
 }

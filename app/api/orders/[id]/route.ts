@@ -23,12 +23,12 @@ export async function GET(
     });
 
     if (!order) {
-      return NextResponse.json(error(404, "Order not found"));
+      return error(404, "Order not found");
     }
 
-    return NextResponse.json(success(200, order));
+    return success(200, order);
   } catch (e) {
     console.log(e);
-    return NextResponse.json(error(500, "Something went wrong"));
+    return error(500, "Something went wrong");
   }
 }
