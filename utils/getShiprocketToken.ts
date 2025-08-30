@@ -4,8 +4,6 @@ let shiprocketToken: string | null = null;
 let tokenExpiry: number | null = null;
 
 export async function getShiprocketToken() {
-  console.log("shiprocketEmail: ", process.env.SHIPROCKET_EMAIL);
-  console.log("shiprocketPassword: ", process.env.SHIPROCKET_PASSWORD);
   if (shiprocketToken && tokenExpiry && Date.now() < tokenExpiry) {
     return shiprocketToken;
   }

@@ -6,7 +6,7 @@ import { verifyAccessToken } from "@/utils/authMiddleware";
 import { getShiprocketToken } from "@/utils/getShiprocketToken";
 import { error, success } from "@/utils/responseWrapper";
 import axios from "axios";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,21 +18,19 @@ export async function POST(req: NextRequest) {
     const { cart } = await req.json();
 
     if (!cart || !Array.isArray(cart) || cart.length === 0) {
-      return NextResponse.json(error(400, "At least one product is required."));
+      return error(400, "At least one product is required.");
     }
 
     const productDetails = [];
 
     for (const item of cart) {
       if (!item._id || !item.quantity) {
-        return NextResponse.json(
-          error(400, "Each product must have productId and quantity.")
-        );
+        return error(400, "Each product must have productId and quantity.");
       }
 
       const product = await Product.findById(item._id);
       if (!product) {
-        return NextResponse.json(error(404, `Product not found: ${item._id}`));
+        return error(404, `Product not found: ${item._id}`);
       }
 
       // if (product.quantity < item.quantity) {
@@ -68,8 +66,8 @@ export async function POST(req: NextRequest) {
         company_name: "Zealous",
         billing_customer_name: user.firstName,
         billing_last_name: user.lastName,
-        billing_address: `${user.houseNo ?? ""}, 
-          ${user.streetAddress} 
+        billing_address: `${user.houseNo ? user.houseNo + ", " : ""}
+          ${user.streetAddress},
           ${user.landmark},
           ${user.city},
           ${user.state},
@@ -105,18 +103,16 @@ export async function POST(req: NextRequest) {
       }
     );
 
-    console.log(shippingResponse.data.order_id);
-
     await Order.create({
       customerId: _id,
       orderId: shippingResponse.data.order_id,
       products: productDetails,
     });
 
-    return NextResponse.json(success(201, "Ordered successfully."));
+    return success(201, "Ordered successfully.");
   } catch (e) {
     console.error(e);
-    return NextResponse.json(error(500, "Something went wrong."));
+    return error(500, "Something went wrong.");
   }
 }
 
@@ -148,10 +144,10 @@ export async function GET(req: NextRequest) {
       })),
     }));
 
-    return NextResponse.json(success(200, responseWrapper));
+    return success(200, responseWrapper);
   } catch (e) {
     console.log(e);
-    return NextResponse.json(error(500, "Something went wrong."));
+    return error(500, "Something went wrong.");
   }
 }
 
@@ -166,11 +162,11 @@ export async function PUT(req: NextRequest) {
     const order = await Order.findById(id);
 
     if (!order) {
-      return NextResponse.json(error(400, "No such order found"));
+      return error(400, "No such order found");
     }
 
     if (!order.orderId) {
-      return NextResponse.json(error(400, "Order ID not found"));
+      return error(400, "Order ID not found");
     }
 
     const token = await getShiprocketToken();
@@ -191,9 +187,9 @@ export async function PUT(req: NextRequest) {
     const statusCode = shippingResponse.data.status_code;
     const message = shippingResponse.data.message;
 
-    return NextResponse.json(success(statusCode, message));
+    return success(statusCode, message);
   } catch (e) {
     console.log(e);
-    return NextResponse.json(error(500, "Something went wrong."));
+    return error(500, "Something went wrong.");
   }
 }

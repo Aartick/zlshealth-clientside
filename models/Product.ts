@@ -22,6 +22,8 @@ export interface IProduct extends Document {
   additionalInfo: string;
   appliedFor: string[];
   faqs: mongoose.Types.ObjectId;
+  averageRating: number;
+  numReviews: number;
 }
 
 const productSchema: Schema<IProduct> = new Schema(
@@ -112,6 +114,14 @@ const productSchema: Schema<IProduct> = new Schema(
     faqs: {
       type: Schema.Types.ObjectId,
       ref: "Faqs",
+    },
+    averageRating: {
+      type: Number,
+      default: 0,
+    },
+    numReviews: {
+      type: Number,
+      default: 0,
     },
   },
   {

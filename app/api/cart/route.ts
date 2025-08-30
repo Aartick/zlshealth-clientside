@@ -1,14 +1,14 @@
 import Cart from "@/models/Cart";
 import { verifyAccessToken } from "@/utils/authMiddleware";
 import { error, success } from "@/utils/responseWrapper";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
     const { productId, quantity } = await req.json();
 
     if (!productId || !quantity) {
-      return NextResponse.json(error(400, "All fields are required."));
+      return error(400, "All fields are required.");
     }
 
     const { valid, response, _id } = await verifyAccessToken(req);
@@ -47,10 +47,10 @@ export async function POST(req: NextRequest) {
       };
     });
 
-    return NextResponse.json(success(201, responseWrapper));
+    return success(201, responseWrapper);
   } catch (e) {
     console.error(e);
-    return NextResponse.json(error(500, "Something went wrong."));
+    return error(500, "Something went wrong.");
   }
 }
 
@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
     );
 
     if (!cart) {
-      return NextResponse.json(error(404, "Cart not found."));
+      return error(404, "Cart not found.");
     }
 
     const responseWrapper = cart.products.map((pro: any) => {
@@ -77,9 +77,9 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    return NextResponse.json(success(201, responseWrapper));
+    return success(201, responseWrapper);
   } catch (e) {
     console.error(e);
-    return NextResponse.json(error(500, "Something went wrong."));
+    return error(500, "Something went wrong.");
   }
 }

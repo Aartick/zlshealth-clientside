@@ -15,6 +15,9 @@ import ReviewCard from "@/components/ReviewCard";
 import ShopLink from "@/components/topBar/ShopLink";
 import { VscSettings } from "react-icons/vsc";
 import { IoSearchOutline } from "react-icons/io5";
+import AnimatedNumber from "@/components/AnimatedNumber";
+import { axiosClient } from "@/utils/axiosClient";
+import toast from "react-hot-toast";
 
 const placeholderTexts = [
   "Stress Relief Syrup",
@@ -133,6 +136,11 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState(0);
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
   const [open, setOpen] = useState(false);
+  const [count, setCount] = useState({
+    users: 0,
+    products: 0,
+    years: 0
+  })
 
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -168,6 +176,15 @@ export default function Home() {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => { getCount() }, [])
+
+  const getCount = async () => {
+    try {
+      const response = await axiosClient.get("/api/home")
+      setCount(response.data.result)
+    } catch (e) { }
+  }
 
   return (
     <div className="bg-white space-y-10 lg:space-y-[60px] mb-8">
@@ -288,7 +305,6 @@ export default function Home() {
         </div>
       </div>
 
-
       <div className="space-y-8 sm:space-y-10 px-6 sm:px-[60px]">
         <p className="font-normal text-2xl sm:text-[32px] whitespace-nowrap">
           <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
@@ -363,15 +379,15 @@ export default function Home() {
 
       <div className="flex justify-center px-6 sm:gap-[60px]">
         <div className="border-r border-[#71BF45] p-[8px] sm:py-[10px] sm:pr-10 sm:pl-[10px] space-y-[8px] sm:space-y-[10px]">
-          <p className="text-[#36810B] font-normal text-[38px] sm:text-[44px] lg:text-[62px]">50 +</p>
+          <AnimatedNumber data={count.products} />
           <p className="text-xs sm:text-2xl font-normal">Herbal Wellness Products</p>
         </div>
         <div className="border-r border-[#71BF45] p-[8px] sm:py-[10px] sm:pr-10 sm:pl-[10px] space-y-[8px] sm:space-y-[10px]">
-          <p className="text-[#36810B] font-normal text-[38px] sm:text-[44px] lg:text-[62px]">10k +</p>
+          <AnimatedNumber data={count.users} />
           <p className="text-xs sm:text-2xl font-normal">Happy Customers Served</p>
         </div>
         <div className="sm:py-[10px] p-[8px] sm:pr-5 sm:pl-[10px] space-y-[8px] sm:space-y-[10px]">
-          <p className="text-[#36810B] font-normal text-[38px] sm:text-[44px] lg:text-[62px]">8 +</p>
+          <AnimatedNumber data={count.years} />
           <p className="text-xs sm:text-2xl font-normal">Years of Herbal Expertise</p>
         </div>
       </div>

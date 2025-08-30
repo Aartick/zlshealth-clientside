@@ -2,14 +2,14 @@ import Wishlist from "@/models/Wishlist";
 import { verifyAccessToken } from "@/utils/authMiddleware";
 import { error, success } from "@/utils/responseWrapper";
 import mongoose from "mongoose";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
     const { productId } = await req.json();
 
     if (!productId) {
-      return NextResponse.json(error(400, "Product ID is required."));
+      return error(400, "Product ID is required.");
     }
 
     const { valid, response, _id } = await verifyAccessToken(req);
@@ -47,10 +47,10 @@ export async function POST(req: NextRequest) {
       };
     });
 
-    return NextResponse.json(success(201, responseWrapper));
+    return success(201, responseWrapper);
   } catch (e) {
     console.log(e);
-    return NextResponse.json(error(500, "Something went wrong"));
+    return error(500, "Something went wrong");
   }
 }
 
@@ -59,7 +59,7 @@ export async function PUT(req: NextRequest) {
     const { productId } = await req.json();
 
     if (!productId) {
-      return NextResponse.json(error(400, "Product ID is required."));
+      return error(400, "Product ID is required.");
     }
 
     const { valid, response, _id } = await verifyAccessToken(req);
@@ -68,7 +68,7 @@ export async function PUT(req: NextRequest) {
     let wishlist = await Wishlist.findOne({ customerId: _id });
 
     if (!wishlist) {
-      return NextResponse.json(error(404, "Wishlist not found."));
+      return error(404, "Wishlist not found.");
     }
 
     const productIndex = wishlist.products.findIndex(
@@ -76,7 +76,7 @@ export async function PUT(req: NextRequest) {
     );
 
     if (productIndex === -1) {
-      return NextResponse.json(error(404, "Product not found in wishlist."));
+      return error(404, "Product not found in wishlist.");
     }
 
     wishlist.products.splice(productIndex, 1);
@@ -92,10 +92,10 @@ export async function PUT(req: NextRequest) {
       discount: pro.productId.discount,
     }));
 
-    return NextResponse.json(success(200, responseWrapper));
+    return success(200, responseWrapper);
   } catch (e) {
     console.log(e);
-    return NextResponse.json(error(500, "Something went wrong"));
+    return error(500, "Something went wrong");
   }
 }
 
@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
     );
 
     if (!cart) {
-      return NextResponse.json(error(404, "Wishlist not found."));
+      return error(404, "Wishlist not found.");
     }
 
     const responseWrapper = cart.products.map((pro: any) => {
@@ -118,13 +118,13 @@ export async function GET(req: NextRequest) {
         name: pro.productId.name,
         img: pro.productId.imageUrl.url,
         price: pro.productId.price,
-        discount: pro.productId.discount
+        discount: pro.productId.discount,
       };
     });
 
-    return NextResponse.json(success(201, responseWrapper));
+    return success(201, responseWrapper);
   } catch (e) {
     console.error(e);
-    return NextResponse.json(error(500, "Something went wrong."));
+    return error(500, "Something went wrong.");
   }
 }

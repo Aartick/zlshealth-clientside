@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { error } from "./responseWrapper";
 import jwt from "jsonwebtoken";
 import dbConnect from "@/dbConnect/dbConnect";
@@ -10,9 +10,7 @@ export const verifyAccessToken = async (req: NextRequest) => {
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return {
       valid: false,
-      response: NextResponse.json(
-        error(401, "Authorization header is required.")
-      ),
+      response: error(401, "Authorization header is required."),
     };
   }
 
@@ -30,7 +28,7 @@ export const verifyAccessToken = async (req: NextRequest) => {
     if (!user) {
       return {
         valid: false,
-        response: NextResponse.json(error(404, "User not found.")),
+        response: error(404, "User not found."),
       };
     }
 
@@ -38,7 +36,7 @@ export const verifyAccessToken = async (req: NextRequest) => {
   } catch (e) {
     return {
       valid: false,
-      response: NextResponse.json(error(401, "Invalid user or token expired.")),
+      response: error(401, "Invalid user or token expired."),
     };
   }
 };
