@@ -7,11 +7,23 @@ import { error, success } from "@/utils/responseWrapper";
 import mongoose from "mongoose";
 import { NextRequest } from "next/server";
 
+/**
+ * @description - Create a new product.
+ * 1. Verifies authentication token.
+ * 2. Validates request body fields.
+ * 3. Resolves related 'Category', 'ProductType', and 'Benefit' references.
+ * 4. Creates product and updates category with reference.
+ * @param req
+ * @returns
+ */
+
 export async function POST(req: NextRequest) {
   try {
+    // Verify JWT token
     const { valid, response } = await verifyAccessToken(req);
     if (!valid) return response!;
 
+    // Extract fields from request body
     const {
       categoryName,
       productType,
@@ -31,6 +43,7 @@ export async function POST(req: NextRequest) {
       appliedFor,
     } = await req.json();
 
+    // Validate required fields
     if (
       !categoryName ||
       !productType ||
@@ -55,6 +68,7 @@ export async function POST(req: NextRequest) {
       return error(400, "All fields are required.");
     }
 
+    // Resolve references
     const category = await Category.findOne({ name: categoryName });
     const prodTypeDocs = await ProductType.find({ name: { $in: productType } });
     const benefitDocs = await Benefit.find({ name: { $in: benefits } });
@@ -71,6 +85,7 @@ export async function POST(req: NextRequest) {
       return error(404, "No such benefits found.");
     }
 
+    // Create product
     const product = await Product.create({
       category: category._id,
       productTypes: prodTypeDocs.map((p) => p._id),
@@ -90,6 +105,7 @@ export async function POST(req: NextRequest) {
       appliedFor,
     });
 
+    // Update category reference
     category.products.push(product._id);
     await category.save();
 
@@ -100,6 +116,14 @@ export async function POST(req: NextRequest) {
   }
 }
 
+/**
+ * @description - Fetch products.
+ * 1. Supports two modes:
+ *    - 'type=all': Filter products by category, productTypes, and benefits.
+ *    - 'type=productId': Fetch single product by ID.
+ * @param req
+ * @returns
+ */
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const type = searchParams.get("type");
@@ -116,10 +140,12 @@ export async function GET(req: NextRequest) {
 
       const filter: any = {};
 
+      // Category filter
       if (category && mongoose.Types.ObjectId.isValid(category)) {
         filter.category = new mongoose.Types.ObjectId(category);
       }
 
+      // Product types filter
       if (productTypes.length > 0) {
         const validProductTypes = productTypes.filter((id) =>
           mongoose.Types.ObjectId.isValid(id)
@@ -131,6 +157,7 @@ export async function GET(req: NextRequest) {
         }
       }
 
+      // Benefits filter
       if (benefits.length > 0) {
         const validBenefits = benefits.filter((id) =>
           mongoose.Types.ObjectId.isValid(id)
@@ -142,6 +169,7 @@ export async function GET(req: NextRequest) {
         }
       }
 
+      // Find all the products according to filter ID's
       const products = await Product.find(filter)
         .populate("description")
         .populate("faqs");
@@ -155,6 +183,7 @@ export async function GET(req: NextRequest) {
         return error(400, "Invalid Product Id.");
       }
 
+      // Find the product details by ID
       const product = await Product.findById(id)
         .populate("description")
         .populate("faqs");
@@ -171,8 +200,17 @@ export async function GET(req: NextRequest) {
   }
 }
 
+/**
+ * @description
+ * Update a product by ID.
+ * 1. Verfies authentication.
+ * 2. Update the product
+ * @param req
+ * @returns
+ */
 export async function PUT(req: NextRequest) {
   try {
+    // Verify JWT token
     const { valid, response } = await verifyAccessToken(req);
     if (!valid) return response!;
 
@@ -189,6 +227,7 @@ export async function PUT(req: NextRequest) {
       return error(400, "Invalid Product ID.");
     }
 
+    // Find the product by ID and update it and then returns the updated product.
     const updatedProduct = await Product.findByIdAndUpdate(id, body, {
       new: true,
       runValidators: true,
@@ -205,6 +244,14 @@ export async function PUT(req: NextRequest) {
   }
 }
 
+/**
+ * @description 
+ * Delete a product by ID.
+ * 1. Verifies authentication.
+ * 2. Deletes product and removes reference from its category.
+ * @param req
+ * @returns
+ */
 export async function DELETE(req: NextRequest) {
   try {
     const { valid, response } = await verifyAccessToken(req);

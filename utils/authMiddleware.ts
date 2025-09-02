@@ -4,6 +4,14 @@ import jwt from "jsonwebtoken";
 import dbConnect from "@/dbConnect/dbConnect";
 import User from "@/models/User";
 
+/**
+ * @function verifyAccessToken
+ * @description Middleware function to verify and decode the access token from Authorization header.
+ * @param {NextRequest} req - The incoming Next.js request object.
+ * @returns
+ * - `valid: true` if token is valid, along with user data.
+ * - `valid: false` with an error response if token is missing, invalid, or expired.
+ */
 export const verifyAccessToken = async (req: NextRequest) => {
   const authHeader = req.headers.get("authorization");
 
