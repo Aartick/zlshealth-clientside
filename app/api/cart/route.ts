@@ -3,6 +3,12 @@ import { verifyAccessToken } from "@/utils/authMiddleware";
 import { error, success } from "@/utils/responseWrapper";
 import { NextRequest } from "next/server";
 
+/**
+ * @route - POST /api/cart
+ * @description - Add a product to the user's cart or update quantity if it already exists
+ * @param req - NextRequest containing productId and quantity in JSON body.
+ * @returns - Update cart with product details
+ */
 export async function POST(req: NextRequest) {
   try {
     const { productId, quantity } = await req.json();
@@ -11,32 +17,40 @@ export async function POST(req: NextRequest) {
       return error(400, "All fields are required.");
     }
 
+    // Verify JWT token and extract customer ID
     const { valid, response, _id } = await verifyAccessToken(req);
     if (!valid) return response!;
 
+    // Find the user's cart in the database
     let cart = await Cart.findOne({ customerId: _id });
 
     if (!cart) {
+      // If no cart exists, create a new one with the product
       cart = await Cart.create({
         customerId: _id,
         products: [{ productId, quantity }],
       });
     } else {
+      // Check if product already exists in cart
       const existingProduct = cart.products.find(
         (p: any) => p.productId.toString() === productId
       );
 
       if (existingProduct) {
+        // If product exists, increase the quantity
         existingProduct.quantity += quantity;
       } else {
+        // If product does not exist, add it to cart
         cart.products.push({ productId, quantity });
       }
 
-      await cart.save();
+      await cart.save(); // Save the updated cart
     }
 
+    // Populate product details for response
     const updatedCart = await cart.populate("products.productId");
 
+    // Map cart products to response format
     const responseWrapper = updatedCart.products.map((pro: any) => {
       return {
         _id: pro.productId._id,
@@ -54,11 +68,19 @@ export async function POST(req: NextRequest) {
   }
 }
 
+/**
+ * @route - GET /api/cart
+ * @description - Retrieve all products in the user's cart
+ * @param req - NextRequest with JWT token for user identification
+ * @returns - List of cart products with details
+ */
 export async function GET(req: NextRequest) {
   try {
+    // Verify JWT token and extract customer ID
     const { valid, response, _id } = await verifyAccessToken(req);
     if (!valid) return response!;
 
+    // Find user's cart and populate product details
     const cart = await Cart.findOne({ customerId: _id }).populate(
       "products.productId"
     );
@@ -67,6 +89,7 @@ export async function GET(req: NextRequest) {
       return error(404, "Cart not found.");
     }
 
+    // Map cart products to response format
     const responseWrapper = cart.products.map((pro: any) => {
       return {
         _id: pro.productId._id,

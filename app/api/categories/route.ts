@@ -1,8 +1,13 @@
 import { error, success } from "@/utils/responseWrapper";
 import Category from "@/models/Category";
 
+/**
+ * @route GET /api/categories
+ * @returns all categories in db
+ */
 export async function GET() {
   try {
+    // Find all the categories in db
     const categories = await Category.find();
     return success(200, categories);
   } catch (e) {
