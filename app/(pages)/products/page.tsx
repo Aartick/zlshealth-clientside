@@ -1,5 +1,16 @@
+/**
+ * Products Page
+ * 
+ * This component displays a list of products with advanced filtering options.
+ * Users can filter products by category, product type, price range, and benefits/concerns.
+ * The page fetches filter data and products from the backend, applies filters, 
+ * and shows loading skeletons while data is loading.
+ * Products are displayed in a responsive grid, and users can sort the results.
+ */
+
 'use client'
 
+// Import required modules and components
 import Product from '@/components/Product'
 import ProductSkeleton from '@/components/ProductSkeleton'
 import { axiosClient } from '@/utils/axiosClient'
@@ -7,6 +18,7 @@ import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { Range } from 'react-range'
 
+// Product interface defines the structure of product objects
 interface products {
     _id: string,
     category: string;
@@ -28,31 +40,41 @@ interface products {
     appliedFor: string[];
 }
 
+// Filters interface for categories, product types, and benefits
 interface filters {
     _id: string,
     name: string,
 }
 
 function page() {
+    // Constants for price range slider
     const STEP = 10;
     const MIN = 300;
     const MAX = 1500;
 
+    // State for price range values
     const [values, setValues] = useState<number[]>([MIN, MAX]);
+    // State for loading and storing categories
     const [loadingCategories, setLoadingCategories] = useState(false)
     const [categories, setCategories] = useState<filters[]>([])
+    // State for loading and storing product types
     const [loadingProductTypes, setLoadingProductTypes] = useState(false)
     const [productTypes, setProductTypes] = useState<filters[]>([])
+    // State for loading and storing benefits
     const [loadingBenefits, setLoadingBenefits] = useState(false)
     const [benefits, setBenefits] = useState<filters[]>([])
 
+    // State for selected filters
     const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]?._id)
     const [selectedProductTypes, setSelectedProductTypes] = useState<string[]>([])
     const [selectedBenefits, setSelectedBenefits] = useState<string[]>([])
+    // State for loading and storing products
     const [loadingProducts, setLoadingProducts] = useState(false);
     const [products, setProducts] = useState<products[]>([])
+    // State for filtered products based on price range
     const [filteredProducts, setFilteredProducts] = useState<products[]>([])
 
+    // Fetch categories, product types, and benefits on mount
     useEffect(() => {
         const getCategories = async () => {
             try {
@@ -61,6 +83,7 @@ function page() {
                 const fetchedCategories = response.data.result;
                 setCategories(fetchedCategories)
 
+                // Set default selected category if not set
                 if (fetchedCategories.length > 0 && !selectedCategory) {
                     setSelectedCategory(fetchedCategories[0]._id)
                 }
@@ -97,12 +120,14 @@ function page() {
         getBenefits()
     }, [])
 
+    // Fetch products whenever filters change
     useEffect(() => {
         const getProducts = async () => {
             try {
                 setLoadingProducts(true)
                 const queryParams = new URLSearchParams();
 
+                // Add selected filters to query params
                 if (selectedCategory) queryParams.append("category", selectedCategory);
                 if (selectedProductTypes.length > 0) {
                     queryParams.append("productTypes", selectedProductTypes.join(","));
@@ -111,6 +136,7 @@ function page() {
                     queryParams.append("benefits", selectedBenefits.join(","));
                 }
 
+                // Fetch products from backend
                 const response = await axiosClient.get(
                     `/api/products?type=all&${queryParams.toString()}`
                 );
@@ -122,12 +148,14 @@ function page() {
         getProducts();
     }, [selectedCategory, selectedProductTypes, selectedBenefits]);
 
+    // Helper to toggle selection for product types and benefits
     const toggleSelection = (id: string, setState: any) => {
         setState((prev: string[]) =>
             prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
         );
     };
 
+    // Filter products by price range whenever price or products change
     useEffect(() => {
         const [min, max] = values;
         const filtered = products.filter(
@@ -136,6 +164,7 @@ function page() {
         setFilteredProducts(filtered);
     }, [values, products]);
 
+    // Skeleton loader for filter checkboxes
     function SkeletonCheckboxRow() {
         return (
             <div className="flex items-center gap-2.5 animate-pulse">
@@ -147,6 +176,7 @@ function page() {
 
     return (
         <>
+            {/* Header image for products page */}
             <div className="relative w-full h-[200px] sm:h-[300px] md:h-[376px]">
                 <Image
                     src="/ProductsHeader.png"
@@ -157,12 +187,12 @@ function page() {
                 />
             </div>
             <div className="flex">
-                {/* Section 1 */}
+                {/* Sidebar: Filters section */}
                 <div className="hidden sm:block flex-1 h-screen overflow-y-scroll scrollbar-hide border-r border-[#e3e3e3] pt-4 px-[20.5px]">
                     <div className='space-y-5'>
                         <h2 className='text-[#093C16] text-2xl font-medium px-2.5'>Filter by</h2>
 
-                        {/* CATEGORY */}
+                        {/* CATEGORY FILTER */}
                         <div className="border border-[#e3e3e3] rounded-xl p-5 space-y-5">
                             <h3 className='font-medium text-xl'>Category</h3>
                             <div className="space-y-5">
@@ -186,7 +216,7 @@ function page() {
                             </div>
                         </div>
 
-                        {/* PRODUCT TYPE */}
+                        {/* PRODUCT TYPE FILTER */}
                         <div className="border border-[#e3e3e3] rounded-xl p-5 space-y-5">
                             <h3 className='font-medium text-xl'>Product Type</h3>
                             <div className="space-y-5">
@@ -212,10 +242,11 @@ function page() {
                             </div>
                         </div>
 
-                        {/* PRICE RANGE */}
+                        {/* PRICE RANGE FILTER */}
                         <div className="border border-[#e3e3e3] rounded-xl p-5 space-y-5">
                             <h3 className='font-medium text-xl'>Price Range</h3>
 
+                            {/* Price range slider */}
                             <Range
                                 step={STEP}
                                 min={MIN}
@@ -223,6 +254,7 @@ function page() {
                                 values={values}
                                 onChange={(vals) => setValues(vals)}
                                 renderTrack={({ props, children }) => {
+                                    // Calculate slider fill percentages
                                     const percentage1 = ((values[0] - MIN) / (MAX - MIN)) * 100;
                                     const percentage2 = ((values[1] - MIN) / (MAX - MIN)) * 100;
 
@@ -267,6 +299,7 @@ function page() {
                                 )}
                             />
 
+                            {/* Display selected price range */}
                             <div className="flex justify-between items-center">
                                 <div className="space-y-2">
                                     <p>From</p>
@@ -279,7 +312,7 @@ function page() {
                             </div>
                         </div>
 
-                        {/* BENEFITS/CONCERNS */}
+                        {/* BENEFITS/CONCERNS FILTER */}
                         <div className="border border-[#e3e3e3] rounded-xl p-5 space-y-5">
                             <h3 className='font-medium text-xl'>Benefits / Concerns</h3>
                             <div className="space-y-5">
@@ -305,8 +338,9 @@ function page() {
                     </div>
                 </div>
 
-                {/* Section 2 */}
+                {/* Main section: Products grid */}
                 <div className="flex-3">
+                    {/* Sort dropdown */}
                     <div className='flex justify-end border-b border-[#e3e3e3] py-2 md:py-4 pr-2 md:pr-4'>
                         <label
                             htmlFor="select"
@@ -319,7 +353,7 @@ function page() {
                         </label>
                     </div>
 
-                    {/* Products */}
+                    {/* Products grid */}
                     <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 md:gap-5 p-4 h-screen overflow-y-scroll scrollbar-hide">
                         {loadingProducts
                             ? Array.from({ length: 9 }).map((_, i) => (

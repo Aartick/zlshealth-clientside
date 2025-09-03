@@ -1,5 +1,17 @@
+/**
+ * Product Description Page
+ * 
+ * This component displays detailed information about a single product.
+ * It fetches product data from the backend using the product ID from the URL.
+ * The page shows product images, ratings, price, highlights, tags, 
+ * delivery options, reviews, and FAQs.
+ * Users can add the product to their cart or wishlist, select quantity,
+ * and view similar products.
+ */
+
 "use client"
 
+// Import required modules and components
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { IoStarSharp } from 'react-icons/io5'
@@ -14,6 +26,7 @@ import { axiosClient } from '@/utils/axiosClient';
 import CartButton from '@/components/CartButton';
 import WishlistButton from '@/components/WishlistButton';
 
+// Product interface defines the structure of product data
 interface product {
     _id: string,
     category: string;
@@ -35,6 +48,7 @@ interface product {
     appliedFor: string[];
 }
 
+// Initial product state for loading
 const initialProduct = {
     _id: "",
     category: "",
@@ -57,12 +71,16 @@ const initialProduct = {
 }
 
 function Page() {
+    // State to hold product details
     const [product, setProduct] = useState<product>(initialProduct)
+    // Get product ID from URL params
     const params = useParams()
 
+    // Fetch product details when component mounts
     useEffect(() => {
         const getDetails = async () => {
             try {
+                // Fetch product data from backend
                 const details = await axiosClient.get(`/api/products?type=productId&id=${params.id}`)
                 setProduct(details.data.result)
             } catch (e) {
@@ -75,10 +93,11 @@ function Page() {
     return (
         <div className='space-y-5 pb-10'>
             <div className="flex flex-col md:flex-row">
-                {/* LEFT COLUMN */}
+                {/* LEFT COLUMN: Product images */}
                 <div className="flex-1 p-3 md:p-6 space-y-6">
                     <div className="flex space-x-4">
                         <div className="flex flex-col space-y-2.5">
+                            {/* Thumbnail images */}
                             <Image
                                 src={product.imageUrl.url}
                                 width={150}
@@ -92,7 +111,6 @@ function Page() {
                                 alt="DiavincoDescImg"
                                 className="w-[150px] h-[150px] object-cover"
                             />
-
                         </div>
 
                         <div className="flex-[2] relative w-[525px] md:h-[492px]">
@@ -101,7 +119,7 @@ function Page() {
                                 <WishlistButton product={product} />
                             </div>
 
-                            {/* Product Image */}
+                            {/* Main product image */}
                             <Image
                                 src={product.imageUrl?.url}
                                 fill
@@ -109,9 +127,9 @@ function Page() {
                                 className="object-cover rounded-[12px]"
                             />
                         </div>
-
                     </div>
 
+                    {/* Additional product images */}
                     <Image
                         src={product.imageUrl.url}
                         width={689}
@@ -126,9 +144,10 @@ function Page() {
                     />
                 </div>
 
-                {/* RIGHT COLUMN */}
+                {/* RIGHT COLUMN: Product details and actions */}
                 <div className="flex-1 p-3 md:p-6">
                     <div className="space-y-5 border-b-[3px] border-[#e3e3e3] px-2.5 pb-5">
+                        {/* Ratings and review links */}
                         <div className="flex items-center justify-between">
                             <div className='flex items-center gap-1.5 text-xs sm:text-base'>
                                 <p className="flex items-center gap-1.5 text-[#848484] font-medium">
@@ -147,16 +166,19 @@ function Page() {
                                 <p className='border-l-2 border-[#848484] pl-1.5 underline decoration-solid text-[#848484]'>Write Review</p>
                                 <p className='border-l-2 border-[#848484] pl-1.5 underline decoration-solid text-[#848484]'>Q&A</p>
                             </div>
+                            {/* Stock indicator */}
                             <div className="p-[3px] sm:p-[5px] border">
                                 <div className="rounded-full bg-[#71bf45] size-2 sm:size-[10px]"></div>
                             </div>
                         </div>
 
+                        {/* Product name and about */}
                         <div>
                             <p className='font-medium text-2xl'>{product?.name}</p>
                             <p className="font-medium text-[#848484]">{product?.about} - 30 Caplets</p>
                         </div>
 
+                        {/* Product tags */}
                         <div className="flex items-center gap-2.5 overflow-x-scroll scrollbar-hide">
                             {product?.tags.map((tag) => (
                                 <div key={tag} className="border-2 border-[#e3e3e3] py-[5px] px-2.5 rounded-[30px]">
@@ -165,9 +187,11 @@ function Page() {
                             ))}
                         </div>
 
+                        {/* Product highlights and description */}
                         <p className='font-medium text-[#848484]'>Tablet for <span className='text-[#000000]'>Glucose</span> & <span className='text-[#000000]'>Lipid Metabolism</span></p>
                         <p className='text-[#848484] font-medium'>{product?.shortDescription}</p>
 
+                        {/* Price, discount, and taxes */}
                         <div>
                             <p className="font-semibold text-base sm:text-2xl">
                                 ₹ {product?.price! - (product?.price! * product?.discount! / 100)}{" "}
@@ -179,6 +203,7 @@ function Page() {
                             <p className='text-[#71BF45]'>inclusice of all taxes</p>
                         </div>
 
+                        {/* Quantity selector */}
                         <div className='flex flex-col space-y-2 w-fit'>
                             <label htmlFor="quantity">
                                 Quantity
@@ -191,6 +216,7 @@ function Page() {
                             </select>
                         </div>
 
+                        {/* Expiry information */}
                         <p className='font-extrabold text-nowrap md:whitespace-normal md:text-xl text-[#093C16]'>
                             Expiry:{" "}
                             <span className="font-medium text-[#848484]">
@@ -204,6 +230,7 @@ function Page() {
                             </span>
                         </p>
 
+                        {/* Cart and Buy Now buttons */}
                         <div className="flex items-center gap-5">
                             <div className="w-full"><CartButton product={product} /></div>
                             <button className='rounded-[10px] py-3 px-2.5 border-2 border-[#093C16] bg-[#71BF45] text-[#093C16] font-semibold w-full'>
@@ -212,6 +239,7 @@ function Page() {
                         </div>
                     </div>
 
+                    {/* Delivery options section */}
                     <div className="border-b-[3px] border-[#e3e3e3] px-2.5 py-5 space-y-5">
                         <p className="font-semibold text-2xl text-[#093C16]">Delivery Options</p>
                         <label
@@ -227,6 +255,7 @@ function Page() {
                             <LuPen className="cursor-pointer text-[#cdcdcd]" />
                         </label>
 
+                        {/* Delivery, payment, and exchange info */}
                         <div className="flex items-center gap-5">
                             <div className="border-[0.5px] border-[#cdcdcd] rounded-[10px] p-2.5 md:p-5 space-y-2.5">
                                 <TbTruckDelivery />
@@ -243,6 +272,7 @@ function Page() {
                         </div>
                     </div>
 
+                    {/* Quick product details section */}
                     <div className="border-b-[3px] border-[#e3e3e3] px-2.5 py-5 space-y-5">
                         <p className="font-semibold text-2xl text-[#093C16]">Quick Product Details</p>
 
@@ -256,10 +286,12 @@ function Page() {
                         </ul>
                     </div>
 
+                    {/* Ratings and customer photos section */}
                     <div className="px-2.5 py-5 space-y-5">
                         <p className="font-semibold text-2xl text-[#093C16]">Ratings</p>
 
                         <div className="px-2.5 flex items-center gap-2.5">
+                            {/* Overall rating and review count */}
                             <div className='border-r-[3px] border-[#e3e3e3] p-2.5 space-y-5'>
                                 <div className="flex items-center gap-[5px]">
                                     <p className='font-semibold text-[32px]'>4.8</p>
@@ -267,6 +299,7 @@ function Page() {
                                 </div>
                                 <p className="text-[#848484]">(120+ Reviews)</p>
                             </div>
+                            {/* Ratings breakdown by stars */}
                             <div className="py-2.5 space-y-2.5">
                                 {[
                                     { rating: 5, count: 98, percent: 75 },
@@ -288,11 +321,10 @@ function Page() {
                                     </div>
                                 ))}
                             </div>
-
                         </div>
 
+                        {/* Customer photos */}
                         <p className="font-semibold text-xl text-[#093C16]">Customer Photos (8)</p>
-
                         <div className="flex items-center gap-5">
                             <Image
                                 src="/DiavincoHand.png"
@@ -317,6 +349,7 @@ function Page() {
                             />
                         </div>
 
+                        {/* Review preview */}
                         <div className="space-y-5">
                             <div className="flex justify-between items-center">
                                 <p className='font-semibold text-xl text-[#093C16]'>Review (8)</p>
@@ -334,6 +367,7 @@ function Page() {
                     </div>
                 </div>
             </div>
+            {/* FAQ and similar products section */}
             <div className="space-y-[30px] mx-3 md:mx-10">
                 <FAQ />
                 <p className="text-2xl font-semibold pt-10">Similar Products</p>

@@ -1,3 +1,32 @@
+/**
+ * Home Page Component
+ * 
+ * Main landing page for Zealous Health.
+ * Displays carousel, product categories, product cards, benefits, stats, process, mission, blogs, and customer reviews.
+ * Handles animated search bar, tab navigation, and fetches stats from backend.
+ *
+ * State:
+ * - inputValue: Search bar input value.
+ * - currentIndex: Index for animated search placeholder.
+ * - isAnimating: Animation state for search placeholder.
+ * - activeTab: Currently selected product tab.
+ * - underlineStyle: Style for tab underline animation.
+ * - open: Shop dropdown open/close state.
+ * - count: Stats for users, products, years (fetched from backend).
+ *
+ * Refs:
+ * - tabRefs: References to tab buttons for underline animation.
+ * - scrollRef: Reference to tab scroll container.
+ *
+ * Effects:
+ * - Updates tab underline position on tab change.
+ * - Animates search placeholder text.
+ * - Fetches stats on mount.
+ *
+ * Usage:
+ * - Renders all homepage sections with responsive layout and interactive UI.
+ */
+
 'use client'
 
 import Image from "next/image";
@@ -19,6 +48,7 @@ import AnimatedNumber from "@/components/AnimatedNumber";
 import { axiosClient } from "@/utils/axiosClient";
 import toast from "react-hot-toast";
 
+// Animated placeholder texts for search bar
 const placeholderTexts = [
   "Stress Relief Syrup",
   "Immunity Booster Capsules",
@@ -27,6 +57,7 @@ const placeholderTexts = [
   "Anti-Acne Cream",
 ];
 
+// Product tabs for filtering
 const tabs = [
   "Trending Now",
   "Popular This Week",
@@ -35,6 +66,7 @@ const tabs = [
   "What Everyone's Buying",
 ];
 
+// Product categories for display
 const categories = [
   {
     icon: <BsLungs />,
@@ -70,6 +102,7 @@ const categories = [
   },
 ];
 
+// Benefits cards data
 const benefitsOfProducts = [
   {
     img: "/Herbalmg.png",
@@ -102,6 +135,7 @@ const benefitsOfProducts = [
   },
 ];
 
+// Customer reviews data
 const reviews = [
   {
     img: "/reviewImg.jpg",
@@ -130,21 +164,30 @@ const reviews = [
 ];
 
 export default function Home() {
+  // State for search bar input value
   const [inputValue, setInputValue] = useState("");
+  // State for animated search placeholder index
   const [currentIndex, setCurrentIndex] = useState(0);
+  // State for search placeholder animation
   const [isAnimating, setIsAnimating] = useState(false);
+  // State for active product tab
   const [activeTab, setActiveTab] = useState(0);
+  // State for tab underline style
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
+  // State for shop dropdown open/close
   const [open, setOpen] = useState(false);
+  // State for stats (users, products, years)
   const [count, setCount] = useState({
     users: 0,
     products: 0,
     years: 0
   })
 
+  // Refs for tab buttons and scroll container
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null)
 
+  // Effect: Update tab underline position and scroll on tab change
   useEffect(() => {
     const currentTab = tabRefs.current[activeTab]
     const scrollContainer = scrollRef.current;
@@ -165,6 +208,7 @@ export default function Home() {
     }
   }, [activeTab]);
 
+  // Effect: Animate search placeholder text every 3 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setIsAnimating(true);
@@ -177,8 +221,10 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  // Effect: Fetch stats on mount
   useEffect(() => { getCount() }, [])
 
+  // Fetch stats from backend
   const getCount = async () => {
     try {
       const response = await axiosClient.get("/api/home")
@@ -189,7 +235,7 @@ export default function Home() {
   return (
     <div className="bg-white space-y-10 lg:space-y-[60px] mb-8">
 
-      {/* TOP BAR */}
+      {/* TOP BAR: Navigation and shop dropdown */}
       <div className="relative z-30">
         <div className="hidden lg:flex justify-center">
           <div className="flex items-center gap-[50px] rounded-br-[40px] rounded-bl-[40px] bg-[#72bf451d] py-5 px-[10px] font-normal text-xl">
@@ -207,6 +253,7 @@ export default function Home() {
                 </span>
               </button>
 
+              {/* ShopLink dropdown menu */}
               <div
                 className={`absolute top-[140%] -left-[430px] transition-all duration-300 ease-in-out ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
                   } z-50`}
@@ -245,7 +292,7 @@ export default function Home() {
               onChange={(e) => setInputValue(e.target.value)}
               className="bg-[#f3f3f3] text-[#2e2e2e] text-xs w-[244px] focus:outline-none"
             />
-            {/* Animated Placeholder */}
+            {/* Animated Placeholder for search input */}
             {inputValue === "" && (
               <div className="absolute left-0 top-0 w-full h-full pointer-events-none flex items-center text-[#a3a3a3] text-xs overflow-hidden">
                 <p>Search for&nbsp; </p>
@@ -267,12 +314,12 @@ export default function Home() {
         </div>
       </div>
 
-      {/* CAROUSEL */}
+      {/* CAROUSEL SECTION */}
       <div className="mx-6">
         <Carousel />
       </div>
 
-      {/* CATEGORIES */}
+      {/* CATEGORIES SECTION */}
       <div className="flex justify-between items-center px-6 sm:px-[60px]">
         <p className="font-normal text-2xl sm:text-[32px] whitespace-nowrap">
           <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
@@ -281,6 +328,7 @@ export default function Home() {
           ories
         </p>
 
+        {/* View All link for mobile */}
         <Link href="/" className="sm:hidden flex items-center gap-[10px] text-[#71BF45]">
           <p className="text-base font-normal underline decoration-solid decoration-[#71BF45]">
             View All
@@ -289,6 +337,7 @@ export default function Home() {
         </Link>
       </div>
 
+      {/* Categories grid/scrollable row */}
       <div className="overflow-x-auto scrollbar-hide px-4">
         <div className="flex lg:grid lg:grid-cols-4 gap-3 min-w-max lg:min-w-0">
           {categories.map((cat, idx) => (
@@ -305,6 +354,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* PRODUCTS SECTION */}
       <div className="space-y-8 sm:space-y-10 px-6 sm:px-[60px]">
         <p className="font-normal text-2xl sm:text-[32px] whitespace-nowrap">
           <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
@@ -314,6 +364,7 @@ export default function Home() {
         </p>
 
         <div className="rounded-[40px] bg-white sm:shadow-2xl sm:shadow-[#bdbdbd] pt-6 sm:py-6 space-y-6">
+          {/* Product tabs row */}
           <div className="relative border-b border-b-[#e3e3e3]">
             <div
               className="relative flex justify-around items-center py-4 overflow-x-auto scrollbar-hide whitespace-nowrap"
@@ -331,6 +382,7 @@ export default function Home() {
                 </button>
               ))}
 
+              {/* Animated underline for active tab */}
               <div
                 className="absolute bottom-0 h-[4px] bg-[#093C16] transition-all duration-300 ease-in-out"
                 style={{
@@ -341,6 +393,7 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Products header and View All link */}
           <div className="flex justify-between items-center sm:px-12">
             <p className="font-medium text-base sm:text-xl">See What's Hot Right Now!</p>
             <Link href="/" className="text-base flex items-center gap-[10px]">
@@ -351,6 +404,7 @@ export default function Home() {
             </Link>
           </div>
 
+          {/* Product cards grid */}
           <div className="grid grid-cols-2 gap-4 sm:w-auto sm:flex sm:flex-wrap sm:justify-center items-center">
             {[...Array(4)].map((_, idx) => (
               <ProductCard key={idx} />
@@ -360,6 +414,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* BENEFITS SECTION */}
       <div className="space-y-10">
         <p className="font-normal text-2xl sm:text-[32px] whitespace-nowrap px-6 sm:px-[60px]">
           <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
@@ -368,6 +423,7 @@ export default function Home() {
           ts of our Products
         </p>
 
+        {/* Benefits cards row */}
         <div className="flex items-center gap-[30px] overflow-x-scroll py-[10px] pl-6 sm:pl-[60px] scrollbar-hide">
           <div className="flex items-center gap-[30px] w-max">
             {benefitsOfProducts.map((data, idx) => (
@@ -377,6 +433,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* STATS SECTION */}
       <div className="flex justify-center px-6 sm:gap-[60px]">
         <div className="border-r border-[#71BF45] p-[8px] sm:py-[10px] sm:pr-10 sm:pl-[10px] space-y-[8px] sm:space-y-[10px]">
           <AnimatedNumber data={count.products} />
@@ -392,6 +449,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* PROCESS SECTION */}
       <div className="space-y-10">
         <p className="font-normal text-2xl sm:text-[32px] whitespace-nowrap px-6 sm:px-[60px]">
           <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
@@ -401,6 +459,7 @@ export default function Home() {
         </p>
 
         <div className="flex flex-col lg:flex-row gap-[30px] px-6 md:px-[60px]">
+          {/* Process image and overlay button group */}
           <div className="relative w-full max-w-[634px] aspect-[634/775] mx-auto">
             <Image
               src="/Process.png"
@@ -420,13 +479,14 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Process steps and info */}
           <div className="space-y-[12px] sm:space-y-[30px]">
             <p className="font-normal text-center sm:text-left text-xl sm:text-[32px] text-[#093C16]">Why Choose Zealous?</p>
             <p className="font-normal text-center sm:text-left text-base sm:text-2xl">
               Natural wellness backed by tradition, science, and trust.
             </p>
 
-            {/* FIRST ROW */}
+            {/* FIRST ROW: Sourced & Tested */}
             <div className="flex justify-between">
               <div className="py-[15px] px-5 rounded-[20px] space-y-[10px]">
                 <div className="flex flex-col sm:flex-row items-center gap-[10px]">
@@ -466,7 +526,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* SECOND ROW */}
+            {/* SECOND ROW: Formulated & Manufactured */}
             <div className="flex justify-between">
               <div className="py-[15px] px-5 rounded-[20px] space-y-[10px]">
                 <div className="flex flex-col sm:flex-row items-center gap-[10px]">
@@ -506,7 +566,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* THIRD ROW */}
+            {/* THIRD ROW: Packed & Delivered */}
             <div className="flex justify-between">
               <div className="py-[15px] px-5 rounded-[20px] space-y-[10px]">
                 <div className="flex flex-col sm:flex-row items-center gap-[10px]">
@@ -546,6 +606,7 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Trademark links */}
             <Link href="/" className="flex items-center gap-1">
               <IoIosLink className="text-base sm:text-2xl" />
               <p className="text-base sm:text-2xl underline text-[#36810B] font-light">
@@ -563,6 +624,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* MISSION SECTION */}
       <div className="hidden sm:block space-y-6 sm:space-y-10 px-6 sm:px-[60px]">
         <p className="font-normal text-2xl sm:text-[32px] whitespace-nowrap">
           <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
@@ -579,6 +641,7 @@ export default function Home() {
             science.
           </p>
 
+          {/* Mission image */}
           <Image
             src="/OurMission.png"
             alt="Our Mission Img"
@@ -587,6 +650,7 @@ export default function Home() {
             className="rounded-[40px] w-full sm:h-[700px] shadow-lg shadow-[#bdbdbd]"
           />
 
+          {/* Mission details and story */}
           <div className="flex flex-col lg:flex-row gap-[50px] lg:gap-[152px]">
             <div className="space-y-10">
               <div className="flex items-center gap-2">
@@ -621,6 +685,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* BLOGS SECTION */}
       <div className="hidden sm:block space-y-3 sm:space-y-5 px-6 sm:px-[60px]">
         <p className="font-normal text-2xl sm:text-[32px] whitespace-nowrap">
           <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
@@ -637,6 +702,7 @@ export default function Home() {
             <MdKeyboardArrowRight size={12} color="#1C1B1F" />
           </div>
 
+          {/* Blog cards row */}
           <div className="flex items-center gap-4">
             <div className="p-5 space-y-5">
               <div className="space-y-4">
@@ -651,6 +717,7 @@ export default function Home() {
                   Debunking Common Myths About Food Supplements
                 </p>
 
+                {/* Blog tags */}
                 <div className="flex justify-center items-center gap-[10px]">
                   <p className="rounded-[30px] border border-[#d6d6d6] py-[5px] px-[10px] font-normal text-sm">
                     Supplements
@@ -663,12 +730,14 @@ export default function Home() {
                   </p>
                 </div>
 
+                {/* Blog summary */}
                 <p className="font-normal text-base text-center text-[#848484]">
                   Food supplements have gained immense popularity over the
                   years, but with this rise in interest comes a plethara of
                   misconceptions and myths.
                 </p>
 
+                {/* Read more button */}
                 <button className="w-full py-[10px] px-5 rounded-[10px] border-[2px] border-[#71BF45] bg-[#72bf4524] text-[#64a43e]">
                   Read More
                 </button>
@@ -688,6 +757,7 @@ export default function Home() {
                   How To Choose The Best Food Supplements For Your Lifestyle
                 </p>
 
+                {/* Blog tags */}
                 <div className="flex justify-center items-center gap-[10px]">
                   <p className="rounded-[30px] border border-[#d6d6d6] py-[5px] px-[10px] font-normal text-sm">
                     Nutrition
@@ -700,12 +770,14 @@ export default function Home() {
                   </p>
                 </div>
 
+                {/* Blog summary */}
                 <p className="font-normal text-base text-center text-[#848484]">
                   Navigating the world of food supplements can be overwhelming,
                   with countless options available, each promising various
                   health benefits.
                 </p>
 
+                {/* Read more button */}
                 <button className="w-full py-[10px] px-5 rounded-[10px] border-[2px] border-[#71BF45] bg-[#72bf4524] text-[#64a43e]">
                   Read More
                 </button>
@@ -725,6 +797,7 @@ export default function Home() {
                   How To Choose The Best Food For Your Lifestyle
                 </p>
 
+                {/* Blog tags */}
                 <div className="flex justify-center items-center gap-[10px]">
                   <p className="rounded-[30px] border border-[#d6d6d6] py-[5px] px-[10px] font-normal text-sm">
                     Nutrition
@@ -737,12 +810,14 @@ export default function Home() {
                   </p>
                 </div>
 
+                {/* Blog summary */}
                 <p className="font-normal text-base text-center text-[#848484]">
                   Navigating the world of food supplements can be overwhelming,
                   with countless options available, each promising various
                   health benefits.
                 </p>
 
+                {/* Read more button */}
                 <button className="w-full py-[10px] px-5 rounded-[10px] border-[2px] border-[#71BF45] bg-[#72bf4524] text-[#64a43e]">
                   Read More
                 </button>
@@ -752,6 +827,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* CUSTOMER REVIEWS SECTION */}
       <div className="space-y-4 sm:space-y-[30px]">
         <p className="font-normal text-2xl sm:text-[32px] whitespace-nowrap px-6 sm:px-[60px]">
           <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
@@ -760,6 +836,7 @@ export default function Home() {
           Customers Say?
         </p>
 
+        {/* Reviews cards row */}
         <div className="flex items-center w-full overflow-x-scroll scrollbar-hide gap-[30px] py-[10px] pr-5 pl-6 sm:pl-[60px]">
           <div className="flex items-center gap-5 sm:gap-[40px] w-max">
             {reviews.map((data, idx) => (

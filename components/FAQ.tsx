@@ -1,8 +1,17 @@
+/**
+ * FAQ Component
+ *
+ * This component displays a list of frequently asked questions (FAQs) with expandable answers.
+ * Users can click on a question to expand or collapse its answer.
+ * Only one answer is shown at a time for better readability.
+ */
+
 "use client";
 
 import React, { useState } from "react";
 import { SlArrowDown } from "react-icons/sl";
 
+// Array of FAQ questions and answers
 const faqs = [
   {
     question: "Ingredients & Usage",
@@ -27,17 +36,20 @@ const faqs = [
 ];
 
 export default function FAQ() {
+  // State to track which FAQ is open (expanded)
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
+  // Toggle open/close for a FAQ item
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
     <div className="space-y-5 sm:space-y-[30px]">
+      {/* Render each FAQ item */}
       {faqs.map((faq, index) => (
         <div key={index}>
-          {/* Question */}
+          {/* Question row, clickable to expand/collapse answer */}
           <div
             className="flex justify-between items-center px-2.5 sm:px-4 pb-3 sm:pb-5 border-b-[2px] sm:border-b-[3px] border-[#e3e3e3] cursor-pointer"
             onClick={() => toggleFAQ(index)}
@@ -45,13 +57,14 @@ export default function FAQ() {
             <p className="text-[#093C16] text-lg sm:text-2xl font-semibold">
               {faq.question}
             </p>
+            {/* Arrow icon rotates when open */}
             <SlArrowDown
               className={`w-5 h-5 sm:w-6 sm:h-6 transform transition-transform duration-300 ${openIndex === index ? "rotate-90" : ""
                 }`}
             />
           </div>
 
-          {/* Answer */}
+          {/* Answer section, expands/collapses with animation */}
           <div
             className={`pt-3 sm:pt-5 overflow-hidden transition-all duration-500 ease-in-out ${openIndex === index
                 ? "max-h-60 sm:max-h-40 opacity-100"

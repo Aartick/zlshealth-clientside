@@ -1,3 +1,17 @@
+/**
+ * Providers Component
+ * 
+ * Handles authentication token management for the app.
+ * Listens for NextAuth session changes and fetches a JWT access token from the backend when a user logs in via Google.
+ * Stores the JWT token in localStorage for use in authenticated API requests.
+ *
+ * Props:
+ * - None (used for global side effects, not UI).
+ *
+ * Usage:
+ * - Place inside the app layout to ensure access token is set for authenticated users.
+ */
+
 "use client";
 
 import { axiosClient } from "@/utils/axiosClient";
@@ -10,6 +24,7 @@ function Providers() {
   const { data: session, status } = useSession();
 
   useEffect(() => {
+    // Function to fetch JWT token from backend when user is authenticated
     const getToken = async () => {
       try {
         // Only run when user is authenticated and session contains user info
@@ -26,6 +41,7 @@ function Providers() {
           setItem(KEY_ACCESS_TOKEN, res.data.result.accessToken);
         }
       } catch (e) {
+        // Log error if token generation fails
         console.log("error generating token: ", e);
       }
     };
