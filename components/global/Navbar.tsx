@@ -1,5 +1,16 @@
+/**
+ * Navbar Component
+ * 
+ * This component renders the main navigation bar for the website.
+ * It includes the logo, location info, search bar with animated placeholder,
+ * cart and wishlist icons with product counts, login/logout button, and sidebar for mobile.
+ * The cart and wishlist counts update dynamically from the Redux store.
+ * The sidebar and cart popups are shown conditionally.
+ */
+
 "use client"
 
+// Import required modules and components
 import { IoLocationOutline, IoSearchOutline } from "react-icons/io5";
 import { IoIosArrowDown } from "react-icons/io";
 import { VscSettings } from "react-icons/vsc";
@@ -26,6 +37,7 @@ const placeholderTexts = [
     "Anti-Acne Cream",
 ];
 
+// Navigation link interfaces
 interface Category {
     name: string;
     href: string;
@@ -43,6 +55,7 @@ interface NavLink {
     subPaths?: SubPath[];
 }
 
+// Initial navigation links
 const initialLinks: NavLink[] = [
     { name: "Home", href: "/" },
     {
@@ -71,22 +84,34 @@ const initialLinks: NavLink[] = [
 ];
 
 function Navbar() {
+    // State for search input value
     const [inputValue, setInputValue] = useState("");
+    // State for animated placeholder index
     const [currentIndex, setCurrentIndex] = useState(0);
+    // State for animation trigger
     const [isAnimating, setIsAnimating] = useState(false);
+    // State for sidebar open/close
     const [openSidebar, setOpenSidebar] = useState<boolean>(false)
+    // State for navigation links
     const [navLinks, setNavLinks] = useState(initialLinks)
+    // State for cart popup open/close
     const [openCart, setOpenCart] = useState(false);
 
+    // Check if user is logged in
     const isUser = getItem(KEY_ACCESS_TOKEN)
     const dispatch = useAppDispatch()
+    // Get cart items from Redux store
     const cart: any[] = useAppSelector((state) => state.cartSlice.cart) || []
+    // Calculate total products in cart
     var totalProducts = 0;
     Array.isArray(cart) && cart?.forEach((pro) => (totalProducts += pro.quantity))
 
+    // Get wishlist products from Redux store
     const wishlist = useAppSelector((state) => state.wishlistSlice.products)
+    // Calculate total wishlist products
     const totalWishlistProducts = wishlist.length;
 
+    // Animated placeholder effect for search bar
     useEffect(() => {
         const interval = setInterval(() => {
             setIsAnimating(true);
@@ -99,6 +124,7 @@ function Navbar() {
         return () => clearInterval(interval);
     }, []);
 
+    // Sync cart with backend or reset for guest
     useEffect(() => {
         const syncCart = async () => {
             if (isUser) {
@@ -111,6 +137,7 @@ function Navbar() {
         syncCart()
     }, [isUser, dispatch])
 
+    // Handle logout action
     const handleLogout = async () => {
         try {
             if (isUser) {
@@ -126,20 +153,23 @@ function Navbar() {
     return (
         <div className="z-40 fixed w-full py-[10px] sm:py-2 px-4 sm:px-10 drop-shadow-[0px_4px_15.8px_rgba(0,0,0,0.06)] bg-white">
             <div className="w-full flex justify-between items-center sm:gap-[40px]">
+                {/* Logo and location section */}
                 <div className="flex flex-col lg:flex-row gap-[21px]">
                     <Link
                         className="relative flex items-center gap-3"
                         href="/"
                     >
+                        {/* Hamburger menu for sidebar (mobile) */}
                         <RxHamburgerMenu
                             size={24}
                             className="text-[#71BF45] lg:hidden cursor-pointer"
                             onClick={() => setOpenSidebar(!openSidebar)}
                         />
+                        {/* Company logo */}
                         <Image src="/logo.png" alt="logo" className="w-[68px] h-[37px] sm:w-[85px] sm:h-[47px]" width={85} height={47} />
                     </Link>
 
-                    {/* Location */}
+                    {/* Location info */}
                     <div className="flex items-center gap-[10px]">
                         <div className="bg-[#71BF451A] text-[#36810B] p-1 rounded-full">
                             <IoLocationOutline size={24} />
@@ -154,13 +184,14 @@ function Navbar() {
                     </div>
                 </div>
 
-                {/* Search */}
+                {/* Search bar section (desktop only) */}
                 <div className="hidden relative flex-1 lg:flex justify-between bg-[#f3f3f3] border-[0.5px] border-[#71BF45] rounded-[10px] py-5 px-[10px] drop-shadow-[0px_4px_15.8px_rgba(132, 132, 132, 0.2)]">
                     <div className="flex items-center gap-[10px] relative">
                         <div className="p-[2px] rounded-lg bg-[#71bf45] text-[#ffffff]">
                             <IoSearchOutline size={15} />
                         </div>
                         <div className="relative">
+                            {/* Search input */}
                             <input
                                 type="text"
                                 value={inputValue}
@@ -189,9 +220,10 @@ function Navbar() {
                     </div>
                 </div>
 
-                {/* Login */}
+                {/* Cart, wishlist, and login/logout section */}
                 <div className="flex items-center gap-3 sm:gap-5">
                     <div className="flex items-center gap-3 text-lg sm:text-2xl">
+                        {/* Cart icon with product count */}
                         <div
                             onClick={() => setOpenCart(!openCart)}
                             className="relative p-2 sm:p-5 rounded-[60px] text-[#71BF45] bg-[#f3f3f3]">
@@ -205,6 +237,7 @@ function Navbar() {
                                 </span>
                             )}
                         </div>
+                        {/* Wishlist icon with product count */}
                         <Link href="/wishlist" className="relative p-2 sm:p-5 rounded-[60px] text-[#71BF45] bg-[#f3f3f3]">
                             <BsSuitHeart />
                             {totalWishlistProducts > 0 && (
@@ -217,6 +250,7 @@ function Navbar() {
                             )}
                         </Link>
                     </div>
+                    {/* Login/Logout button */}
                     <Link
                         className="flex items-center gap-[6px] text-xs sm:text-base rounded-[4px] sm:rounded-[10px] p-2 sm:p-4 bg-[#093C16] text-[#ffffff]"
                         href={isUser ? "" : "/login"}
@@ -228,8 +262,10 @@ function Navbar() {
                 </div>
             </div>
 
+            {/* Cart popup */}
             {openCart && <Cart onClose={() => setOpenCart(false)} />}
 
+            {/* Sidebar popup (mobile) */}
             {openSidebar && (
                 <Sidebar
                     links={navLinks}

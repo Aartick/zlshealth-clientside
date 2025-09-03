@@ -1,44 +1,64 @@
+/**
+ * Sidebar Component
+ * 
+ * This component renders a slide-in sidebar navigation for mobile and small screens.
+ * It displays navigation links, including multi-level dropdowns for categories and subcategories.
+ * The sidebar includes the company logo and a close button, and overlays the main content.
+ * Dropdowns can be expanded/collapsed, and clicking a link or the overlay closes the sidebar.
+ */
+
 'use client'
 
+// Import required modules and components
 import { ChevronRight, CircleX } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useState } from 'react';
 
+// Category interface for third-level navigation
 interface Category {
     name: string;
     href: string
 }
 
+// SubPath interface for second-level navigation
 interface SubPath {
     name: string;
     href: string;
     categories?: Category[]
 }
 
+// LinkItem interface for top-level navigation
 interface LinkItem {
     name: string;
     href: string;
     subPaths?: SubPath[];
 }
 
+// Props for Sidebar component
 interface Props {
     links: LinkItem[];
     onClose: () => void;
 }
 
 function Sidebar({ links, onClose }: Props) {
+    // Get current pathname for active link highlighting
     const pathname = usePathname();
+    // State for sidebar closing animation
     const [isClosing, setIsClosing] = useState(false);
+    // State for open/closed first-level dropdowns
     const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
+    // State for open/closed second-level dropdowns
     const [openSubDropdowns, setOpenSubDropdowns] = useState<Record<string, boolean>>({});
 
+    // Handle sidebar close with animation
     const handleCloseClick = () => {
         setIsClosing(true);
         setTimeout(onClose, 300);
     };
 
+    // Toggle first-level dropdown open/close
     const toggleDropdown = (name: string) => {
         setOpenDropdowns(prev => ({
             ...prev,
@@ -46,6 +66,7 @@ function Sidebar({ links, onClose }: Props) {
         }));
     };
 
+    // Toggle second-level dropdown open/close
     const toggleSubDropdown = (name: string) => {
         setOpenSubDropdowns(prev => ({
             ...prev,
@@ -53,21 +74,20 @@ function Sidebar({ links, onClose }: Props) {
         }));
     };
 
-
     return (
         <div className="fixed inset-0 z-50 flex justify-start">
-            {/* Overlay */}
+            {/* Overlay: closes sidebar when clicked */}
             <div
                 className={`fixed h-screen inset-0 bg-black transition-opacity duration-300 ${isClosing ? "opacity-0" : "opacity-50"}`}
                 onClick={handleCloseClick}
             ></div>
 
-            {/* Sidebar */}
+            {/* Sidebar panel */}
             <div
                 className={`relative h-screen w-80 bg-[#093C16] text-white transition-transform duration-300 
           ${isClosing ? "sidebar-slide-out" : "sidebar-slide-in"}`}
             >
-                {/* Header */}
+                {/* Header: logo and close button */}
                 <div className="flex justify-between items-center m-2">
                     <Link href="/">
                         <div className="relative size-11 md:size-14 rounded-full cursor-pointer">
@@ -85,9 +105,10 @@ function Sidebar({ links, onClose }: Props) {
                     />
                 </div>
 
-                {/* Links */}
+                {/* Navigation links */}
                 <div className="flex flex-col gap-2 mt-2">
                     {links.map((link) => {
+                        // Check if link has dropdown subPaths
                         const isOpen = openDropdowns[link.name] || false;
 
                         if (link.subPaths && link.subPaths.length > 0) {
@@ -111,6 +132,7 @@ function Sidebar({ links, onClose }: Props) {
                                     {/* First-level Dropdown Content */}
                                     <div className={`transition-all duration-300 overflow-hidden ml-4 space-y-2 ${isOpen ? "max-h-96 mt-2" : "max-h-0"}`}>
                                         {link.subPaths.map((subPath) => {
+                                            // Check if subPath has categories (third-level dropdown)
                                             const isSubOpen = openSubDropdowns[subPath.name] || false;
 
                                             if (subPath.categories && subPath.categories.length > 0) {
@@ -121,7 +143,6 @@ function Sidebar({ links, onClose }: Props) {
                                                             className="flex items-center justify-between py-1 px-2 rounded cursor-pointer hover:bg-gray-200 text-white"
                                                             onClick={() => toggleSubDropdown(subPath.name)}
                                                         >
-
                                                             <span>{subPath.name}</span>
                                                             <ChevronRight
                                                                 className={`transform transition-transform duration-300 ${isSubOpen ? "rotate-90" : ""}`}
@@ -145,6 +166,7 @@ function Sidebar({ links, onClose }: Props) {
                                                 );
                                             }
 
+                                            // Second-level link (no categories)
                                             return (
                                                 <Link
                                                     key={subPath.name}
