@@ -45,33 +45,33 @@ export default function FAQ() {
   };
 
   return (
-    <div className="space-y-5 sm:space-y-[30px]">
+    <div className="space-y-3">
       {/* Render each FAQ item */}
       {faqs.map((faq, index) => (
         <div key={index}>
           {/* Question row, clickable to expand/collapse answer */}
           <div
-            className="flex justify-between items-center px-2.5 sm:px-4 pb-3 sm:pb-5 border-b-[2px] sm:border-b-[3px] border-[#e3e3e3] cursor-pointer"
+            className="flex justify-between items-center px-2.5 pb-2.5 border-b-2 sm:border-b-[3px] border-[#e3e3e3] cursor-pointer"
             onClick={() => toggleFAQ(index)}
           >
-            <p className="text-[#093C16] text-lg sm:text-2xl font-semibold">
+            <p className="text-[#093C16] text-sm font-medium">
               {faq.question}
             </p>
             {/* Arrow icon rotates when open */}
             <SlArrowDown
-              className={`w-5 h-5 sm:w-6 sm:h-6 transform transition-transform duration-300 ${openIndex === index ? "rotate-90" : ""
+              className={`w-5 h-5 transform transition-transform duration-300 ${openIndex === index ? "rotate-90" : ""
                 }`}
             />
           </div>
 
           {/* Answer section, expands/collapses with animation */}
           <div
-            className={`pt-3 sm:pt-5 overflow-hidden transition-all duration-500 ease-in-out ${openIndex === index
+            className={`pt-3 overflow-hidden transition-all duration-500 ease-in-out ${openIndex === index
                 ? "max-h-60 sm:max-h-40 opacity-100"
                 : "max-h-0 opacity-0"
               }`}
           >
-            <p className="px-2.5 sm:px-4 pb-3 sm:pb-4 text-sm sm:text-base text-gray-600 leading-relaxed">
+            <p className="px-2.5 pb-2.5 text-sm text-gray-600 leading-relaxed">
               {faq.answer}
             </p>
           </div>
