@@ -87,7 +87,7 @@ function Product({ product }: ProductProps) {
     return (
         // Product card container
         <div
-            className="rounded-[10px] sm:rounded-[22px] p-[10px] border-2 border-[#d9d9d9] space-y-[15px]"
+            className="rounded-[10px] sm:rounded-[22px] p-2.5 space-y-4"
         >
             {/* Product image section */}
             <div className="relative h-[150px] sm:h-[300px]">
@@ -116,20 +116,6 @@ function Product({ product }: ProductProps) {
                 </div>
             </div>
 
-            {/* Rating row */}
-            <div className="flex justify-between items-center">
-                <p className="flex items-center text-[#848484] font-medium text-xs sm:text-base">
-                    <span className="flex items-center text-[#71BF45]">
-                        {renderStars()}
-                    </span>
-                    {rating}
-                </p>
-                {/* Stock indicator dot */}
-                <div className="p-[3px] sm:p-[5px] border">
-                    <div className="rounded-full bg-[#71bf45] size-2 sm:size-[10px]"></div>
-                </div>
-            </div>
-
             {/* Product title and about, links to product description */}
             <Link href={`/productDescription/${product._id}`}>
                 <p className="font-medium text-base sm:text-2xl">{product.name}</p>
@@ -138,28 +124,13 @@ function Product({ product }: ProductProps) {
                 </p>
             </Link>
 
-            {/* Product tags */}
-            <div className="flex items-center gap-2.5 overflow-x-scroll scrollbar-hide">
-                {product.tags.map((tag) => (
-                    <div
-                        key={tag}
-                        className="border-2 border-[#e3e3e3] py-[5px] px-2.5 rounded-[30px]"
-                    >
-                        <p className="text-[#093C16] text-nowrap">{tag}</p>
-                    </div>
-                ))}
-            </div>
-
-            {/* Product highlights */}
-            <p className="text-[#848484] font-medium">{product.highlights[0]}</p>
-
             {/* Price row with discount info */}
-            <p className="font-semibold text-base sm:text-2xl text-[#36810B]">
+            <p className="font-extrabold text-base sm:text-xl text-[#093C16]">
                 ₹ {discountedPrice}{" "}
                 <span className="font-normal text-xs line-through text-[#848484]">
                     ₹ {product.price}
                 </span>{" "}
-                <span className="font-medium text-sm text-[#71BF45]">({product.discount}% off)</span>
+                <span className="font-medium text-xs text-[#71BF45]">({product.discount}% off)</span>
             </p>
 
             {/* Add to cart button */}

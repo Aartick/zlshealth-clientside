@@ -17,6 +17,9 @@ import { axiosClient } from '@/utils/axiosClient'
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { Range } from 'react-range'
+import { CiFilter } from "react-icons/ci";
+import { MdKeyboardArrowDown } from 'react-icons/md'
+import { IoSearchOutline } from 'react-icons/io5'
 
 // Product interface defines the structure of product objects
 interface products {
@@ -46,22 +49,37 @@ interface filters {
     name: string,
 }
 
+const placeholderTexts = [
+    "Stress Relief Syrup",
+    "Immunity Booster Capsules",
+    "Ashwagandha Supplements",
+    "Diabetes Management",
+    "Anti-Acne Cream",
+];
+
 function page() {
     // Constants for price range slider
     const STEP = 10;
     const MIN = 300;
     const MAX = 1500;
 
+    const [filterBarOpen, setFilterBarOpen] = useState(true)
+    // State for search input value
+    const [inputValue, setInputValue] = useState("");
+    // State for animated placeholder index
+    const [currentIndex, setCurrentIndex] = useState(0);
+    // State for animation trigger
+    const [isAnimating, setIsAnimating] = useState(false);
     // State for price range values
     const [values, setValues] = useState<number[]>([MIN, MAX]);
     // State for loading and storing categories
-    const [loadingCategories, setLoadingCategories] = useState(false)
+    const [loadingCategories, setLoadingCategories] = useState(true)
     const [categories, setCategories] = useState<filters[]>([])
     // State for loading and storing product types
-    const [loadingProductTypes, setLoadingProductTypes] = useState(false)
+    const [loadingProductTypes, setLoadingProductTypes] = useState(true)
     const [productTypes, setProductTypes] = useState<filters[]>([])
     // State for loading and storing benefits
-    const [loadingBenefits, setLoadingBenefits] = useState(false)
+    const [loadingBenefits, setLoadingBenefits] = useState(true)
     const [benefits, setBenefits] = useState<filters[]>([])
 
     // State for selected filters
@@ -69,7 +87,7 @@ function page() {
     const [selectedProductTypes, setSelectedProductTypes] = useState<string[]>([])
     const [selectedBenefits, setSelectedBenefits] = useState<string[]>([])
     // State for loading and storing products
-    const [loadingProducts, setLoadingProducts] = useState(false);
+    const [loadingProducts, setLoadingProducts] = useState(true);
     const [products, setProducts] = useState<products[]>([])
     // State for filtered products based on price range
     const [filteredProducts, setFilteredProducts] = useState<products[]>([])
@@ -140,6 +158,7 @@ function page() {
                 const response = await axiosClient.get(
                     `/api/products?type=all&${queryParams.toString()}`
                 );
+
                 setProducts(response.data.result);
             } catch { }
             setLoadingProducts(false)
@@ -186,35 +205,115 @@ function page() {
                     priority
                 />
             </div>
-            <div className="flex">
-                {/* Sidebar: Filters section */}
-                <div className="hidden sm:block flex-1 h-screen overflow-y-scroll scrollbar-hide border-r border-[#e3e3e3] pt-4 px-[20.5px]">
-                    <div className='space-y-5'>
-                        <h2 className='text-[#093C16] text-2xl font-medium px-2.5'>Filter by</h2>
+            <div className="flex transition-all duration-500 ease-in-out">
 
-                        {/* CATEGORY FILTER */}
-                        <div className="border border-[#e3e3e3] rounded-xl p-5 space-y-5">
-                            <h3 className='font-medium text-xl'>Category</h3>
-                            <div className="space-y-5">
-                                {loadingCategories
-                                    ? Array.from({ length: 9 }).map((_, i) => (
-                                        <SkeletonCheckboxRow key={i} />
-                                    ))
-                                    : categories.map((category) => (
-                                        <div key={category._id} className="flex items-center gap-2.5">
-                                            <input
-                                                type="checkbox"
-                                                id={category._id}
-                                                checked={selectedCategory === category._id}
-                                                onChange={() =>
-                                                    setSelectedCategory(category._id)
-                                                }
-                                            />
-                                            <label htmlFor={category._id} className='text-[#848484]'>{category.name}</label>
+                {/* Main section */}
+                <div className={`transition-all duration-500 ease-in-out ${filterBarOpen ? "flex-3" : "flex-4"
+                    }`}>
+
+                    {/* Top filters */}
+                    <div className="space-y-4 p-4 border-b border-[#E3E3E3]">
+                        <div className="flex items-center justify-between">
+
+                            {/* SEARCH BAR  */}
+                            <div className="flex-1 flex items-center gap-2.5 relative border-[0.5px] border-[#71BF45] rounded-[50px] py-2 px-2.5">
+                                <label htmlFor='search' className="p-1 rounded-[27px] bg-[#71bf45] text-[#ffffff]">
+                                    <IoSearchOutline size={15} />
+                                </label>
+
+                                <div className="relative w-full">
+                                    {/* Search input */}
+                                    <input
+                                        id='search'
+                                        type="text"
+                                        value={inputValue}
+                                        onChange={(e) => setInputValue(e.target.value)}
+                                        className="text-[#2e2e2e] text-xs w-full focus:outline-none"
+                                    />
+                                    {/* Animated Placeholder */}
+                                    {inputValue === "" && (
+                                        <div className="absolute left-0 top-0 w-full h-full pointer-events-none flex items-center text-[#a3a3a3] text-xs overflow-hidden">
+                                            <p>Search for&nbsp; </p>
+                                            <div
+                                                className={`transition-transform duration-500 ${isAnimating
+                                                    ? "-translate-y-full"
+                                                    : "translate-y-0 opacity-100"
+                                                    }`}
+                                                key={currentIndex}
+                                            >
+                                                "{placeholderTexts[currentIndex]}"
+                                            </div>
                                         </div>
-                                    ))}
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="flex-1 justify-end flex items-center gap-4">
+                                {/* FILTERS */}
+                                <label
+                                    htmlFor="select"
+                                    className='flex items-center py-2 px-3 gap-5 rounded-lg border border-[#e3e3e3] text-base font-medium'
+                                >
+                                    <p className='text-[#848484]'>Sort by:</p>
+                                    <select name="Sort By" id="select" className='focus:outline-none'>
+                                        <option value="Recommended">Recommended</option>
+                                    </select>
+                                </label>
+
+                                <div
+                                    onClick={() => setFilterBarOpen(!filterBarOpen)}
+                                    className='flex items-center py-2 px-3 gap-5 rounded-lg border border-[#e3e3e3] text-base font-medium transition-all'
+                                >
+                                    <CiFilter />
+                                    <div className="flex gap-2 items-center">
+                                        <p>Filter By</p>
+                                        <MdKeyboardArrowDown
+                                            className={`transition-transform duration-300 ${filterBarOpen ? "rotate-180" : ""
+                                                }`}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
+                        <div className="space-y-4 p-4">
+                            <p className="font-medium">Category</p>
+
+                            <div className="grid grid-cols-3 gap-4">
+                                {categories.map((category) => (
+                                    <div key={category._id} className="flex items-center gap-2.5">
+                                        <input
+                                            type="checkbox"
+                                            id={category._id}
+                                            checked={selectedCategory === category._id}
+                                            onChange={() =>
+                                                setSelectedCategory(category._id)
+                                            }
+                                        />
+                                        <label htmlFor={category._id} className='text-[#848484]'>{category.name}</label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Products grid */}
+                    <div className={`grid grid-cols-2 ${filterBarOpen ? "lg:grid-cols-3" : "lg:grid-cols-4"} gap-2.5 md:gap-5 p-4 h-screen overflow-y-scroll scrollbar-hide`}>
+                        {loadingProducts
+                            ? Array.from({ length: 9 }).map((_, i) => (
+                                <ProductSkeleton key={i} />
+                            ))
+                            : filteredProducts.map((data) => (
+                                <Product product={data} key={data._id} />
+                            ))}
+                    </div>
+                </div>
+
+                {/* Sidebar: Filters section */}
+                <div className={`transition-all duration-500 ease-in-out h-screen overflow-y-scroll scrollbar-hide border-r border-[#e3e3e3] pt-4 px-[20.5px] ${filterBarOpen ? "w-[300px] opacity-100" : "w-0 opacity-0"
+                    }`}  >
+                    <div className='space-y-5'>
+                        <h2 className='text-[#093C16] text-2xl font-medium px-2.5'>Filter by</h2>
 
                         {/* PRODUCT TYPE FILTER */}
                         <div className="border border-[#e3e3e3] rounded-xl p-5 space-y-5">
@@ -335,33 +434,6 @@ function page() {
                                     ))}
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                {/* Main section: Products grid */}
-                <div className="flex-3">
-                    {/* Sort dropdown */}
-                    <div className='flex justify-end border-b border-[#e3e3e3] py-2 md:py-4 pr-2 md:pr-4'>
-                        <label
-                            htmlFor="select"
-                            className='flex items-center py-2 px-3 gap-5 rounded-lg border border-[#e3e3e3] text-base md:text-lg lg:text-xl font-medium'
-                        >
-                            <p className='text-[#848484]'>Sort by:</p>
-                            <select name="Sort By" id="select" className='focus:outline-none'>
-                                <option value="Recommended">Recommended</option>
-                            </select>
-                        </label>
-                    </div>
-
-                    {/* Products grid */}
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 md:gap-5 p-4 h-screen overflow-y-scroll scrollbar-hide">
-                        {loadingProducts
-                            ? Array.from({ length: 9 }).map((_, i) => (
-                                <ProductSkeleton key={i} />
-                            ))
-                            : filteredProducts.map((data) => (
-                                <Product product={data} key={data._id} />
-                            ))}
                     </div>
                 </div>
             </div>

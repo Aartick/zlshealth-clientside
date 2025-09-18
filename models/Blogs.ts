@@ -1,6 +1,6 @@
 /**
  * Blog Model
- * 
+ *
  * Mongoose model for blog posts.
  * Supports rich content sections, comments, author, category, and images.
  *
@@ -36,22 +36,23 @@ export interface IComment {
 // Main blog document interface
 export interface IBlog extends Document {
   category: mongoose.Types.ObjectId; // Reference to BlogCategory
-  title: string;                     // Blog title
-  content: IContentSection[];        // Array of content sections
-  imageUrl: {                        // Blog image
+  title: string; // Blog title
+  content: IContentSection[]; // Array of content sections
+  imageUrl: {
+    // Blog image
     public_id: string;
     url: string;
   };
-  author: mongoose.Types.ObjectId;   // Reference to User
-  postedOn: Date;                    // Date posted
-  comments: IComment[];              // Array of comments
+  author: mongoose.Types.ObjectId; // Reference to User
+  postedOn: Date; // Date posted
+  comments: IComment[]; // Array of comments
 }
 
 // Schema for individual content sections (no _id for subdocs)
 const contentSectionSchema = new Schema<IContentSection>(
   {
     heading: { type: String, required: true }, // Section heading
-    body: { type: String, required: true },    // Section body
+    body: { type: String, required: true }, // Section body
   },
   { _id: false }
 );
@@ -60,8 +61,8 @@ const contentSectionSchema = new Schema<IContentSection>(
 const commentSchema = new Schema<IComment>(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true }, // Comment author
-    text: { type: String, required: true },                             // Comment text
-    createdAt: { type: Date, default: Date.now },                       // Comment date
+    text: { type: String, required: true }, // Comment text
+    createdAt: { type: Date, default: Date.now }, // Comment date
   },
   { _id: false }
 );
@@ -97,3 +98,4 @@ const blogSchema: Schema<IBlog> = new Schema(
 const Blog = mongoose.models.Blog || mongoose.model<IBlog>("Blog", blogSchema);
 
 // Export the Blog model
+export default Blog;
