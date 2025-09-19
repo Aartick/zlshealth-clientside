@@ -33,7 +33,7 @@ interface orders {
     paymentMethod: string,
 }
 
-function page() {
+function Page() {
     // State to hold all orders
     const [orders, setOrders] = useState<orders[]>([])
 
@@ -48,7 +48,7 @@ function page() {
             const response = await axiosClient.get("/api/orders")
             console.log("orders", response.data.result)
             setOrders(response.data.result)
-        } catch (e) { }
+        } catch { }
     }
 
     // Function to cancel an order and refresh the list
@@ -57,7 +57,7 @@ function page() {
             const response = await axiosClient.put(`/api/orders?id=${id}`)
             toast.success(response.data.result)
             getOrders()
-        } catch (e) { }
+        } catch { }
     }
 
     return (
@@ -103,4 +103,4 @@ function page() {
     )
 }
 
-export default page
+export default Page

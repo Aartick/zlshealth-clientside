@@ -46,7 +46,6 @@ import { VscSettings } from "react-icons/vsc";
 import { IoSearchOutline } from "react-icons/io5";
 import AnimatedNumber from "@/components/AnimatedNumber";
 import { axiosClient } from "@/utils/axiosClient";
-import toast from "react-hot-toast";
 
 // Animated placeholder texts for search bar
 const placeholderTexts = [
@@ -229,7 +228,7 @@ export default function Home() {
     try {
       const response = await axiosClient.get("/api/home")
       setCount(response.data.result)
-    } catch (e) { }
+    } catch { }
   }
 
   return (
@@ -303,7 +302,7 @@ export default function Home() {
                     }`}
                   key={currentIndex}
                 >
-                  "{placeholderTexts[currentIndex]}"
+                  &quot;{placeholderTexts[currentIndex]}&quot;
                 </div>
               </div>
             )}
@@ -395,7 +394,7 @@ export default function Home() {
 
           {/* Products header and View All link */}
           <div className="flex justify-between items-center sm:px-12">
-            <p className="font-medium text-base sm:text-xl">See What's Hot Right Now!</p>
+            <p className="font-medium text-base sm:text-xl">See What&apos;s Hot Right Now!</p>
             <Link href="/" className="text-base flex items-center gap-[10px]">
               <p className="text-[#093C16] font-normal underline decoration-solid decoration-[#093C16]">
                 View All
@@ -670,7 +669,7 @@ export default function Home() {
 
             <div className="space-y-[30px] font-normal text-xl text-justify">
               <p>
-                At Zealous, we're on a journey to bring people closer to nature
+                At Zealous, we&apos;re on a journey to bring people closer to nature
                 one remedy at a time. We aim to bridge the gap between time
                 tested Ayurvedic knowledge and the everyday wellness needs of
                 modern life.

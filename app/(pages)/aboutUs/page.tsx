@@ -1,3 +1,16 @@
+/**
+ * 
+ * This page tells the story of Zealous Health by blending visuals, animations,
+ * and descriptive text. It includes:
+ * - A hero section with headline and image.
+ * - Auto-scroll image carousel for brand visuals.
+ * - Our story with decorative leaves.
+ * - Our Promise highlighting purity and quality.
+ * - Our Values (icons for ingredients, testing, payment, delivery).
+ * - Our Team section introducing the experts.
+ * 
+ */
+
 "use client"
 
 import Image from 'next/image'
@@ -28,6 +41,7 @@ function page() {
                     simple, safe, and effective for everyone.
                 </p>
 
+                {/* Hero Image */}
                 <div className="relative w-full max-w-[1054px] h-[400px] sm:h-[502px] mx-auto">
                     <Image
                         src="/aboutUs/1.jpg"
@@ -38,9 +52,10 @@ function page() {
                 </div>
             </div>
 
-            {/* Auto-Scroll Images */}
+            {/* ================ IMAGE CAROUSEL ================ */}
             <div className="relative overflow-hidden">
                 <div className="flex gap-4 animate-scroll-left">
+                    {/* Duplicate images for infinite scroll */}
                     {horizontalScroll.map((data, idx) => (
                         <div key={idx} className="relative w-[200px] h-[200px] shrink-0">
                             <Image
@@ -54,8 +69,9 @@ function page() {
                 </div>
             </div>
 
-            {/* Our Story */}
+            {/* ================ OUR STORY ================ */}
             <div className="flex items-center h-[292px] bg-gradient-to-b from-white to-[#79D347] text-center">
+                {/* Decorative Leaves */}
                 <div>
                     <svg width="327" height="511" viewBox="0 0 327 511" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M126.364 182.023C128.982 194.025 120.23 206.123 120.23 206.123C120.23 206.123 107.248 198.76 104.63 186.758C102.015 174.751 110.764 162.657 110.764 162.657C110.764 162.657 123.752 170.031 126.364 182.023Z" fill="#B1CC33" />
@@ -73,6 +89,7 @@ function page() {
                         Zealous Health was founded with a simple belief — health should be holistic, accessible, and science-backed. In a world flooded with pharmaceuticals and synthetic quick fixes, we wanted to bring back the purity of nature, enhanced with cutting-edge research. From our first formulation to today, our journey is fueled by one mission: to restore balance and vitality in everyday life.
                     </p>
                 </div>
+                {/* Decorative Leaves */}
                 <div>
                     <svg width="335" height="518" viewBox="0 0 335 518" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M184.1 312.104C185.21 299.869 197.193 290.961 197.193 290.961C197.193 290.961 207.363 301.885 206.252 314.119C205.138 326.356 193.159 335.262 193.159 335.262C193.159 335.262 182.987 324.326 184.1 312.104Z" fill="#B1CC33" />
@@ -84,7 +101,7 @@ function page() {
                 </div>
             </div>
 
-            {/* Our Promise */}
+            {/* ================ OUR PROMISE ================ */}
             <div className="flex flex-col items-center space-y-3 text-center">
                 <p className="font-semibold text-2xl text-[#093C16]">
                     Our Promise
@@ -103,7 +120,7 @@ function page() {
                 </div>
             </div>
 
-            {/* Our Values */}
+            {/* ================ OUR VALUES ================ */}
             <div className="flex flex-col items-center space-y-[30px] text-center">
                 <p className="font-semibold text-3xl text-[#093C16]">
                     Our Values
@@ -161,8 +178,9 @@ function page() {
                 </div>
             </div>
 
-            {/* Our Team */}
+            {/* ================ OUR TEAM ================ */}
             <div className="flex flex-col md:flex-row items-center gap-[30px] py-2.5 px-10">
+                {/* Left Image */}
                 <div className="relative w-full max-w-[566px] h-[407px] mx-auto">
                     <Image
                         src="/aboutUs/5.png"
@@ -172,6 +190,7 @@ function page() {
                     />
                 </div>
 
+                {/* Right Text Content */}
                 <div className="space-y-3">
                     <p className="border-2 border-[#71BF45] rounded-[58px] py-2.5 px-5 text-[#71BF45] font-semibold text-sm w-fit">
                         About Us

@@ -39,6 +39,11 @@ async function updateProductRating(productId: string) {
  * @param req
  * @returns
  */
+
+interface MongoError extends Error{
+  code?: number;
+}
+
 export async function POST(req: NextRequest) {
   try {
     // Verify JWT token and extract customer ID
@@ -75,9 +80,10 @@ export async function POST(req: NextRequest) {
     await updateProductRating(productId);
 
     return success(201, review);
-  } catch (e: any) {
+  } catch (e: unknown) {
     // Handle duplicate review (user already reviewed this product)
-    if (e.code === 11000) {
+    const err = e as MongoError
+    if (err.code === 11000) {
       return error(400, "You have already reviewed this product.");
     }
     return error(500, "Something went wrong.");

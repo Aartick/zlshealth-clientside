@@ -1,7 +1,20 @@
 import Cart from "@/models/Cart";
 import { verifyAccessToken } from "@/utils/authMiddleware";
 import { error, success } from "@/utils/responseWrapper";
+import { Types } from "mongoose";
 import { NextRequest } from "next/server";
+
+interface ProductDoc {
+  _id: Types.ObjectId;
+  name: string;
+  imageUrl: {url: string},
+  price: number
+}
+
+interface CartProduct {
+  productId: Types.ObjectId | ProductDoc;
+  quantity: number;
+}
 
 /**
  * @route - POST /api/cart/items
@@ -32,9 +45,9 @@ export async function POST(req: NextRequest) {
       });
     } else {
       // If cart exists, merge products
-      for (let p of products) {
+      for (const p of products) {
         const existing = cart.products.find(
-          (prod: any) => prod.productId.toString() === p.productId
+          (prod: CartProduct) => prod.productId.toString() === p.productId
         );
         if (existing) {
           // Increment quantity if product already exists
@@ -60,6 +73,8 @@ export async function POST(req: NextRequest) {
  * @param req - NextRequest containing productId in JSON body
  * @returns - Updated cart with product details
  */
+
+
 export async function PUT(req: NextRequest) {
   try {
     // Verify JWT and extract user ID
@@ -73,7 +88,7 @@ export async function PUT(req: NextRequest) {
     }
 
     // Find cart of customer
-    let cart = await Cart.findOne({ customerId: _id });
+    const cart = await Cart.findOne({ customerId: _id });
 
     if (!cart) {
       return error(404, "Cart not found.");
@@ -81,7 +96,7 @@ export async function PUT(req: NextRequest) {
 
     // Find product index
     const productIndex = cart.products.findIndex(
-      (p: any) => p.productId.toString() === productId
+      (p: CartProduct) => p.productId.toString() === productId
     );
 
     if (productIndex === -1) {
@@ -102,12 +117,13 @@ export async function PUT(req: NextRequest) {
     const updatedCart = await cart.populate("products.productId");
 
     // Map cart products to response format
-    const responseWrapper = updatedCart.products.map((pro: any) => {
+    const responseWrapper = updatedCart.products.map((pro: CartProduct) => {
+      const product = pro.productId as ProductDoc
       return {
-        _id: pro.productId._id,
-        name: pro.productId.name,
-        img: pro.productId.imageUrl.url,
-        price: pro.productId.price,
+        _id: product._id,
+        name: product.name,
+        img: product.imageUrl.url,
+        price: product.price,
         quantity: pro.quantity,
       };
     });
@@ -144,7 +160,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     const productIndex = cart.products.findIndex(
-      (p: any) => p.productId.toString() === productId
+      (p: CartProduct) => p.productId.toString() === productId
     );
 
     if (productIndex === -1) {

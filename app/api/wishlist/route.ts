@@ -1,8 +1,21 @@
 import Wishlist from "@/models/Wishlist";
 import { verifyAccessToken } from "@/utils/authMiddleware";
 import { error, success } from "@/utils/responseWrapper";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { NextRequest } from "next/server";
+
+interface ProductDoc {
+  _id: Types.ObjectId;
+  name: string;
+  imageUrl: { url: string };
+  price: number;
+  discount: number;
+}
+
+interface WishlistProduct {
+  productId: Types.ObjectId | ProductDoc;
+  quantity: number;
+}
 
 /**
  * @route - POST /api/wishlist
@@ -35,7 +48,7 @@ export async function POST(req: NextRequest) {
     } else {
       // If wishlist exists, check if product is already present
       const existingProduct = wishlist.products.find(
-        (p: any) => p.productId.toString() === productId
+        (p: WishlistProduct) => p.productId.toString() === productId
       );
 
       if (!existingProduct) {
@@ -51,15 +64,18 @@ export async function POST(req: NextRequest) {
     const updatedWishlist = await wishlist.populate("products.productId");
 
     // Map wishlist products to response format
-    const responseWrapper = updatedWishlist.products.map((pro: any) => {
-      return {
-        _id: pro.productId._id,
-        name: pro.productId.name,
-        img: pro.productId.imageUrl.url,
-        price: pro.productId.price,
-        discount: pro.productId.discount,
-      };
-    });
+    const responseWrapper = updatedWishlist.products.map(
+      (pro: WishlistProduct) => {
+        const product = pro.productId as ProductDoc;
+        return {
+          _id: product._id,
+          name: product.name,
+          img: product.imageUrl.url,
+          price: product.price,
+          discount: product.discount,
+        };
+      }
+    );
 
     return success(201, responseWrapper);
   } catch (e) {
@@ -87,7 +103,7 @@ export async function PUT(req: NextRequest) {
     if (!valid) return response!;
 
     // Find user's wishlist
-    let wishlist = await Wishlist.findOne({ customerId: _id });
+    const wishlist = await Wishlist.findOne({ customerId: _id });
 
     if (!wishlist) {
       return error(404, "Wishlist not found.");
@@ -95,7 +111,7 @@ export async function PUT(req: NextRequest) {
 
     // Find index of product to remove
     const productIndex = wishlist.products.findIndex(
-      (p: any) => p.productId.toString() === productId
+      (p: WishlistProduct) => p.productId.toString() === productId
     );
 
     if (productIndex === -1) {
@@ -110,13 +126,18 @@ export async function PUT(req: NextRequest) {
     const updatedWishlist = await wishlist.populate("products.productId");
 
     // Map wishlist products to response format
-    const responseWrapper = updatedWishlist.products.map((pro: any) => ({
-      _id: pro.productId._id,
-      name: pro.productId.name,
-      img: pro.productId.imageUrl?.url,
-      price: pro.productId.price,
-      discount: pro.productId.discount,
-    }));
+    const responseWrapper = updatedWishlist.products.map(
+      (pro: WishlistProduct) => {
+        const product = pro.productId as ProductDoc;
+        return {
+          _id: product._id,
+          name: product.name,
+          img: product.imageUrl?.url,
+          price: product.price,
+          discount: product.discount,
+        };
+      }
+    );
 
     return success(200, responseWrapper);
   } catch (e) {
@@ -124,7 +145,6 @@ export async function PUT(req: NextRequest) {
     return error(500, "Something went wrong");
   }
 }
-
 
 /**
  * @route - GET /api/wishlist
@@ -148,13 +168,14 @@ export async function GET(req: NextRequest) {
     }
 
     // Map wishlist products to response format
-    const responseWrapper = wishlist.products.map((pro: any) => {
+    const responseWrapper = wishlist.products.map((pro: WishlistProduct) => {
+      const product = pro.productId as ProductDoc
       return {
-        _id: pro.productId._id,
-        name: pro.productId.name,
-        img: pro.productId.imageUrl.url,
-        price: pro.productId.price,
-        discount: pro.productId.discount,
+        _id: product._id,
+        name: product.name,
+        img: product.imageUrl.url,
+        price: product.price,
+        discount: product.discount,
       };
     });
 

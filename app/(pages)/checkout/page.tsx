@@ -92,7 +92,7 @@ function Checkout() {
             // Place the order with cart items
             const orderResponse = await axiosClient.post("/api/orders", { cart })
             toast.success(orderResponse.data.result)
-        } catch (err) { }
+        } catch { }
     };
 
     // Show loading indicator while fetching user details

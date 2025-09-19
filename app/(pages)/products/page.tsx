@@ -57,7 +57,7 @@ const placeholderTexts = [
     "Anti-Acne Cream",
 ];
 
-function page() {
+function Page() {
     // Constants for price range slider
     const STEP = 10;
     const MIN = 300;
@@ -67,13 +67,13 @@ function page() {
     // State for search input value
     const [inputValue, setInputValue] = useState("");
     // State for animated placeholder index
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [currentIndex, ] = useState(0);
     // State for animation trigger
-    const [isAnimating, setIsAnimating] = useState(false);
+    const [isAnimating, ] = useState(false);
     // State for price range values
     const [values, setValues] = useState<number[]>([MIN, MAX]);
     // State for loading and storing categories
-    const [loadingCategories, setLoadingCategories] = useState(true)
+    const [ , setLoadingCategories] = useState(true)
     const [categories, setCategories] = useState<filters[]>([])
     // State for loading and storing product types
     const [loadingProductTypes, setLoadingProductTypes] = useState(true)
@@ -105,9 +105,7 @@ function page() {
                 if (fetchedCategories.length > 0 && !selectedCategory) {
                     setSelectedCategory(fetchedCategories[0]._id)
                 }
-            } catch (e) {
-                return
-            }
+            } catch {}
             setLoadingCategories(false)
         }
 
@@ -116,9 +114,7 @@ function page() {
                 setLoadingProductTypes(true)
                 const response = await axiosClient.get("/api/productTypes")
                 setProductTypes(response.data.result)
-            } catch (e) {
-                return
-            }
+            } catch {}
             setLoadingProductTypes(false)
         }
 
@@ -127,9 +123,7 @@ function page() {
                 setLoadingBenefits(true)
                 const response = await axiosClient.get("/api/benefits")
                 setBenefits(response.data.result)
-            } catch (e) {
-                return
-            }
+            } catch {}
             setLoadingBenefits(false)
         }
 
@@ -168,7 +162,7 @@ function page() {
     }, [selectedCategory, selectedProductTypes, selectedBenefits]);
 
     // Helper to toggle selection for product types and benefits
-    const toggleSelection = (id: string, setState: any) => {
+    const toggleSelection = (id: string, setState: React.Dispatch<React.SetStateAction<string[]>>) => {
         setState((prev: string[]) =>
             prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
         );
@@ -241,7 +235,7 @@ function page() {
                                                     }`}
                                                 key={currentIndex}
                                             >
-                                                "{placeholderTexts[currentIndex]}"
+                                                &quot;{placeholderTexts[currentIndex]}&quot;
                                             </div>
                                         </div>
                                     )}
@@ -441,4 +435,4 @@ function page() {
     )
 }
 
-export default page
+export default Page

@@ -22,14 +22,14 @@ export default function ToastHandler() {
 
     useEffect(() => {
         // Show toast notification based on type
-        switch (toastData.type) {
+        switch (toastData?.type) {
             case TOAST_SUCCESS:
                 // Show success toast
-                toast.success(toastData.message);
+                toast.success(toastData?.message);
                 break;
             case TOAST_FAILURE:
                 // Show error toast
-                toast.error(toastData.message);
+                toast.error(toastData?.message);
                 break;
         }
     }, [toastData]);

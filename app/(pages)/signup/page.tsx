@@ -21,7 +21,7 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 
 function Page() {
     // State for password visibility toggle
-    const [togglePassword, setTogglePassword] = useState<Boolean>(false)
+    const [togglePassword, setTogglePassword] = useState<boolean>(false)
     // State for email input
     const [email, setEmail] = useState("")
     // State for password input
@@ -32,7 +32,7 @@ function Page() {
     const [loading, setLoading] = useState(false)
 
     // Handles signup form submission
-    const handleSignUp = async (e: any) => {
+    const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         // Validate email presence
@@ -85,9 +85,8 @@ function Page() {
             setPassword("")
             // Show success message
             toast.success(response.data.result)
-        } catch (e) {
-            return;
-        } finally {
+        } catch { }
+        finally {
             setLoading(false)
         }
     }
@@ -149,7 +148,7 @@ function Page() {
                             disabled={loading}
                             onChange={(e) => setTermsAndCondition(e.target.checked)}
                         />
-                        <p >By continuing, I agree to Zealous's {" "}
+                        <p >By continuing, I agree to Zealous&apos;s {" "}
                             <span className="underline font-semibold decoration-solid text-[#71BF45]">Terms of Condition</span>
                             {" "} and {" "}
                             <span className="underline font-semibold decoration-solid text-[#71BF45]">Privacy Policy.</span>

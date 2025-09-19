@@ -51,7 +51,7 @@ export const mergeGuestCart = createAsyncThunk(
 
       // Reset guest cart after merging
       dispatch(resetCart());
-    } catch (e) {}
+    } catch {}
   }
 );
 
@@ -74,7 +74,7 @@ export const addToCart = createAsyncThunk(
       );
       // Return updated cart from backend
       return response.data.result;
-    } catch (e) {
+    } catch {
       return [];
     }
   }
@@ -99,7 +99,7 @@ export const removeFromCart = createAsyncThunk(
 
       // Return updated cart from backend
       return response.data.result;
-    } catch (e) {
+    } catch {
       return [];
     }
   }
@@ -115,7 +115,7 @@ export const getCart = createAsyncThunk("cart/removeFromCart", async () => {
     });
     // Return cart data
     return response.data.result;
-  } catch (e) {
+  } catch {
     return [];
   }
 });
@@ -133,7 +133,7 @@ export const deleteFromCart = createAsyncThunk(
       });
       // Refresh cart after deletion
       thunkAPI.dispatch(getCart());
-    } catch (e) {
+    } catch {
       return [];
     }
   }

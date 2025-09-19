@@ -13,7 +13,7 @@
 
 // Import required modules and components
 import { googleLogIn } from '@/app/actions';
-import { auth } from '@/app/auth';
+// import { auth } from '@/app/auth';
 import { axiosClient } from '@/utils/axiosClient';
 import { KEY_ACCESS_TOKEN, setItem } from '@/utils/localStorageManager';
 import Image from 'next/image'
@@ -25,14 +25,14 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 
 function Page() {
     // State variables for password visibility, email, password, and loading status
-    const [togglePassword, setTogglePassword] = useState<Boolean>(false)
+    const [togglePassword, setTogglePassword] = useState<boolean>(false)
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
     const router = useRouter();
 
     // Handles login form submission
-    const handleLogIn = async (e: any) => {
+    const handleLogIn = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         // Validate email input
@@ -66,9 +66,8 @@ function Page() {
             setPassword("")
             // Redirect to home page
             router.push("/")
-        } catch (e) {
-            return;
-        } finally {
+        } catch { }
+        finally {
             setLoading(false)
         }
     }
@@ -134,7 +133,7 @@ function Page() {
                             className={`bg-[#092C16] py-2.5 px-4 text-white border border-[#CDCDCD] rounded-[10px] w-full ${loading ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}
                         />
                         <div className="flex items-center justify-center gap-2.5 text-sm sm:text-base flex-wrap">
-                            <p className='text-[#71BF45] font-medium'>Don't have an account?</p>
+                            <p className='text-[#71BF45] font-medium'>Don&apos;t have an account?</p>
                             <Link
                                 href="/signup"
                                 className='font-semibold underline decoration-solid'

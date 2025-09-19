@@ -26,7 +26,7 @@ import { axiosClient } from "@/utils/axiosClient";
 import toast from "react-hot-toast";
 import Cart from "../Cart";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { getCart, mergeGuestCart } from "@/lib/thunks/cartThunks";
+import { getCart } from "@/lib/thunks/cartThunks";
 import { resetCart } from "@/lib/features/cartSlice";
 
 const placeholderTexts = [
@@ -93,7 +93,7 @@ function Navbar() {
     // State for sidebar open/close
     const [openSidebar, setOpenSidebar] = useState<boolean>(false)
     // State for navigation links
-    const [navLinks, setNavLinks] = useState(initialLinks)
+    const [navLinks,] = useState(initialLinks)
     // State for cart popup open/close
     const [openCart, setOpenCart] = useState(false);
 
@@ -101,9 +101,9 @@ function Navbar() {
     const isUser = getItem(KEY_ACCESS_TOKEN)
     const dispatch = useAppDispatch()
     // Get cart items from Redux store
-    const cart: any[] = useAppSelector((state) => state.cartSlice.cart) || []
+    const cart = useAppSelector((state) => state.cartSlice.cart) || []
     // Calculate total products in cart
-    var totalProducts = 0;
+    let totalProducts = 0;
     Array.isArray(cart) && cart?.forEach((pro) => (totalProducts += pro.quantity))
 
     // Get wishlist products from Redux store
@@ -145,9 +145,7 @@ function Navbar() {
                 removeItem(KEY_ACCESS_TOKEN)
                 toast.success(response.data.result)
             }
-        } catch (e) {
-            return
-        }
+        } catch {}
     }
 
     return (
@@ -209,7 +207,7 @@ function Navbar() {
                                             }`}
                                         key={currentIndex}
                                     >
-                                        "{placeholderTexts[currentIndex]}"
+                                        &quot;{placeholderTexts[currentIndex]}&quot;
                                     </div>
                                 </div>
                             )}

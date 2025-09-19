@@ -1,3 +1,28 @@
+/**
+ * This page represents a user profile and account management interface. 
+ * It is structured into multiple sections to allow users to view, edit, and manage
+ * their personal information, addresses and account preferences.
+ * 
+ * 1. Cards Section
+ *    * Displays three cards:
+ *      - Profile -> Manages personal details, saved addresses, and payment options.
+ *      - Orders & Returns -> Allows tracking of purchases, deliveries, and returns.
+ *      - Legal -> Provides access to terms , policies, and privacy details. 
+ * 
+ * 2. Edit Details Form
+ *    * Contains input fields for full name, mobile number (with OTP note),
+ *      email, date of birth, and gender.
+ *    * Includes a section to upload or change the profile picture, with an overlay 
+ *      edit icon.
+ * 
+ * 3. Address Management Section
+ *    * Displays Default Address and Other Address with user details (name, address,
+ *      phone number).
+ *    * Each address block has Edit and Remove options for better management.
+ *    * A button is available to Add New Address.
+ * 
+ */
+
 import React from 'react'
 import { FaGear, FaUser } from 'react-icons/fa6'
 import { GoPlus } from 'react-icons/go'
@@ -8,10 +33,14 @@ import { RxCross2 } from 'react-icons/rx'
 function page() {
     return (
         <div className='flex gap-8 p-8'>
+            {/* Sidebar Container */}
             <div className="flex-1 space-y-4 border border-[#f4f4f4] rounded-[36px] p-[30px]">
+                {/* Sidebar Content Wrapper */}
                 <div className="space-y-[60px]">
+                    {/* Overview Section */}
                     <p className="border-b border-[#e3e3e3] p-2.5 font-medium">Overview</p>
 
+                    {/* Profile Sub-section */}
                     <div className="space-y-3 border-b border-[#e3e3e3] p-2.5  text-sm">
                         <p className="font-medium">Profile</p>
                         <p className="text-[#71BF45]">Edit Details</p>
@@ -19,23 +48,29 @@ function page() {
                         <p className="text-[#848484]">Other Address</p>
                     </div>
 
+                    {/* Orders & Returns Sub-Section */}
                     <div className="space-y-3 border-b border-[#e3e3e3] p-2.5  text-sm">
                         <p className="font-medium">Orders & Returns</p>
                         <p className="text-[#848484]">All Orders</p>
                         <p className="text-[#848484]">Track Orders</p>
                     </div>
 
+                    {/* Legal Section */}
                     <div className="space-y-3 border-b border-[#e3e3e3] p-2.5  text-sm">
                         <p className="font-medium">Legal</p>
                         <p className="text-[#848484]">Terms of Use</p>
                         <p className="text-[#848484]">Privacy Policy</p>
                     </div>
 
+                    {/* Settings & Help Section */}
                     <div className="space-y-3 border-b border-[#e3e3e3] p-2.5  text-sm">
+                        {/* Settings Item */}
                         <div className="flex items-center gap-2.5 text-[#848484] font-medium">
                             <FaGear />
                             <p>Settings</p>
                         </div>
+
+                        {/* Help & Feedback Item with custom SVG */}
                         <div className="flex items-center gap-2.5 text-[#848484] font-medium">
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M10 1.25C8.26941 1.25 6.57769 1.76318 5.13876 2.72464C3.69983 3.6861 2.57832 5.05267 1.91605 6.65152C1.25379 8.25037 1.08051 10.0097 1.41813 11.707C1.75575 13.4044 2.58911 14.9635 3.81282 16.1872C5.03653 17.4109 6.59563 18.2442 8.29296 18.5819C9.99029 18.9195 11.7496 18.7462 13.3485 18.0839C14.9473 17.4217 16.3139 16.3002 17.2754 14.8612C18.2368 13.4223 18.75 11.7306 18.75 10C18.75 7.67936 17.8281 5.45376 16.1872 3.81282C14.5462 2.17187 12.3206 1.25 10 1.25ZM10 17.5C8.51664 17.5 7.06659 17.0601 5.83322 16.236C4.59985 15.4119 3.63856 14.2406 3.0709 12.8701C2.50325 11.4997 2.35472 9.99168 2.64411 8.53682C2.9335 7.08197 3.64781 5.74559 4.6967 4.6967C5.74559 3.64781 7.08197 2.9335 8.53682 2.64411C9.99168 2.35472 11.4997 2.50325 12.8701 3.0709C14.2406 3.63856 15.4119 4.59985 16.236 5.83322C17.0601 7.06659 17.5 8.51664 17.5 10C17.5 11.9891 16.7098 13.8968 15.3033 15.3033C13.8968 16.7098 11.9891 17.5 10 17.5Z" fill="#848484" />
@@ -48,17 +83,20 @@ function page() {
                     </div>
                 </div>
 
+                {/* Sign Out Button */}
                 <div className="flex items-center gap-3 text-[#093C16]">
                     <LuLogOut />
                     <p className="font-medium text-sm">Sign out</p>
                 </div>
             </div>
+
             <div className="flex-4 space-y-4 border border-[#f4f4f4] rounded-[36px] p-[30px]">
                 <div className="space-y-4">
-                    {/* CARDS */}
+                    {/* CARDS SECTION (Profile, Orders & Returns, Legal) */}
                     <div className="flex items-center gap-3">
                         {/* PROFILE CARD */}
                         <div className="border border-[#71BF45] bg-[#F4FAF0] p-5 space-y-3 rounded-3xl">
+                            {/* Profile Icon */}
                             <div className="bg-[#71BF45] p-2.5 rounded-[30px] text-white w-fit">
                                 <HiOutlineUserCircle />
                             </div>
@@ -73,7 +111,9 @@ function page() {
 
                         {/* ORDERS & RETURNS CARD */}
                         <div className="border border-[#e3e3e3] p-5 space-y-3 rounded-3xl">
+                            {/* Orders Icon */}
                             <div className="border border-[#71BF45] p-2.5 rounded-[30px] w-fit">
+                                {/* Orders Icon (SVG) */}
                                 <svg width="18" height="23" viewBox="0 0 18 23" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M15.5 3.5H2.5C1.94772 3.5 1.5 3.94772 1.5 4.5V20.5C1.5 21.0523 1.94772 21.5 2.5 21.5H15.5C16.0523 21.5 16.5 21.0523 16.5 20.5V4.5C16.5 3.94772 16.0523 3.5 15.5 3.5Z" stroke="#71BF45" stroke-width="2" stroke-linejoin="round" />
                                     <path d="M6 1.5V4.5M12 1.5V4.5M5 9H13M5 13H11M5 17H9" stroke="#71BF45" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -90,6 +130,7 @@ function page() {
 
                         {/* LEGAL CARD */}
                         <div className="border border-[#e3e3e3] p-5 space-y-3 rounded-3xl">
+                            {/* Legal Icon */}
                             <div className="border border-[#71BF45] p-2.5 rounded-[30px] w-fit">
                                 <svg width="20" height="23" viewBox="0 0 20 23" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M9.833 11.667C10.888 12.722 12.278 13.794 12.278 13.794L14.183 11.889C14.183 11.889 13.111 10.499 12.056 9.444C11.001 8.389 9.611 7.317 9.611 7.317L7.706 9.222C7.706 9.222 8.778 10.612 9.833 11.667ZM9.833 11.667L6.5 15M14.5 11.571L11.96 14.111M9.93 7L7.39 9.54" stroke="#71BF45" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
@@ -106,30 +147,33 @@ function page() {
                         </div>
                     </div>
 
-                    {/* EDIT DETAILS */}
+                    {/* EDIT DETAILS FORM*/}
                     <div className="space-y-4 p-2.5">
                         <p className="font-semibold text-[#093C16]">
                             Edit Details
                         </p>
 
                         <div className="flex justify-between">
-                            {/* FORM */}
+                            {/* FORM FIELDS*/}
                             <div className="flex gap-6">
                                 {/* FIRST COLUMN */}
                                 <div className="space-y-4">
+                                    {/* Full Name Input */}
                                     <div className="flex flex-col space-y-1.5">
                                         <label htmlFor='fullName' className="text-sm font-medium">Full Name *</label>
                                         <input type="text" id="fullName" className="p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]" placeholder='Enter Full Name' />
                                     </div>
 
+                                    {/* Mobile Number Input */}
                                     <div className="flex flex-col space-y-1.5">
                                         <label htmlFor='mobildNumber' className="text-sm font-medium">Mobile Number *</label>
                                         <input type="text" id="mobileNumber" className="p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]" placeholder='(+91)-' />
                                         <p className='text-xs text-[#676767]'>*You will receive an OTP for confirmation.</p>
                                     </div>
 
+                                    {/* Email Input */}
                                     <div className="flex flex-col space-y-1.5">
-                                        <label htmlFor='email' className="text-sm font-medium">Mobile Number <span className='text-[#71BF45]'>(for order updates)</span></label>
+                                        <label htmlFor='email' className="text-sm font-medium">Email <span className='text-[#71BF45]'>(for order updates)</span></label>
                                         <div className="flex justify-between items-center p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]">
                                             <input type="email" id="email" className="" placeholder='Enter Email' />
                                             <p id='email'>@gmail.com</p>
@@ -139,11 +183,13 @@ function page() {
 
                                 {/* SECOND COLUMN */}
                                 <div className="space-y-4">
+                                    {/* DOB Field */}
                                     <div className="flex flex-col space-y-1.5">
                                         <label htmlFor='dob' className="text-sm font-medium">DOB</label>
                                         <input type="date" id="dob" className="p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]" placeholder='(dd/mm/yy)' />
                                     </div>
 
+                                    {/* Gender Dropdown */}
                                     <div className="flex flex-col space-y-1.5">
                                         <label htmlFor='gender' className="text-sm font-medium">Gender</label>
                                         <select id="gender" className="p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]">
@@ -155,9 +201,11 @@ function page() {
                                 </div>
                             </div>
 
-                            {/* PROFILE PICTURE */}
+                            {/* PROFILE PICTURE UPLOAD */}
                             <label htmlFor="img" className='relative flex items-center justify-center p-5 bg-[#E3E3E3] w-[150px] h-[150px] rounded-full'>
+                                {/* Default User Icon */}
                                 <FaUser size={75} className='text-white' />
+                                {/* Edit Icon Overlay */}
                                 <div className="absolute top-1 -right-2 p-2.5 border-3 border-[#E3E3E3] rounded-full bg-white">
                                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M2.16667 13.8333H3.35417L11.5 5.6875L10.3125 4.5L2.16667 12.6458V13.8333ZM0.5 15.5V11.9583L11.5 0.979167C11.6667 0.826389 11.8508 0.708333 12.0525 0.625C12.2542 0.541667 12.4658 0.5 12.6875 0.5C12.9092 0.5 13.1244 0.541667 13.3333 0.625C13.5422 0.708333 13.7228 0.833333 13.875 1L15.0208 2.16667C15.1875 2.31944 15.3092 2.5 15.3858 2.70833C15.4625 2.91667 15.5006 3.125 15.5 3.33333C15.5 3.55556 15.4619 3.7675 15.3858 3.96917C15.3097 4.17083 15.1881 4.35472 15.0208 4.52083L4.04167 15.5H0.5ZM10.8958 5.10417L10.3125 4.5L11.5 5.6875L10.8958 5.10417Z" fill="#71BF45" />
@@ -168,8 +216,9 @@ function page() {
                     </div>
                 </div>
 
-                {/* DESCRIPTIONS */}
+                {/* ADDRESS SECTION */}
                 <div className="border-b border- space-y-4">
+                    {/* Default Address Header */}
                     <div className="flex items-center justify-between">
                         <p className="font-semibold text-[#093C16]">Default Address</p>
                         <button className='p-2.5 border border-[#71BF45] rounded-[6px] flex items-center gap-1.5 text-[#71BF45] text-sm font-medium'>
@@ -177,10 +226,11 @@ function page() {
                         </button>
                     </div>
 
-                    {/* DEFAULT ADDRESS */}
+                    {/* DEFAULT ADDRESS CARD */}
                     <div className="border-b border-[#e3e3e3] p-2.5 space-y-3">
                         <p className="font-medium text-sm">Harshita</p>
                         <div className="flex gap-1.5">
+                            {/* Home Icon */}
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_125_504)">
                                     <path d="M15.8333 19.9998H4.16667C1.86917 19.9998 0 18.1307 0 15.8332V8.10318C0 6.71568 0.686667 5.42401 1.83667 4.64901L7.66917 0.712344C9.085 -0.242656 10.915 -0.242656 12.3308 0.712344L18.1642 4.64901C19.3133 5.42401 20 6.71484 20 8.10318V15.8332C20 18.1307 18.1308 19.9998 15.8333 19.9998Z" fill="#71BF45" />
@@ -191,6 +241,7 @@ function page() {
                                     </clipPath>
                                 </defs>
                             </svg>
+                            {/* Address Details */}
                             <p className="flex flex-col text-[#848484] text-xs">
                                 Plot No. 45, House No.: 3-7-112/5, Near Shanti Gardens, Suryapet, Hyderabad, Telangana - 508206.
                                 <span>Suryapet</span>
@@ -198,30 +249,34 @@ function page() {
                                 <span>TELANGANA</span>
                             </p>
                         </div>
+                        {/* Phone Number */}
                         <div className='flex items-center gap-2 text-sm font-medium'>
                             <p>Phone:</p>
                             <p className='text-[#848484]'>+91-9876543210</p>
                         </div>
+                        {/* Edit & Remove Buttons */}
                         <div className="flex items-center gap-1.5">
-                            <div className="flex items-center justify-between border-[0.5px] border-[#848484] p-10 rounded-[6px]">
+                            <div className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px]">
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M2.16667 13.8333H3.35417L11.5 5.6875L10.3125 4.5L2.16667 12.6458V13.8333ZM0.5 15.5V11.9583L11.5 0.979167C11.6667 0.826389 11.8508 0.708333 12.0525 0.625C12.2542 0.541667 12.4658 0.5 12.6875 0.5C12.9092 0.5 13.1244 0.541667 13.3333 0.625C13.5422 0.708333 13.7228 0.833333 13.875 1L15.0208 2.16667C15.1875 2.31944 15.3092 2.5 15.3858 2.70833C15.4625 2.91667 15.5006 3.125 15.5 3.33333C15.5 3.55556 15.4619 3.7675 15.3858 3.96917C15.3097 4.17083 15.1881 4.35472 15.0208 4.52083L4.04167 15.5H0.5ZM10.8958 5.10417L10.3125 4.5L11.5 5.6875L10.8958 5.10417Z" fill="#848484" />
                                 </svg>
                                 <p className="text-[#848484] font-medium text-sm">Edit</p>
                             </div>
-                            <div className="flex items-center justify-between border-[0.5px] border-[#848484] p-10 rounded-[6px] text-[#848484]">
+                            <div className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px] text-[#848484]">
                                 <RxCross2 />
                                 <p className="font-medium text-sm">Remove</p>
                             </div>
                         </div>
                     </div>
 
-                    {/* OTHER ADDRESS */}
+                    {/* OTHER ADDRESS HEADER */}
                     <p className="font-semibold text-[#093C16]">Other Address</p>
 
+                    {/* OTHER ADDRESS CARD */}
                     <div className="border-b border-[#e3e3e3] p-2.5 space-y-3">
                         <p className="font-medium text-sm">Prem</p>
                         <div className="flex gap-1.5">
+                            {/* Home Icon */}
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g clip-path="url(#clip0_125_504)">
                                     <path d="M15.8333 19.9998H4.16667C1.86917 19.9998 0 18.1307 0 15.8332V8.10318C0 6.71568 0.686667 5.42401 1.83667 4.64901L7.66917 0.712344C9.085 -0.242656 10.915 -0.242656 12.3308 0.712344L18.1642 4.64901C19.3133 5.42401 20 6.71484 20 8.10318V15.8332C20 18.1307 18.1308 19.9998 15.8333 19.9998Z" fill="#71BF45" />
@@ -232,6 +287,7 @@ function page() {
                                     </clipPath>
                                 </defs>
                             </svg>
+                            {/* Address Details */}
                             <p className="flex flex-col text-[#848484] text-xs">
                                 Plot No. 45, House No.: 3-7-112/5, Near Shanti Gardens, Suryapet, Hyderabad, Telangana - 508206.
                                 <span>Suryapet</span>
@@ -239,18 +295,20 @@ function page() {
                                 <span>TELANGANA</span>
                             </p>
                         </div>
+                        {/* Phone Number */}
                         <div className='flex items-center gap-2 text-sm font-medium'>
                             <p>Phone:</p>
                             <p className='text-[#848484]'>+91-9876543210</p>
                         </div>
+                        {/* Edit & Remove Buttons */}
                         <div className="flex items-center gap-1.5">
-                            <div className="flex items-center justify-between border-[0.5px] border-[#848484] p-10 rounded-[6px]">
+                            <div className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px]">
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M2.16667 13.8333H3.35417L11.5 5.6875L10.3125 4.5L2.16667 12.6458V13.8333ZM0.5 15.5V11.9583L11.5 0.979167C11.6667 0.826389 11.8508 0.708333 12.0525 0.625C12.2542 0.541667 12.4658 0.5 12.6875 0.5C12.9092 0.5 13.1244 0.541667 13.3333 0.625C13.5422 0.708333 13.7228 0.833333 13.875 1L15.0208 2.16667C15.1875 2.31944 15.3092 2.5 15.3858 2.70833C15.4625 2.91667 15.5006 3.125 15.5 3.33333C15.5 3.55556 15.4619 3.7675 15.3858 3.96917C15.3097 4.17083 15.1881 4.35472 15.0208 4.52083L4.04167 15.5H0.5ZM10.8958 5.10417L10.3125 4.5L11.5 5.6875L10.8958 5.10417Z" fill="#848484" />
                                 </svg>
                                 <p className="text-[#848484] font-medium text-sm">Edit</p>
                             </div>
-                            <div className="flex items-center justify-between border-[0.5px] border-[#848484] p-10 rounded-[6px] text-[#848484]">
+                            <div className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px] text-[#848484]">
                                 <RxCross2 />
                                 <p className="font-medium text-sm">Remove</p>
                             </div>

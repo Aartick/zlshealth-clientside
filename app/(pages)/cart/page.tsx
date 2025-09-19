@@ -1,3 +1,19 @@
+/**
+ * This page represents a multi-step checkout flow with three main stages:
+ * 1. Cart Review (Products in cart and wishlist)
+ * 2. Shopping Information (Contact + Shipping Address + Delivery options)
+ * 3. Payment Method (Payment selection and summary)
+ * 
+ * Features:
+ * - Dynamic step navigation (Cart -> Shopping -> Payment) using `activeButton` state.
+ * - Transition animations for smooth appearance of sections.
+ * - Discount banner with available offers.
+ * - Left section (steps: cart, shopping, payment forms).
+ * - Right section (price details, payment methods, coupons).
+ * - Gradient underline effects for section headers.
+ * 
+ */
+
 "use client"
 
 import Image from 'next/image'
@@ -16,19 +32,20 @@ const paymentMehods = [
     "/cart/ApplePay.png"
 ]
 
-function page() {
-    const [activeButton, setActiveButton] = useState("shopping")
+function Page() {
+    const [activeButton, setActiveButton] = useState("cart")
 
     return (
         <div className='flex flex-col items-center m-10'>
 
-            {/* CHECKOUT PROGRESS BAR */}
+            {/* ================ CHECKOUT PROGRESS BAR ================ */}
             <div className="flex items-center mb-3.5">
                 {/* CART BUTTON */}
                 <button
                     onClick={() => setActiveButton("cart")}
                     className="flex items-center gap-2.5 transition-all duration-500 ease-out cursor-pointer"
                 >
+                    {/* Step number */}
                     <p
                         className={`font-extrabold text-sm py-[7px] px-3.5 rounded-[60px] transition-all duration-500 ease-out
                         ${activeButton === "cart"
@@ -38,6 +55,7 @@ function page() {
                     >
                         1
                     </p>
+                    {/* Step label */}
                     <p
                         className={`transition-all duration-300 ease-out
                             ${activeButton === "cart"
@@ -57,6 +75,7 @@ function page() {
                     onClick={() => setActiveButton("shopping")}
                     className="flex items-center gap-2.5 transition-all duration-500 ease-out cursor-pointer"
                 >
+                    {/* Step number */}
                     <p
                         className={`font-extrabold text-sm py-[7px] px-3.5 rounded-[60px] transition-all duration-500 ease-out
                         ${activeButton === "shopping"
@@ -65,6 +84,7 @@ function page() {
                     >
                         2
                     </p>
+                    {/* Step label */}
                     <p
                         className={`transition-all duration-500 ease-out
                             ${activeButton === "shopping"
@@ -84,6 +104,7 @@ function page() {
                     onClick={() => setActiveButton("payment")}
                     className="flex items-center gap-2.5 transition-all duration-500 ease-out cursor-pointer"
                 >
+                    {/* Step number */}
                     <p
                         className={`font-extrabold text-sm py-[7px] px-3.5 rounded-[60px] transition-all duration-500 ease-out
                         ${activeButton === "payment"
@@ -92,6 +113,7 @@ function page() {
                     >
                         3
                     </p>
+                    {/* Step label */}
                     <p
                         className={`transition-all duration-500 ease-out
                             ${activeButton === "payment"
@@ -104,7 +126,7 @@ function page() {
                 </button>
             </div>
 
-            {/* DISCOUNT BANNER */}
+            {/* ================ DISCOUNT BANNER ================= */}
             <div className="p-5 rounded-[20px] border-2 border-[#e3e3e3] space-y-3.5 w-full">
                 <div className="flex items-center gap-[5px] text-[#71BF45]">
                     <BiSolidOffer />
@@ -113,6 +135,7 @@ function page() {
                     </p>
                 </div>
 
+                {/* Offers List */}
                 <ul className='space-y-2.5 list-disc font-semibold text-sm pl-5'>
                     <li>
                         10% Instant Discount {" "}
@@ -129,13 +152,15 @@ function page() {
                 </ul>
             </div>
 
-            {/* CENTER PART */}
+            {/* MAIN CONTENT AREA */}
             <div className="space-y-[30px] mt-10">
                 <p className="font-semibold text-xl text-center">Your Cart</p>
 
                 <div className="flex gap-3">
-                    {/* LEFT SECTION */}
+                    {/* LEFT SECTION (Dynamic Step Content) */}
                     <div className="flex-2 space-y-[30px]">
+
+                        {/* Cart Section */}
                         {activeButton === "cart" && (
                             <>
                                 <div className="p-2.5 border border-[#e3e3e3] rounded-[20px] transition-all duration-500 ease-out opacity-0 translate-y-2 animate-fadeInCart">
@@ -147,18 +172,19 @@ function page() {
                                         <p>Price</p>
                                     </div>
 
+                                    {/* Sample Products */}
                                     {Array.from({ length: 5 }).map((_, idx) => (
                                         <div key={idx}>
-                                            {/* BORDER */}
+                                            {/* Border */}
                                             <div className="border border-[#e3e3e3] mx-3" />
 
-                                            {/* CART PRODUCTS */}
+                                            {/* Cart Products */}
                                             <div className="grid grid-cols-3 items-start py-2.5">
                                                 <div className="flex gap-3">
-                                                    {/* SERIAL NO. */}
+                                                    {/* Serial N0. */}
                                                     <p>{idx + 1}.</p>
 
-                                                    {/* PRODUCT IMAGE */}
+                                                    {/* Product Image*/}
                                                     <div className="relative w-[96px] h-[93px]">
                                                         <Image
                                                             src="/aboutUs/1.jpg"
@@ -168,7 +194,7 @@ function page() {
                                                         />
                                                     </div>
 
-                                                    {/* PRODUCT DETAILS */}
+                                                    {/* Product details */}
                                                     <div className="flex flex-col justify-between font-medium">
                                                         <div>
                                                             <p className='text-sm'>Diavinco</p>
@@ -181,6 +207,7 @@ function page() {
                                                     </div>
                                                 </div>
 
+                                                {/* Product quantity */}
                                                 <div className="flex justify-center">
                                                     <select
                                                         id="quantity"
@@ -192,6 +219,7 @@ function page() {
                                                     </select>
                                                 </div>
 
+                                                {/* Product Price */}
                                                 <div className="flex justify-center items-center gap-4">
                                                     <p className="text-base font-medium">₹1300.00</p>
                                                     <RxCross1 className="text-[#848484] cursor-pointer" />
@@ -202,7 +230,7 @@ function page() {
 
                                 </div>
 
-                                {/* WISHLIST */}
+                                {/* ================ WISHLIST ================ */}
                                 <div className="p-2.5 border border-[#e3e3e3] rounded-[20px] transition-all duration-500 ease-out opacity-0 translate-y-2 animate-fadeInCart">
 
                                     {/* HEADERS */}
@@ -275,51 +303,98 @@ function page() {
                             </>
                         )}
 
+                        {/* Shopping Section */}
                         {activeButton === "shopping" && (
-                            <div className="p-2.5 border-[3px] border-[#e3e3e3] rounded-[20px] transition-all duration-500 ease-out opacity-0 translate-y-2 animate-fadeInCart min-w-60">
+                            <div
+                                className="p-2.5 border-[3px] border-[#e3e3e3] rounded-[20px] transition-all
+                                duration-500 ease-out opacity-0 translate-y-2 animate-fadeInCart min-w-60"
+                            >
                                 <div className="space-y-3">
                                     {/* HEADER */}
                                     <div className="border-b-2 p-2.5 border-[#e3e3e3] font-medium">
                                         Contact Information
                                     </div>
 
-                                    {/* FORM */}
+                                    {/* Full Name and Mobile Number Input */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
                                         <div className="flex flex-col space-y-3 text-sm text-[#848484]">
                                             <label htmlFor="fullName" className='font-medium px-2.5'>Full Name *</label>
-                                            <input type="text" id="fullName" placeholder='Enter Full Name' className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none' />
+                                            <input
+                                                type="text"
+                                                id="fullName"
+                                                placeholder='Enter Full Name'
+                                                className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none'
+                                            />
                                         </div>
 
                                         <div className="flex flex-col space-y-3 text-sm text-[#848484]">
                                             <label htmlFor="mobileNumber" className='font-medium px-2.5'>Mobile Number *</label>
-                                            <input type="number" id="mobileNumber" placeholder='(+91)-' className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none' />
+                                            <input
+                                                type="number"
+                                                id="mobileNumber"
+                                                placeholder='(+91)-'
+                                                className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none'
+                                            />
                                             <div className="text-xs">*You will receive an OTP for confirmation.</div>
                                         </div>
                                     </div>
 
+                                    {/* Email Input */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
                                         <div className=" flex flex-col space-y-3 text-sm text-[#848484]">
-                                            <label htmlFor="email" className='font-medium px-2.5'>Email{" "}<span className="text-xs font-normal">(Optional, For Order Updates)</span> *</label>
-                                            <div className="flex items-center justify-between rounded-[10px] border border-[#cdcdcd] p-2.5">
-                                                <input type="email" id="email" placeholder='Enter email' className='focus:outline-none' />
+                                            <label
+                                                htmlFor="email"
+                                                className='font-medium px-2.5'
+                                            >
+                                                Email{" "}
+                                                <span className="text-xs font-normal">
+                                                    (Optional, For Order Updates)
+                                                </span> *
+                                            </label>
+                                            <div
+                                                className="flex items-center justify-between rounded-[10px] 
+                                                border border-[#cdcdcd] p-2.5"
+                                            >
+                                                <input
+                                                    type="email"
+                                                    id="email"
+                                                    placeholder='Enter email'
+                                                    className='focus:outline-none'
+                                                />
                                                 <p className="text-xs">@gmail.com</p>
                                             </div>
                                         </div>
                                         <div className="" />
                                     </div>
 
+                                    {/* ================ SHIPPING ADDRESS ================ */}
                                     <p className="border-b-2 p-2.5 border-[#e3e3e3] font-medium">
                                         Shipping Address
                                     </p>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-                                        <div className=" flex flex-col space-y-3 text-sm text-[#848484]">
-                                            <label htmlFor="streetAddress" className='font-medium px-2.5'>Street Address / House No.</label>
-                                            <input type="text" id="streetAddress" placeholder='Street Address / House No.' className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none' />
+                                        <div className="flex flex-col space-y-3 text-sm text-[#848484]">
+                                            <label
+                                                htmlFor="streetAddress"
+                                                className='font-medium px-2.5'
+                                            >
+                                                Street Address / House No.
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="streetAddress"
+                                                placeholder='Street Address / House No.'
+                                                className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none'
+                                            />
                                         </div>
 
                                         <div className=" flex flex-col space-y-3 text-sm text-[#848484]">
-                                            <label htmlFor="streetAddressLine2" className='font-medium px-2.5'>Street Address Line 2</label>
+                                            <label
+                                                htmlFor="streetAddressLine2"
+                                                className='font-medium px-2.5'
+                                            >
+                                                Street Address Line 2
+                                            </label>
                                             <input type="text" id="streetAddressLine2" placeholder='Street Address Line 2' className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none' />
                                         </div>
                                     </div>
@@ -416,6 +491,7 @@ function page() {
                             </div>
                         )}
 
+                        {/* Payment Section */}
                         {activeButton === "payment" && (
                             <>
                                 <div className="p-2.5 border border-[#e3e3e3] rounded-[20px] transition-all duration-500 ease-out opacity-0 translate-y-2 animate-fadeInCart">
@@ -565,4 +641,4 @@ function page() {
     )
 }
 
-export default page
+export default Page

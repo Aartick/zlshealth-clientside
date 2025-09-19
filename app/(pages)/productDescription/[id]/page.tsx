@@ -15,9 +15,6 @@
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { IoStarSharp } from 'react-icons/io5'
-import { LuPen } from "react-icons/lu";
-import { TbTruckDelivery } from "react-icons/tb";
-import { LiaHandHoldingUsdSolid, LiaExchangeAltSolid } from "react-icons/lia";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import Link from 'next/link';
 import FAQ from '@/components/FAQ';
@@ -74,7 +71,7 @@ function Page() {
     // State to hold product details
     const [product, setProduct] = useState<product>(initialProduct)
     // Store selecte image
-    const [selectedImage, setSelectedImage] = useState(product.imageUrl?.url)
+    const [selectedImage, setSelectedImage] = useState("/aboutUs/1.jpg")
     // Get product ID from URL params
     const params = useParams()
 
@@ -85,12 +82,10 @@ function Page() {
                 // Fetch product data from backend
                 const details = await axiosClient.get(`/api/products?type=productId&id=${params.id}`)
                 setProduct(details.data.result)
-            } catch (e) {
-                return
-            }
+            } catch { }
         }
         getDetails()
-    }, [])
+    }, [params.id])
 
     const thumbnails = [
         "/aboutUs/1.jpg",
@@ -152,13 +147,13 @@ function Page() {
                         {/* Price, discount, and taxes */}
                         <div>
                             <p className="font-extrabold text-base sm:text-xl">
-                                ₹ {product?.price! - (product?.price! * product?.discount! / 100)}{" "}
+                                ₹ {product?.price ?? 0 - (product?.price ?? 0 * (product?.discount ?? 0) / 100)}{" "}
                                 <span className="font-normal text-xs line-through text-[#848484]">
-                                    ₹ {product?.price}
+                                    ₹ {product?.price ?? 0}
                                 </span>{" "}
-                                <span className="font-medium text-xs text-[#71BF45]">({product?.discount}% off)</span>
+                                <span className="font-medium text-xs text-[#71BF45]">({product?.discount ?? 0}% off)</span>
                             </p>
-                            <p className='text-[#71BF45] text-xs'>inclusice of all taxes</p>
+                            <p className='text-[#71BF45] text-xs'>inclusive of all taxes</p>
                         </div>
 
                         {/* Quantity selector */}
@@ -337,7 +332,7 @@ function Page() {
                             </div>
                             <div className="space-y-1.5 text-xs">
                                 <p className='font-medium'>Natural relief that works so well!</p>
-                                <p>I've been using Diavinco for almost three months now, and the difference has been remarkable. My fasting sugar levels have dropped, my energy feels steadier throughout the day, and even my evening fatigue has reduced a lot. What, I really like is that it's herbal, so I'm not worried about long-term side effects...
+                                <p>I&apos;ve been using Diavinco for almost three months now, and the difference has been remarkable. My fasting sugar levels have dropped, my energy feels steadier throughout the day, and even my evening fatigue has reduced a lot. What, I really like is that it&apos;s herbal, so I&apos;m not worried about long-term side effects...
                                     <span className='text-[#017BD2]'>see more.</span>
                                 </p>
                                 <div className="flex items-center pr-2.5 ">

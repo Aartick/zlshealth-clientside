@@ -1,6 +1,6 @@
 /**
  * appConfigSlice
- * 
+ *
  * Redux slice for application configuration state.
  * Handles global toast notifications and other app-wide config.
  *
@@ -16,21 +16,21 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// State interface for app config
-interface AppState {
-  toastData: Record<string, any>;
-}
-
 // Payload interface for toast notifications
 interface ToastPayload {
   message: string;
   type: string;
 }
 
+// State interface for app config
+interface AppState {
+  toastData: ToastPayload | null;
+}
+
 // Initial state for app config
 const initialState: AppState = {
-    toastData: {}
-}
+  toastData: null,
+};
 
 // Create Redux slice for app config
 const appConfigSlice = createSlice({
@@ -39,13 +39,13 @@ const appConfigSlice = createSlice({
   reducers: {
     // Action to show a toast notification
     showToast: (state, action: PayloadAction<ToastPayload>) => {
-        state.toastData = action.payload;
-    }
-  }
+      state.toastData = action.payload;
+    },
+  },
 });
 
 // Export reducer for store
 export default appConfigSlice.reducer;
 
 // Export actions for dispatch
-export const {showToast} = appConfigSlice.actions
+export const { showToast } = appConfigSlice.actions;
