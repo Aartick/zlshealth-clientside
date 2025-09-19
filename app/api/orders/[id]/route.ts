@@ -18,16 +18,17 @@ import { NextRequest } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const {id} = await context.params
     // Verify JWT token and extract customer ID
     const { valid, response, _id } = await verifyAccessToken(req);
     if (!valid) return response!;
 
     // Find the order by ID for the authenticated customer
     const order = await Order.findOne({
-      _id: params.id,
+      _id: id,
       customerId: _id,
     }).populate({
       path: "products.productId",

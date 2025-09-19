@@ -138,7 +138,7 @@ export async function GET(req: NextRequest) {
       const productTypes = searchParams.getAll("productTypes");
       const benefits = searchParams.getAll("benefits");
 
-      const filter: any = {};
+      const filter: Record<string, unknown> = {};
 
       // Category filter
       if (category && mongoose.Types.ObjectId.isValid(category)) {

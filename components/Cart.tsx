@@ -25,13 +25,13 @@ function Cart({ onClose }: CartProps) {
     const cart = useAppSelector((state) => state.cartSlice.cart)
 
     // Calculate total items in cart
-    let totalItems = cart.reduce((acc, item) => acc + item.quantity, 0)
+    const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0)
     // Calculate total price of cart
-    let totalPrice = cart.reduce(
+    const totalPrice = cart.reduce(
         (acc, item) => acc + item.price * item.quantity, 0
     )
     // Check if cart is empty
-    let isCartEmpty = cart.length === 0
+    const isCartEmpty = cart.length === 0
 
     // Handle close button click with animation
     const handleCloseClick = () => {

@@ -40,7 +40,7 @@ function CartButton({ product }: ProductProps) {
     // Check if product is already in cart
     const added = Array.isArray(cart) && cart.some((prod) => prod._id === product._id)
     // Get cart item details for quantity display
-    const cartItem = cart.find((prod) => prod._id === product._id) || []
+    const cartItem = cart.find((prod) => prod._id === product._id)
 
     // Add product to cart (handles user/guest)
     const handleAddToCart = () => {
@@ -97,7 +97,7 @@ function CartButton({ product }: ProductProps) {
 
                     {/* Show current quantity */}
                     <span className="text-xs sm:text-sm font-semibold">
-                        {cartItem?.quantity}
+                        {cartItem?.quantity || 1}
                     </span>
 
                     {/* Add one to cart */}

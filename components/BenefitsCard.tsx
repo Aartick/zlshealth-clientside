@@ -8,7 +8,17 @@
 
 import Image from "next/image";
 
-function BenefitsCard({ data }: any) {
+interface Data {
+    img: string,
+    title: string,
+    description: string
+}
+
+interface props {
+    data: Data
+}
+
+function BenefitsCard({ data }: props) {
     return (
         // Card container with border and shadow
         <div className="rounded-[26px] p-[20px] border border-[#cdcdcd] space-y-[16px] shadow-md shadow-[#cdcdcd]">

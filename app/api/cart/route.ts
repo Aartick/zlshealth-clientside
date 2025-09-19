@@ -1,7 +1,20 @@
 import Cart from "@/models/Cart";
 import { verifyAccessToken } from "@/utils/authMiddleware";
 import { error, success } from "@/utils/responseWrapper";
+import { Types } from "mongoose";
 import { NextRequest } from "next/server";
+
+interface ProductDoc {
+  _id: Types.ObjectId;
+  name: string;
+  imageUrl: { url: string };
+  price: number;
+}
+
+interface CartProduct {
+  productId: Types.ObjectId | ProductDoc;
+  quantity: number;
+}
 
 /**
  * @route - POST /api/cart
@@ -33,7 +46,7 @@ export async function POST(req: NextRequest) {
     } else {
       // Check if product already exists in cart
       const existingProduct = cart.products.find(
-        (p: any) => p.productId.toString() === productId
+        (p: CartProduct) => p.productId.toString() === productId
       );
 
       if (existingProduct) {
@@ -51,12 +64,13 @@ export async function POST(req: NextRequest) {
     const updatedCart = await cart.populate("products.productId");
 
     // Map cart products to response format
-    const responseWrapper = updatedCart.products.map((pro: any) => {
+    const responseWrapper = updatedCart.products.map((pro: CartProduct) => {
+      const product = pro.productId as ProductDoc;
       return {
-        _id: pro.productId._id,
-        name: pro.productId.name,
-        img: pro.productId.imageUrl.url,
-        price: pro.productId.price,
+        _id: product._id,
+        name: product.name,
+        img: product.imageUrl.url,
+        price: product.price,
         quantity: pro.quantity,
       };
     });
@@ -90,12 +104,14 @@ export async function GET(req: NextRequest) {
     }
 
     // Map cart products to response format
-    const responseWrapper = cart.products.map((pro: any) => {
+    const responseWrapper = cart.products.map((pro: CartProduct) => {
+      const product = pro.productId as ProductDoc
+
       return {
-        _id: pro.productId._id,
-        name: pro.productId.name,
-        img: pro.productId.imageUrl.url,
-        price: pro.productId.price,
+        _id: product._id,
+        name: product.name,
+        img: product.imageUrl.url,
+        price: product.price,
         quantity: pro.quantity,
       };
     });

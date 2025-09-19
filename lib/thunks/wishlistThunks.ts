@@ -1,7 +1,7 @@
 /**
  * wishlistThunks
  *
- * Contains Redux async thunks for wishlist operations, 
+ * Contains Redux async thunks for wishlist operations,
  * syncing wishlist state with backend for logged-in users.
  * Handles adding and removing products from the wishlist.
  *
@@ -34,7 +34,7 @@ export const addToWishlist = createAsyncThunk(
       );
       // Return updated wishlist from backend
       return response.data.result;
-    } catch (e) {
+    } catch {
       // On error, return empty array
       return [];
     }
@@ -58,7 +58,7 @@ export const removeFromWishlist = createAsyncThunk(
       );
       // Return updated wishlist from backend
       return response.data.result;
-    } catch (e) {
+    } catch {
       // On error, return empty array
       return [];
     }

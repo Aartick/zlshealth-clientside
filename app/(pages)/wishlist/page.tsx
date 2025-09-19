@@ -15,11 +15,11 @@ import { useAppSelector } from '@/lib/hooks'
 import Image from 'next/image'
 import React from 'react'
 
-function page() {
+function Page() {
     // Get wishlist products from Redux store
     const wishlist = useAppSelector((state) => state.wishlistSlice.products)
     // Check if wishlist is empty
-    let isWishlistEmpty = wishlist.length === 0
+    const isWishlistEmpty = wishlist.length === 0
 
     return (
         <div className='flex flex-col items-center space-y-5 p-10'>
@@ -63,4 +63,4 @@ function page() {
     )
 }
 
-export default page
+export default Page

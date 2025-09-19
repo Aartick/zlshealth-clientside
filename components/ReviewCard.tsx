@@ -13,7 +13,19 @@
 import Image from "next/image";
 import { IoStarSharp } from "react-icons/io5";
 
-function ReviewCard({ data }: any) {
+interface Data {
+    img: string,
+    title: string,
+    name: string,
+    designation: string,
+    review: string
+}
+
+interface props {
+    data: Data
+}
+
+function ReviewCard({ data }: props) {
     return (
         // Card container
         <div className="flex items-center w-[344px] sm:w-[933px] gap-5 sm:gap-[55px] rounded-[20px] sm:rounded-[40px] p-3 sm:p-[30px] mb-5 shadow-lg shadow-[#b9b9b9]">

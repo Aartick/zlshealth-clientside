@@ -5,6 +5,7 @@ import { verifyAccessToken } from "@/utils/authMiddleware";
 import { getShiprocketToken } from "@/utils/getShiprocketToken";
 import { error, success } from "@/utils/responseWrapper";
 import axios from "axios";
+import { Types } from "mongoose";
 import { NextRequest } from "next/server";
 
 /**
@@ -130,6 +131,21 @@ export async function POST(req: NextRequest) {
  * @param req
  * @returns
  */
+
+interface ProductDoc {
+  _id: Types.ObjectId;
+  name: string;
+  price: number;
+  imageUrl: { url: string };
+}
+
+interface OrderProduct {
+  _id: Types.ObjectId;
+  productId: ProductDoc; 
+  quantity: number;
+  totalAmount: number;
+}
+
 export async function GET(req: NextRequest) {
   try {
     // Verify JWT token
@@ -151,7 +167,7 @@ export async function GET(req: NextRequest) {
       orderStatus: data.orderStatus,
       paymentStatus: data.paymentStatus,
       paymentMethod: data.paymentMethod,
-      products: data.products.map((pro: any) => ({
+      products: data.products.map((pro: OrderProduct) => ({
         _id: pro._id,
         imgUrl: pro.productId.imageUrl.url,
         name: pro.productId.name,
