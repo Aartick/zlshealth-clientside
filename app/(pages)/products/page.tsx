@@ -199,7 +199,7 @@ function Page() {
                     priority
                 />
             </div>
-            <div className="flex transition-all duration-500 ease-in-out">
+            <div className="container mx-auto flex transition-all duration-500 ease-in-out">
 
                 {/* Main section */}
                 <div className={`transition-all duration-500 ease-in-out ${filterBarOpen ? "flex-3" : "flex-4"
@@ -304,7 +304,7 @@ function Page() {
                 </div>
 
                 {/* Sidebar: Filters section */}
-                <div className={`transition-all duration-500 ease-in-out h-screen overflow-y-scroll scrollbar-hide border-r border-[#e3e3e3] pt-4 px-[20.5px] ${filterBarOpen ? "w-[300px] opacity-100" : "w-0 opacity-0"
+                <div className={`transition-all duration-500 ease-in-out h-screen overflow-y-scroll scrollbar-hide pt-4 px-[20.5px] ${filterBarOpen ? "w-[300px] opacity-100" : "w-0 opacity-0"
                     }`}  >
                     <div className='space-y-5'>
                         <h2 className='text-[#093C16] text-2xl font-medium px-2.5'>Filter by</h2>

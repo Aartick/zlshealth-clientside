@@ -23,17 +23,34 @@
  * 
  */
 
-import React from 'react'
+"use client"
+import React, { useRef, useState } from 'react'
 import { FaGear, FaUser } from 'react-icons/fa6'
 import { GoPlus } from 'react-icons/go'
 import { HiOutlineUserCircle } from 'react-icons/hi2'
 import { LuLogOut } from 'react-icons/lu'
 import { RxCross2 } from 'react-icons/rx'
 
-function page() {
+function Page() {
+    const [activeButton, setActiveButton] = useState("profile")
+    const [activeSection, setActiveSection] = useState<string>("editDetails")
+
+    // Refs for sections
+    const editDetailsRef = useRef<HTMLDivElement | null>(null);
+    const defaultAddressRef = useRef<HTMLDivElement | null>(null);
+    const otherAddressRef = useRef<HTMLDivElement | null>(null);
+
+    const handleScroll = (
+        ref: React.RefObject<HTMLDivElement | null>,
+        section: string
+    ) => {
+        setActiveSection(section)
+        ref.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+    }
+
     return (
         <div className='flex gap-8 p-8'>
-            {/* Sidebar Container */}
+            {/* ================ Sidebar Container ================ */}
             <div className="flex-1 space-y-4 border border-[#f4f4f4] rounded-[36px] p-[30px]">
                 {/* Sidebar Content Wrapper */}
                 <div className="space-y-[60px]">
@@ -41,11 +58,26 @@ function page() {
                     <p className="border-b border-[#e3e3e3] p-2.5 font-medium">Overview</p>
 
                     {/* Profile Sub-section */}
-                    <div className="space-y-3 border-b border-[#e3e3e3] p-2.5  text-sm">
+                    <div className="flex flex-col items-start space-y-3 border-b border-[#e3e3e3] p-2.5 text-sm">
                         <p className="font-medium">Profile</p>
-                        <p className="text-[#71BF45]">Edit Details</p>
-                        <p className="text-[#848484]">Default Address</p>
-                        <p className="text-[#848484]">Other Address</p>
+                        <button
+                            className={activeSection === "editDetails" ? "text-[#71BF45]" : "text-[#848484]"}
+                            onClick={() => handleScroll(editDetailsRef, "editDetails")}
+                        >
+                            Edit Details
+                        </button>
+                        <button
+                            className={activeSection === "defaultAddress" ? "text-[#71BF45]" : "text-[#848484]"}
+                            onClick={() => handleScroll(defaultAddressRef, "defaultAddress")}
+                        >
+                            Default Address
+                        </button>
+                        <button
+                            className={activeSection === "otherAddress" ? "text-[#71BF45]" : "text-[#848484]"}
+                            onClick={() => handleScroll(otherAddressRef, "otherAddress")}
+                        >
+                            Other Address
+                        </button>
                     </div>
 
                     {/* Orders & Returns Sub-Section */}
@@ -91,234 +123,344 @@ function page() {
             </div>
 
             <div className="flex-4 space-y-4 border border-[#f4f4f4] rounded-[36px] p-[30px]">
-                <div className="space-y-4">
-                    {/* CARDS SECTION (Profile, Orders & Returns, Legal) */}
-                    <div className="flex items-center gap-3">
-                        {/* PROFILE CARD */}
-                        <div className="border border-[#71BF45] bg-[#F4FAF0] p-5 space-y-3 rounded-3xl">
-                            {/* Profile Icon */}
-                            <div className="bg-[#71BF45] p-2.5 rounded-[30px] text-white w-fit">
-                                <HiOutlineUserCircle />
-                            </div>
-                            <p className="text-sm font-medium">
-                                Profile
-                            </p>
-                            <p className="text-xs text-[#848484]">
-                                Manage your personal details, addresses,
-                                and saved payment options in one place.
-                            </p>
+                {/* CARDS SECTION (Profile, Orders & Returns, Legal) */}
+                <div className="flex items-center gap-3">
+                    {/* PROFILE CARD */}
+                    <div
+                        onClick={() => setActiveButton("profile")}
+                        className={`
+                        border ${activeButton === "profile"
+                                ? "border-[#71BF45] bg-[#F4FAF0]"
+                                : "border-[#E3E3E3]"
+                            }
+                         p-5 space-y-3 rounded-3xl 
+                         transition-all duration-500 
+                         ease-out cursor-pointer
+                         `}
+                    >
+                        {/* Profile Icon */}
+                        <div className={`${activeButton === "profile"
+                            ? "bg-[#71BF45] text-white"
+                            : "border border-[#71BF45] text-[#71BF45]"
+                            } p-2.5 rounded-[30px] w-fit`}
+                        >
+                            <HiOutlineUserCircle size={24} />
                         </div>
+                        <p className="text-sm font-medium">
+                            Profile
+                        </p>
+                        <p className="text-xs text-[#848484]">
+                            Manage your personal details, addresses,
+                            and saved payment options in one place.
+                        </p>
+                    </div>
 
-                        {/* ORDERS & RETURNS CARD */}
-                        <div className="border border-[#e3e3e3] p-5 space-y-3 rounded-3xl">
-                            {/* Orders Icon */}
-                            <div className="border border-[#71BF45] p-2.5 rounded-[30px] w-fit">
-                                {/* Orders Icon (SVG) */}
-                                <svg width="18" height="23" viewBox="0 0 18 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15.5 3.5H2.5C1.94772 3.5 1.5 3.94772 1.5 4.5V20.5C1.5 21.0523 1.94772 21.5 2.5 21.5H15.5C16.0523 21.5 16.5 21.0523 16.5 20.5V4.5C16.5 3.94772 16.0523 3.5 15.5 3.5Z" stroke="#71BF45" stroke-width="2" stroke-linejoin="round" />
-                                    <path d="M6 1.5V4.5M12 1.5V4.5M5 9H13M5 13H11M5 17H9" stroke="#71BF45" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            </div>
-                            <p className="text-sm font-medium">
-                                Orders & Return
-                            </p>
-                            <div className="text-xs text-[#848484]">
-                                Track your purchases, check delivery status,
-                                and manage returns or exchanges easily.
-                            </div>
+                    {/* ORDERS & RETURNS CARD */}
+                    <div
+                        onClick={() => setActiveButton("ordersAndReturns")}
+                        className={`
+                        border ${activeButton === "ordersAndReturns"
+                                ? "border-[#71BF45] bg-[#F4FAF0]"
+                                : "border-[#E3E3E3]"
+                            }
+                        p-5 space-y-3 rounded-3xl
+                        transition-all duration-500 
+                        ease-out cursor-pointer
+                        `}
+                    >
+                        {/* Orders Icon */}
+                        <div className={`${activeButton === "ordersAndReturns"
+                            ? "bg-[#71BF45]"
+                            : "border border-[#71BF45]"
+                            } p-2.5 rounded-[30px] w-fit`}
+                        >
+                            {/* Orders Icon (SVG) */}
+                            <svg
+                                width="24" height="24"
+                                viewBox="0 0 18 23" fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="M15.5 3.5H2.5C1.94772 3.5 1.5 
+                                    3.94772 1.5 4.5V20.5C1.5 21.0523 
+                                    1.94772 21.5 2.5 21.5H15.5C16.0523
+                                    21.5 16.5 21.0523 16.5 20.5V4.5C16.5 
+                                    3.94772 16.0523 3.5 15.5 3.5Z"
+                                    stroke={activeButton === "ordersAndReturns"
+                                        ? "#FFFFFF"
+                                        : "#71BF45"
+                                    } stroke-width="2"
+                                    stroke-linejoin="round"
+                                />
+                                <path
+                                    d="M6 1.5V4.5M12 1.5V4.5M5 9H13M5 13H11M5 17H9"
+                                    stroke={activeButton === "ordersAndReturns"
+                                        ? "#FFFFFF"
+                                        : "#71BF45"
+                                    } stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round"
+                                />
+                            </svg>
                         </div>
-
-                        {/* LEGAL CARD */}
-                        <div className="border border-[#e3e3e3] p-5 space-y-3 rounded-3xl">
-                            {/* Legal Icon */}
-                            <div className="border border-[#71BF45] p-2.5 rounded-[30px] w-fit">
-                                <svg width="20" height="23" viewBox="0 0 20 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M9.833 11.667C10.888 12.722 12.278 13.794 12.278 13.794L14.183 11.889C14.183 11.889 13.111 10.499 12.056 9.444C11.001 8.389 9.611 7.317 9.611 7.317L7.706 9.222C7.706 9.222 8.778 10.612 9.833 11.667ZM9.833 11.667L6.5 15M14.5 11.571L11.96 14.111M9.93 7L7.39 9.54" stroke="#71BF45" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                    <path d="M19 10.683V7.78C19 6.14 19 5.32 18.596 4.785C18.192 4.25 17.278 3.991 15.451 3.471C14.349 3.1545 13.2702 2.76258 12.222 2.298C11.023 1.766 10.424 1.5 10 1.5C9.576 1.5 8.977 1.766 7.778 2.298C6.898 2.688 5.798 3.116 4.549 3.471C2.722 3.991 1.809 4.251 1.404 4.785C1 5.32 1 6.14 1 7.78V10.683C1 16.308 6.063 19.683 8.594 21.019C9.201 21.339 9.504 21.5 10 21.5C10.496 21.5 10.799 21.34 11.406 21.02C13.937 19.682 19 16.308 19 10.683Z" stroke="#71BF45" stroke-width="1.5" stroke-linecap="round" />
-                                </svg>
-                            </div>
-                            <p className="text-sm font-medium">
-                                Legal
-                            </p>
-                            <div className="text-xs text-[#848484]">
-                                Review our terms, policies, and privacy guidelines
-                                to understand your rights and security.
-                            </div>
+                        <p className="text-sm font-medium">
+                            Orders & Return
+                        </p>
+                        <div className="text-xs text-[#848484]">
+                            Track your purchases, check delivery status,
+                            and manage returns or exchanges easily.
                         </div>
                     </div>
 
-                    {/* EDIT DETAILS FORM*/}
-                    <div className="space-y-4 p-2.5">
-                        <p className="font-semibold text-[#093C16]">
-                            Edit Details
+                    {/* LEGAL CARD */}
+                    <div
+                        onClick={() => setActiveButton("legal")}
+                        className={`
+                            border ${activeButton === "legal"
+                                ? "border-[#71BF45] bg-[#F4FAF0]"
+                                : "border-[#E3E3E3]"
+                            } 
+                            p-5 space-y-3 rounded-3xl 
+                            transition-all duration-500 
+                            ease-out cursor-pointer
+                        `}
+                    >
+                        {/* Legal Icon */}
+                        <div className={`${activeButton === "legal"
+                            ? "bg-[#71BF45]"
+                            : "border border-[#71BF45]"
+                            }
+                            p-2.5 rounded-[30px] w-fit`}
+                        >
+                            <svg
+                                width="24" height="24"
+                                viewBox="0 0 20 23" fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="M9.833 11.667C10.888 12.722 
+                                    12.278 13.794 12.278 13.794L14.183
+                                    11.889C14.183 11.889 13.111 10.499 
+                                    12.056 9.444C11.001 8.389 9.611 7.317
+                                    9.611 7.317L7.706 9.222C7.706 9.222 
+                                    8.778 10.612 9.833 11.667ZM9.833
+                                    11.667L6.5 15M14.5 11.571L11.96 
+                                    14.111M9.93 7L7.39 9.54"
+                                    stroke={activeButton === "legal"
+                                        ? "#FFFFFF"
+                                        : "#71BF45"
+                                    } stroke-width="1.5"
+                                    stroke-linecap="round" stroke-linejoin="round"
+                                />
+                                <path
+                                    d="M19 10.683V7.78C19 6.14 19 5.32 18.596
+                                    4.785C18.192 4.25 17.278 3.991 15.451 
+                                    3.471C14.349 3.1545 13.2702 2.76258 12.222
+                                    2.298C11.023 1.766 10.424 1.5 10 1.5C9.576 
+                                    1.5 8.977 1.766 7.778 2.298C6.898 2.688 
+                                    5.798 3.116 4.549 3.471C2.722 3.991 1.809 
+                                    4.251 1.404 4.785C1 5.32 1 6.14 1 7.78V10.683C1 
+                                    16.308 6.063 19.683 8.594 21.019C9.201 21.339 
+                                    9.504 21.5 10 21.5C10.496 21.5 10.799 21.34 
+                                    11.406 21.02C13.937 19.682 19 16.308 19 10.683Z"
+                                    stroke={activeButton === "legal"
+                                        ? "#FFFFFF"
+                                        : "#71BF45"
+                                    } stroke-width="1.5"
+                                    stroke-linecap="round"
+                                />
+                            </svg>
+                        </div>
+                        <p className="text-sm font-medium">
+                            Legal
                         </p>
+                        <div className="text-xs text-[#848484]">
+                            Review our terms, policies, and privacy guidelines
+                            to understand your rights and security.
+                        </div>
+                    </div>
+                </div>
 
-                        <div className="flex justify-between">
-                            {/* FORM FIELDS*/}
-                            <div className="flex gap-6">
-                                {/* FIRST COLUMN */}
-                                <div className="space-y-4">
-                                    {/* Full Name Input */}
-                                    <div className="flex flex-col space-y-1.5">
-                                        <label htmlFor='fullName' className="text-sm font-medium">Full Name *</label>
-                                        <input type="text" id="fullName" className="p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]" placeholder='Enter Full Name' />
+                {/* PROFILE SECTION */}
+                {activeButton === "profile" && (
+                    <div className='
+                          transition-all duration-500 
+                          ease-out opacity-0
+                          translate-y-2 animate-fadeInCart
+                        '
+                    >
+                        {/* EDIT DETAILS FORM*/}
+                        <div ref={editDetailsRef} className="space-y-4 p-2.5">
+                            <p className="font-semibold text-[#093C16]">
+                                Edit Details
+                            </p>
+
+                            <div className="flex justify-between">
+                                {/* FORM FIELDS*/}
+                                <div className="flex gap-6">
+                                    {/* FIRST COLUMN */}
+                                    <div className="space-y-4">
+                                        {/* Full Name Input */}
+                                        <div className="flex flex-col space-y-1.5">
+                                            <label htmlFor='fullName' className="text-sm font-medium">Full Name *</label>
+                                            <input type="text" id="fullName" className="p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]" placeholder='Enter Full Name' />
+                                        </div>
+
+                                        {/* Mobile Number Input */}
+                                        <div className="flex flex-col space-y-1.5">
+                                            <label htmlFor='mobildNumber' className="text-sm font-medium">Mobile Number *</label>
+                                            <input type="text" id="mobileNumber" className="p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]" placeholder='(+91)-' />
+                                            <p className='text-xs text-[#676767]'>*You will receive an OTP for confirmation.</p>
+                                        </div>
+
+                                        {/* Email Input */}
+                                        <div className="flex flex-col space-y-1.5">
+                                            <label htmlFor='email' className="text-sm font-medium">Email <span className='text-[#71BF45]'>(for order updates)</span></label>
+                                            <div className="flex justify-between items-center p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]">
+                                                <input type="email" id="email" className="" placeholder='Enter Email' />
+                                                <p id='email'>@gmail.com</p>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    {/* Mobile Number Input */}
-                                    <div className="flex flex-col space-y-1.5">
-                                        <label htmlFor='mobildNumber' className="text-sm font-medium">Mobile Number *</label>
-                                        <input type="text" id="mobileNumber" className="p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]" placeholder='(+91)-' />
-                                        <p className='text-xs text-[#676767]'>*You will receive an OTP for confirmation.</p>
-                                    </div>
+                                    {/* SECOND COLUMN */}
+                                    <div className="space-y-4">
+                                        {/* DOB Field */}
+                                        <div className="flex flex-col space-y-1.5">
+                                            <label htmlFor='dob' className="text-sm font-medium">DOB</label>
+                                            <input type="date" id="dob" className="p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]" placeholder='(dd/mm/yy)' />
+                                        </div>
 
-                                    {/* Email Input */}
-                                    <div className="flex flex-col space-y-1.5">
-                                        <label htmlFor='email' className="text-sm font-medium">Email <span className='text-[#71BF45]'>(for order updates)</span></label>
-                                        <div className="flex justify-between items-center p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]">
-                                            <input type="email" id="email" className="" placeholder='Enter Email' />
-                                            <p id='email'>@gmail.com</p>
+                                        {/* Gender Dropdown */}
+                                        <div className="flex flex-col space-y-1.5">
+                                            <label htmlFor='gender' className="text-sm font-medium">Gender</label>
+                                            <select id="gender" className="p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]">
+                                                <option>(Select Option)</option>
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* SECOND COLUMN */}
-                                <div className="space-y-4">
-                                    {/* DOB Field */}
-                                    <div className="flex flex-col space-y-1.5">
-                                        <label htmlFor='dob' className="text-sm font-medium">DOB</label>
-                                        <input type="date" id="dob" className="p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]" placeholder='(dd/mm/yy)' />
+                                {/* PROFILE PICTURE UPLOAD */}
+                                <label htmlFor="img" className='relative flex items-center justify-center p-5 bg-[#E3E3E3] w-[150px] h-[150px] rounded-full'>
+                                    {/* Default User Icon */}
+                                    <FaUser size={75} className='text-white' />
+                                    {/* Edit Icon Overlay */}
+                                    <div className="absolute top-1 -right-2 p-2.5 border-3 border-[#E3E3E3] rounded-full bg-white">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M2.16667 13.8333H3.35417L11.5 5.6875L10.3125 4.5L2.16667 12.6458V13.8333ZM0.5 15.5V11.9583L11.5 0.979167C11.6667 0.826389 11.8508 0.708333 12.0525 0.625C12.2542 0.541667 12.4658 0.5 12.6875 0.5C12.9092 0.5 13.1244 0.541667 13.3333 0.625C13.5422 0.708333 13.7228 0.833333 13.875 1L15.0208 2.16667C15.1875 2.31944 15.3092 2.5 15.3858 2.70833C15.4625 2.91667 15.5006 3.125 15.5 3.33333C15.5 3.55556 15.4619 3.7675 15.3858 3.96917C15.3097 4.17083 15.1881 4.35472 15.0208 4.52083L4.04167 15.5H0.5ZM10.8958 5.10417L10.3125 4.5L11.5 5.6875L10.8958 5.10417Z" fill="#71BF45" />
+                                        </svg>
                                     </div>
+                                </label>
+                            </div>
+                        </div>
 
-                                    {/* Gender Dropdown */}
-                                    <div className="flex flex-col space-y-1.5">
-                                        <label htmlFor='gender' className="text-sm font-medium">Gender</label>
-                                        <select id="gender" className="p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]">
-                                            <option>(Select Option)</option>
-                                            <option value="male">Male</option>
-                                            <option value="female">Female</option>
-                                        </select>
-                                    </div>
-                                </div>
+                        {/* ADDRESS SECTION */}
+                        <div className="border-b border- space-y-4">
+                            {/* Default Address Header */}
+                            <div ref={defaultAddressRef} className="flex items-center justify-between">
+                                <p className="font-semibold text-[#093C16]">Default Address</p>
+                                <button className='p-2.5 border border-[#71BF45] rounded-[6px] flex items-center gap-1.5 text-[#71BF45] text-sm font-medium'>
+                                    <GoPlus /> Add New Address
+                                </button>
                             </div>
 
-                            {/* PROFILE PICTURE UPLOAD */}
-                            <label htmlFor="img" className='relative flex items-center justify-center p-5 bg-[#E3E3E3] w-[150px] h-[150px] rounded-full'>
-                                {/* Default User Icon */}
-                                <FaUser size={75} className='text-white' />
-                                {/* Edit Icon Overlay */}
-                                <div className="absolute top-1 -right-2 p-2.5 border-3 border-[#E3E3E3] rounded-full bg-white">
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M2.16667 13.8333H3.35417L11.5 5.6875L10.3125 4.5L2.16667 12.6458V13.8333ZM0.5 15.5V11.9583L11.5 0.979167C11.6667 0.826389 11.8508 0.708333 12.0525 0.625C12.2542 0.541667 12.4658 0.5 12.6875 0.5C12.9092 0.5 13.1244 0.541667 13.3333 0.625C13.5422 0.708333 13.7228 0.833333 13.875 1L15.0208 2.16667C15.1875 2.31944 15.3092 2.5 15.3858 2.70833C15.4625 2.91667 15.5006 3.125 15.5 3.33333C15.5 3.55556 15.4619 3.7675 15.3858 3.96917C15.3097 4.17083 15.1881 4.35472 15.0208 4.52083L4.04167 15.5H0.5ZM10.8958 5.10417L10.3125 4.5L11.5 5.6875L10.8958 5.10417Z" fill="#71BF45" />
+                            {/* DEFAULT ADDRESS CARD */}
+                            <div className="border-b border-[#e3e3e3] p-2.5 space-y-3">
+                                <p className="font-medium text-sm">Harshita</p>
+                                <div className="flex gap-1.5">
+                                    {/* Home Icon */}
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <g clip-path="url(#clip0_125_504)">
+                                            <path d="M15.8333 19.9998H4.16667C1.86917 19.9998 0 18.1307 0 15.8332V8.10318C0 6.71568 0.686667 5.42401 1.83667 4.64901L7.66917 0.712344C9.085 -0.242656 10.915 -0.242656 12.3308 0.712344L18.1642 4.64901C19.3133 5.42401 20 6.71484 20 8.10318V15.8332C20 18.1307 18.1308 19.9998 15.8333 19.9998Z" fill="#71BF45" />
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clip0_125_504">
+                                                <rect width="20" height="20" fill="white" />
+                                            </clipPath>
+                                        </defs>
                                     </svg>
+                                    {/* Address Details */}
+                                    <p className="flex flex-col text-[#848484] text-xs">
+                                        Plot No. 45, House No.: 3-7-112/5, Near Shanti Gardens, Suryapet, Hyderabad, Telangana - 508206.
+                                        <span>Suryapet</span>
+                                        <span>Hyderabad - 508206</span>
+                                        <span>TELANGANA</span>
+                                    </p>
                                 </div>
-                            </label>
+                                {/* Phone Number */}
+                                <div className='flex items-center gap-2 text-sm font-medium'>
+                                    <p>Phone:</p>
+                                    <p className='text-[#848484]'>+91-9876543210</p>
+                                </div>
+                                {/* Edit & Remove Buttons */}
+                                <div className="flex items-center gap-1.5">
+                                    <div className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px]">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M2.16667 13.8333H3.35417L11.5 5.6875L10.3125 4.5L2.16667 12.6458V13.8333ZM0.5 15.5V11.9583L11.5 0.979167C11.6667 0.826389 11.8508 0.708333 12.0525 0.625C12.2542 0.541667 12.4658 0.5 12.6875 0.5C12.9092 0.5 13.1244 0.541667 13.3333 0.625C13.5422 0.708333 13.7228 0.833333 13.875 1L15.0208 2.16667C15.1875 2.31944 15.3092 2.5 15.3858 2.70833C15.4625 2.91667 15.5006 3.125 15.5 3.33333C15.5 3.55556 15.4619 3.7675 15.3858 3.96917C15.3097 4.17083 15.1881 4.35472 15.0208 4.52083L4.04167 15.5H0.5ZM10.8958 5.10417L10.3125 4.5L11.5 5.6875L10.8958 5.10417Z" fill="#848484" />
+                                        </svg>
+                                        <p className="text-[#848484] font-medium text-sm">Edit</p>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px] text-[#848484]">
+                                        <RxCross2 />
+                                        <p className="font-medium text-sm">Remove</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* OTHER ADDRESS HEADER */}
+                            <p className="font-semibold text-[#093C16]">Other Address</p>
+
+                            {/* OTHER ADDRESS CARD */}
+                            <div ref={otherAddressRef} className="border-b border-[#e3e3e3] p-2.5 space-y-3">
+                                <p className="font-medium text-sm">Prem</p>
+                                <div className="flex gap-1.5">
+                                    {/* Home Icon */}
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <g clip-path="url(#clip0_125_504)">
+                                            <path d="M15.8333 19.9998H4.16667C1.86917 19.9998 0 18.1307 0 15.8332V8.10318C0 6.71568 0.686667 5.42401 1.83667 4.64901L7.66917 0.712344C9.085 -0.242656 10.915 -0.242656 12.3308 0.712344L18.1642 4.64901C19.3133 5.42401 20 6.71484 20 8.10318V15.8332C20 18.1307 18.1308 19.9998 15.8333 19.9998Z" fill="#71BF45" />
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clip0_125_504">
+                                                <rect width="20" height="20" fill="white" />
+                                            </clipPath>
+                                        </defs>
+                                    </svg>
+                                    {/* Address Details */}
+                                    <p className="flex flex-col text-[#848484] text-xs">
+                                        Plot No. 45, House No.: 3-7-112/5, Near Shanti Gardens, Suryapet, Hyderabad, Telangana - 508206.
+                                        <span>Suryapet</span>
+                                        <span>Hyderabad - 508206</span>
+                                        <span>TELANGANA</span>
+                                    </p>
+                                </div>
+                                {/* Phone Number */}
+                                <div className='flex items-center gap-2 text-sm font-medium'>
+                                    <p>Phone:</p>
+                                    <p className='text-[#848484]'>+91-9876543210</p>
+                                </div>
+                                {/* Edit & Remove Buttons */}
+                                <div className="flex items-center gap-1.5">
+                                    <div className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px]">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M2.16667 13.8333H3.35417L11.5 5.6875L10.3125 4.5L2.16667 12.6458V13.8333ZM0.5 15.5V11.9583L11.5 0.979167C11.6667 0.826389 11.8508 0.708333 12.0525 0.625C12.2542 0.541667 12.4658 0.5 12.6875 0.5C12.9092 0.5 13.1244 0.541667 13.3333 0.625C13.5422 0.708333 13.7228 0.833333 13.875 1L15.0208 2.16667C15.1875 2.31944 15.3092 2.5 15.3858 2.70833C15.4625 2.91667 15.5006 3.125 15.5 3.33333C15.5 3.55556 15.4619 3.7675 15.3858 3.96917C15.3097 4.17083 15.1881 4.35472 15.0208 4.52083L4.04167 15.5H0.5ZM10.8958 5.10417L10.3125 4.5L11.5 5.6875L10.8958 5.10417Z" fill="#848484" />
+                                        </svg>
+                                        <p className="text-[#848484] font-medium text-sm">Edit</p>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px] text-[#848484]">
+                                        <RxCross2 />
+                                        <p className="font-medium text-sm">Remove</p>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
-                </div>
-
-                {/* ADDRESS SECTION */}
-                <div className="border-b border- space-y-4">
-                    {/* Default Address Header */}
-                    <div className="flex items-center justify-between">
-                        <p className="font-semibold text-[#093C16]">Default Address</p>
-                        <button className='p-2.5 border border-[#71BF45] rounded-[6px] flex items-center gap-1.5 text-[#71BF45] text-sm font-medium'>
-                            <GoPlus /> Add New Address
-                        </button>
-                    </div>
-
-                    {/* DEFAULT ADDRESS CARD */}
-                    <div className="border-b border-[#e3e3e3] p-2.5 space-y-3">
-                        <p className="font-medium text-sm">Harshita</p>
-                        <div className="flex gap-1.5">
-                            {/* Home Icon */}
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g clip-path="url(#clip0_125_504)">
-                                    <path d="M15.8333 19.9998H4.16667C1.86917 19.9998 0 18.1307 0 15.8332V8.10318C0 6.71568 0.686667 5.42401 1.83667 4.64901L7.66917 0.712344C9.085 -0.242656 10.915 -0.242656 12.3308 0.712344L18.1642 4.64901C19.3133 5.42401 20 6.71484 20 8.10318V15.8332C20 18.1307 18.1308 19.9998 15.8333 19.9998Z" fill="#71BF45" />
-                                </g>
-                                <defs>
-                                    <clipPath id="clip0_125_504">
-                                        <rect width="20" height="20" fill="white" />
-                                    </clipPath>
-                                </defs>
-                            </svg>
-                            {/* Address Details */}
-                            <p className="flex flex-col text-[#848484] text-xs">
-                                Plot No. 45, House No.: 3-7-112/5, Near Shanti Gardens, Suryapet, Hyderabad, Telangana - 508206.
-                                <span>Suryapet</span>
-                                <span>Hyderabad - 508206</span>
-                                <span>TELANGANA</span>
-                            </p>
-                        </div>
-                        {/* Phone Number */}
-                        <div className='flex items-center gap-2 text-sm font-medium'>
-                            <p>Phone:</p>
-                            <p className='text-[#848484]'>+91-9876543210</p>
-                        </div>
-                        {/* Edit & Remove Buttons */}
-                        <div className="flex items-center gap-1.5">
-                            <div className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px]">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M2.16667 13.8333H3.35417L11.5 5.6875L10.3125 4.5L2.16667 12.6458V13.8333ZM0.5 15.5V11.9583L11.5 0.979167C11.6667 0.826389 11.8508 0.708333 12.0525 0.625C12.2542 0.541667 12.4658 0.5 12.6875 0.5C12.9092 0.5 13.1244 0.541667 13.3333 0.625C13.5422 0.708333 13.7228 0.833333 13.875 1L15.0208 2.16667C15.1875 2.31944 15.3092 2.5 15.3858 2.70833C15.4625 2.91667 15.5006 3.125 15.5 3.33333C15.5 3.55556 15.4619 3.7675 15.3858 3.96917C15.3097 4.17083 15.1881 4.35472 15.0208 4.52083L4.04167 15.5H0.5ZM10.8958 5.10417L10.3125 4.5L11.5 5.6875L10.8958 5.10417Z" fill="#848484" />
-                                </svg>
-                                <p className="text-[#848484] font-medium text-sm">Edit</p>
-                            </div>
-                            <div className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px] text-[#848484]">
-                                <RxCross2 />
-                                <p className="font-medium text-sm">Remove</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* OTHER ADDRESS HEADER */}
-                    <p className="font-semibold text-[#093C16]">Other Address</p>
-
-                    {/* OTHER ADDRESS CARD */}
-                    <div className="border-b border-[#e3e3e3] p-2.5 space-y-3">
-                        <p className="font-medium text-sm">Prem</p>
-                        <div className="flex gap-1.5">
-                            {/* Home Icon */}
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g clip-path="url(#clip0_125_504)">
-                                    <path d="M15.8333 19.9998H4.16667C1.86917 19.9998 0 18.1307 0 15.8332V8.10318C0 6.71568 0.686667 5.42401 1.83667 4.64901L7.66917 0.712344C9.085 -0.242656 10.915 -0.242656 12.3308 0.712344L18.1642 4.64901C19.3133 5.42401 20 6.71484 20 8.10318V15.8332C20 18.1307 18.1308 19.9998 15.8333 19.9998Z" fill="#71BF45" />
-                                </g>
-                                <defs>
-                                    <clipPath id="clip0_125_504">
-                                        <rect width="20" height="20" fill="white" />
-                                    </clipPath>
-                                </defs>
-                            </svg>
-                            {/* Address Details */}
-                            <p className="flex flex-col text-[#848484] text-xs">
-                                Plot No. 45, House No.: 3-7-112/5, Near Shanti Gardens, Suryapet, Hyderabad, Telangana - 508206.
-                                <span>Suryapet</span>
-                                <span>Hyderabad - 508206</span>
-                                <span>TELANGANA</span>
-                            </p>
-                        </div>
-                        {/* Phone Number */}
-                        <div className='flex items-center gap-2 text-sm font-medium'>
-                            <p>Phone:</p>
-                            <p className='text-[#848484]'>+91-9876543210</p>
-                        </div>
-                        {/* Edit & Remove Buttons */}
-                        <div className="flex items-center gap-1.5">
-                            <div className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px]">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M2.16667 13.8333H3.35417L11.5 5.6875L10.3125 4.5L2.16667 12.6458V13.8333ZM0.5 15.5V11.9583L11.5 0.979167C11.6667 0.826389 11.8508 0.708333 12.0525 0.625C12.2542 0.541667 12.4658 0.5 12.6875 0.5C12.9092 0.5 13.1244 0.541667 13.3333 0.625C13.5422 0.708333 13.7228 0.833333 13.875 1L15.0208 2.16667C15.1875 2.31944 15.3092 2.5 15.3858 2.70833C15.4625 2.91667 15.5006 3.125 15.5 3.33333C15.5 3.55556 15.4619 3.7675 15.3858 3.96917C15.3097 4.17083 15.1881 4.35472 15.0208 4.52083L4.04167 15.5H0.5ZM10.8958 5.10417L10.3125 4.5L11.5 5.6875L10.8958 5.10417Z" fill="#848484" />
-                                </svg>
-                                <p className="text-[#848484] font-medium text-sm">Edit</p>
-                            </div>
-                            <div className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px] text-[#848484]">
-                                <RxCross2 />
-                                <p className="font-medium text-sm">Remove</p>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
+                )}
             </div>
         </div>
     )
 }
 
-export default page
+export default Page

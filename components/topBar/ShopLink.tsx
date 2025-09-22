@@ -113,7 +113,7 @@ function ShopLink() {
                         ))}
                     </div>
                     {/* Link to all products */}
-                    <Link href="/" className='text-[#36810B] text-base font-normal underline decoration-solid'>See All Products</Link>
+                    <Link href="/products" className='text-[#36810B] text-base font-normal underline decoration-solid'>See All Products</Link>
                 </div>
             </div>
 
@@ -148,7 +148,7 @@ function ShopLink() {
                             ))}
                         </div>
                         {/* Link to all products */}
-                        <Link href="/" className='text-[#36810B] text-base font-normal underline decoration-solid'>See All Products</Link>
+                        <Link href="/products" className='text-[#36810B] text-base font-normal underline decoration-solid'>See All Products</Link>
                     </div>
 
                     {/* SECOND PART: Mental, PCOS, Respiratory */}
