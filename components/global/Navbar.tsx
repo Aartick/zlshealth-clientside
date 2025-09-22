@@ -150,7 +150,7 @@ function Navbar() {
 
     return (
         <div className="z-40 fixed w-full py-[10px] sm:py-2 px-4 sm:px-10 drop-shadow-[0px_4px_15.8px_rgba(0,0,0,0.06)] bg-white">
-            <div className="w-full flex justify-between items-center sm:gap-[40px]">
+            <div className="container mx-auto w-full flex justify-between items-center sm:gap-[40px]">
                 {/* Logo and location section */}
                 <div className="flex flex-col lg:flex-row gap-[21px]">
                     <Link

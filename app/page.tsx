@@ -273,7 +273,7 @@ export default function Home() {
                 <MdKeyboardArrowDown size={24} />
               </span>
             </Link>
-            <Link href="/">Blog</Link>
+            <Link href="/blogs">Blogs</Link>
           </div>
         </div>
       </div>

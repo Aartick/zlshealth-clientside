@@ -64,7 +64,7 @@ export default function RootLayout({
             {/* Render global navigation bar */}
             <Navbar />
             {/* Main content area with top padding for navbar */}
-            <div className="pt-24 sm:pt-28 lg:pt-20">
+            <div className="pt-24 sm:pt-28 lg:pt-20 container mx-auto">
               {/* React Hot Toast container */}
               <Toaster />
               {/* Render page content */}
