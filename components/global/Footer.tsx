@@ -18,7 +18,7 @@ import Image from "next/image";
 
 function Footer() {
     return (
-        <div className="border-t border-[#000000] p-5 sm:py-20 sm:px-16">
+        <div className="bg-white text-black border-t border-[#000000] p-5 sm:py-20 sm:px-16">
             {/* Main footer layout: left and right sections */}
             <div className="container mx-auto flex flex-col lg:flex-row gap-6 md:gap-[50px] lg:gap-[412px] bg-white">
                 {/* LEFT PART: Logo, tagline, address, contact */}
