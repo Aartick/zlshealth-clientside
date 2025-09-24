@@ -20,7 +20,7 @@ import { BsSuitHeart } from "react-icons/bs";
 function ProductCard() {
     return (
         // Product card container
-        <div className="rounded-3xl p-3 bg-white border border-[#71BF45] space-y-[18px]">
+        <div className="rounded-3xl p-3 bg-white border border-[#71BF45] space-y-[18px] shadow-2xl">
             {/* Product image section */}
             <div className="relative h-[150px] sm:h-[259px] w-full">
                 <Image

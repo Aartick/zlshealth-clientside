@@ -24,6 +24,7 @@ import ToastHandler from "@/components/global/ToastHandler";
 import { Toaster } from "react-hot-toast";
 import Providers from "./Providers";
 import { SessionProvider } from "next-auth/react";
+import Breadcrumbs from "@/components/global/Breadcrumbs";
 
 // Load Geist Sans font and set CSS variable
 const geistSans = Geist({
@@ -64,9 +65,13 @@ export default function RootLayout({
             {/* Render global navigation bar */}
             <Navbar />
             {/* Main content area with top padding for navbar */}
-            <div className="pt-24 sm:pt-28 lg:pt-20 container mx-auto bg-white text-black">
+            <div className="pt-24 sm:pt-28 lg:pt-36 container mx-auto bg-white text-black">
               {/* React Hot Toast container */}
               <Toaster />
+              {/* Breadcrumbs records the user navigation paths. */}
+              <div className="pl-14">
+                <Breadcrumbs />
+              </div>
               {/* Render page content */}
               {children}
             </div>
