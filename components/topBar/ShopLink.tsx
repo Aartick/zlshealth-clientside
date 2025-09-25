@@ -83,7 +83,7 @@ function ShopLink() {
     ]
 
     return (
-        <div className='flex flex-wrap lg:flex-nowrap py-10 gap-[35px] px-10 bg-white'>
+        <div className='flex flex-wrap lg:flex-nowrap p-10 gap-[35px] bg-white'>
             {/* FIRST COLUMN: Shop by Category */}
             <div className="space-y-5">
                 <p className="font-normal text-[32px] whitespace-nowrap">

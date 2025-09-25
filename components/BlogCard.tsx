@@ -34,7 +34,7 @@ function BlogCard() {
             </p>
 
             {/* Tags */}
-            <div className="flex items-center gap-2.5 text-xs md:text-base">
+            <div className="flex items-center gap-2.5 overflow-x-scroll scrollbar-hide text-xs md:text-base">
                 <p className="py-[5px] px-2.5 border border-[#D6D6D6] rounded-[30px]">Supplements</p>
                 <p className="py-[5px] px-2.5 border border-[#D6D6D6] rounded-[30px]">Wellness</p>
                 <p className="py-[5px] px-2.5 border border-[#D6D6D6] rounded-[30px]">Myths</p>

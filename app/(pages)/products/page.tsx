@@ -188,7 +188,7 @@ function Page() {
     }
 
     return (
-        <>
+        <div className='pt-4'>
             {/* Header image for products page */}
             <div className="relative w-full h-[200px] sm:h-[300px] md:h-[376px]">
                 <Image
@@ -431,7 +431,7 @@ function Page() {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 
