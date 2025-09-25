@@ -16,63 +16,56 @@
 
 import Image from "next/image";
 import { BsSuitHeart } from "react-icons/bs";
-import { IoStarSharp } from "react-icons/io5";
 
 function ProductCard() {
     return (
         // Product card container
-        <div className="rounded-[10px] sm:rounded-[22px] p-[10px] border-2 border-[#d9d9d9] space-y-[15px]">
+        <div className="rounded-3xl p-3 bg-white border border-[#71BF45] space-y-[18px]">
             {/* Product image section */}
-            <div className="relative h-[150px] sm:size-[225px]">
+            <div className="relative h-[150px] sm:h-[259px] w-full">
                 <Image
                     src='/prodImg.png'
                     fill
                     alt="productImg"
-                    className="border-[3px] border-[#e3e3e3] rounded-[10px] sm:rounded-[20px]"
+                    className="rounded-[10px] sm:rounded-[14px]"
                 />
                 {/* Wishlist (favorite) icon */}
-                <div className="absolute top-3 right-3 rounded-[30px] p-[10px] bg-[#ffffff] text-[#2e2e2e] text-[18px] sm:text-2xl">
-                    <BsSuitHeart />
-                </div>
-            </div>
-
-            {/* Rating row */}
-            <div className="flex justify-between items-center">
-                <p className="flex items-center text-[#848484] font-medium text-xs sm:text-base">
-                    <span className="flex items-center text-[#71BF45]">
-                        {/* 5 full stars */}
-                        <IoStarSharp />
-                        <IoStarSharp />
-                        <IoStarSharp />
-                        <IoStarSharp />
-                        <IoStarSharp />
-                    </span>
-                    4.5
-                </p>
-                {/* Stock indicator dot */}
-                <div className="p-[3px] sm:p-[5px] border">
-                    <div className="rounded-full bg-[#71bf45] size-2 sm:size-[10px]"></div>
+                <div className="flex items-center justify-between w-full absolute top-3 px-3">
+                    <div className="border bg-white p-2.5">
+                        <div className="size-2.5 rounded-full bg-[#71BF45]" />
+                    </div>
+                    <div className="rounded-full p-2.5 bg-[#ffffff] text-[#2e2e2e] text-[18px]">
+                        <BsSuitHeart />
+                    </div>
                 </div>
             </div>
 
             {/* Product title and about */}
             <div>
                 <p className="font-medium text-base sm:text-2xl">Diavinco</p>
-                <p className="font-medium text-xs sm:text-base text-[#848484]">
+                <p className="font-medium text-xs sm:text-sm text-[#848484]">
                     Blood Sugar Control Tablet
                 </p>
             </div>
 
             {/* Price row with discount info */}
-            <p className="font-semibold text-base sm:text-2xl text-[#36810B]">
+            <p className="font-extrabold text-base sm:text-xl text-[#093C16]">
                 ₹ 1,300.00{" "}
                 <span className="font-normal text-xs line-through text-[#848484]">
                     ₹ 1,500.00
                 </span>
+                <span className="text-medium text-xs text-[#71BF45]">(28% off)</span>
             </p>
 
             {/* Add to cart button (no logic, just UI) */}
-            <button className="bg-[#093C16] rounded-md sm:rounded-[10px] py-[5px] sm:py-3 px-[10px] text-[#ffffff] font-semibold text-base w-full">
+            <button className="
+            py-[5px] sm:py-3
+            border border-[#093C16]
+            rounded-md sm:rounded-[10px]
+            bg-white text-[#093C16]
+            hover:bg-[#093C16] hover:text-[#ffffff] 
+            font-semibold w-full cursor-pointer"
+            >
                 Add To Cart
             </button>
         </div>

@@ -24,12 +24,17 @@
  */
 
 "use client"
+import Image from 'next/image'
 import React, { useRef, useState } from 'react'
+import { BsBoxSeam } from 'react-icons/bs'
 import { FaGear, FaUser } from 'react-icons/fa6'
 import { GoPlus } from 'react-icons/go'
 import { HiOutlineUserCircle } from 'react-icons/hi2'
+import { LiaTruckMovingSolid } from 'react-icons/lia'
 import { LuLogOut } from 'react-icons/lu'
+import { MdKeyboardArrowRight } from 'react-icons/md'
 import { RxCross2 } from 'react-icons/rx'
+import { SlArrowDown } from 'react-icons/sl'
 
 function Page() {
     const [activeButton, setActiveButton] = useState("profile")
@@ -39,63 +44,118 @@ function Page() {
     const editDetailsRef = useRef<HTMLDivElement | null>(null);
     const defaultAddressRef = useRef<HTMLDivElement | null>(null);
     const otherAddressRef = useRef<HTMLDivElement | null>(null);
+    const allOrdersRef = useRef<HTMLDivElement | null>(null);
+    const trackOrdersRef = useRef<HTMLDivElement | null>(null);
+    const termsOfUseRef = useRef<HTMLDivElement | null>(null);
+    const privacyPolicyRef = useRef<HTMLDivElement | null>(null);
+
+    const changeCard = (activeCard: string, activeCardSection: string) => {
+        setActiveButton(activeCard)
+        setActiveSection(activeCardSection)
+    }
 
     const handleScroll = (
         ref: React.RefObject<HTMLDivElement | null>,
         section: string
     ) => {
         setActiveSection(section)
-        ref.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+        ref.current?.scrollIntoView({ behavior: "smooth", block: "center" })
     }
 
     return (
-        <div className='flex gap-8 p-8'>
+        <div className='flex gap-8 p-8 h-screen'>
             {/* ================ Sidebar Container ================ */}
-            <div className="flex-1 space-y-4 border border-[#f4f4f4] rounded-[36px] p-[30px]">
+            <div className="flex-1 space-y-[60px] border border-[#f4f4f4] rounded-[36px] p-[30px] overflow-y-scroll scrollbar-hide">
                 {/* Sidebar Content Wrapper */}
-                <div className="space-y-[60px]">
+                <div className="space-y-4">
                     {/* Overview Section */}
                     <p className="border-b border-[#e3e3e3] p-2.5 font-medium">Overview</p>
 
                     {/* Profile Sub-section */}
-                    <div className="flex flex-col items-start space-y-3 border-b border-[#e3e3e3] p-2.5 text-sm">
-                        <p className="font-medium">Profile</p>
+                    <div className="flex flex-col items-start space-y-3 border-b border-[#e3e3e3] px-2.5 pb-2.5 text-sm">
                         <button
-                            className={activeSection === "editDetails" ? "text-[#71BF45]" : "text-[#848484]"}
+                            className="font-medium"
+                            onClick={() => changeCard("profile", "editDetails")}
+                        >
+                            Profile
+                        </button >
+                        <button
+                            className={`${(activeSection === "editDetails" && activeButton === "profile") ? "text-[#71BF45]" : "text-[#848484]"} 
+                            ${activeButton === "profile" ? "cursor-pointer" : "cursor-not-allowed"}
+                            `}
                             onClick={() => handleScroll(editDetailsRef, "editDetails")}
+                            disabled={activeButton !== "profile"}
                         >
                             Edit Details
                         </button>
                         <button
-                            className={activeSection === "defaultAddress" ? "text-[#71BF45]" : "text-[#848484]"}
+                            className={`${(activeSection === "defaultAddress" && activeButton === "profile") ? "text-[#71BF45]" : "text-[#848484]"}
+                            ${activeButton === "profile" ? "cursor-pointer" : "cursor-not-allowed"}`}
                             onClick={() => handleScroll(defaultAddressRef, "defaultAddress")}
+                            disabled={activeButton !== "profile"}
                         >
                             Default Address
                         </button>
                         <button
-                            className={activeSection === "otherAddress" ? "text-[#71BF45]" : "text-[#848484]"}
+                            className={`${(activeSection === "otherAddress" && activeButton === "profile") ? "text-[#71BF45]" : "text-[#848484]"}
+                            ${activeButton === "profile" ? "cursor-pointer" : "cursor-not-allowed"}`}
                             onClick={() => handleScroll(otherAddressRef, "otherAddress")}
+                            disabled={activeButton !== "profile"}
                         >
                             Other Address
                         </button>
                     </div>
 
                     {/* Orders & Returns Sub-Section */}
-                    <div className="space-y-3 border-b border-[#e3e3e3] p-2.5  text-sm">
-                        <p className="font-medium">Orders & Returns</p>
-                        <p className="text-[#848484]">All Orders</p>
-                        <p className="text-[#848484]">Track Orders</p>
+                    <div className="flex flex-col items-start space-y-3 border-b border-[#e3e3e3] px-2.5 pb-2.5 text-sm">
+                        <button
+                            className="font-medium"
+                            onClick={() => changeCard("ordersAndReturns", "allOrders")}
+                        >
+                            Orders & Returns
+                        </button>
+                        <button
+                            className={`${(activeSection === "allOrders" && activeButton === "ordersAndReturns") ? "text-[#71BF45]" : "text-[#848484]"}
+                            ${activeButton === "ordersAndReturns" ? "cursor-pointer" : "cursor-not-allowed"}`}
+                            onClick={() => handleScroll(allOrdersRef, "allOrders")}
+                        >
+                            All Orders
+                        </button>
+                        <button
+                            className={`${(activeSection === "trackOrders" && activeButton === "ordersAndReturns") ? "text-[#71BF45]" : "text-[#848484]"}
+                            ${activeButton === "ordersAndReturns" ? "cursor-pointer" : "cursor-not-allowed"}`}
+                            onClick={() => handleScroll(trackOrdersRef, "trackOrders")}
+                        >
+                            Track Orders
+                        </button>
                     </div>
 
                     {/* Legal Section */}
-                    <div className="space-y-3 border-b border-[#e3e3e3] p-2.5  text-sm">
-                        <p className="font-medium">Legal</p>
-                        <p className="text-[#848484]">Terms of Use</p>
-                        <p className="text-[#848484]">Privacy Policy</p>
+                    <div className="flex flex-col items-start space-y-3 border-b border-[#e3e3e3] px-2.5 pb-2.5 text-sm">
+                        <button
+                            className="font-medium"
+                            onClick={() => changeCard("legal", "termsOfUse")}
+                        >
+                            Legal
+                        </button>
+                        <button
+                            className={`${(activeSection === "termsOfUse" && activeButton === "legal") ? "text-[#71BF45]" : "text-[#848484]"}
+                            ${activeButton === "legal" ? "cursor-pointer" : "cursor-not-allowed"}`}
+                            onClick={() => handleScroll(termsOfUseRef, "termsOfUse")}
+                        >
+                            Terms of Use
+                        </button>
+                        <button
+                            className={`${(activeSection === "privacyPolicy" && activeButton === "legal") ? "text-[#71BF45]" : "text-[#848484]"}
+                            ${activeButton === "legal" ? "cursor-pointer" : "cursor-not-allowed"}`}
+                            onClick={() => handleScroll(privacyPolicyRef, "privacyPolicy")}
+                        >
+                            Privacy Policy
+                        </button>
                     </div>
 
                     {/* Settings & Help Section */}
-                    <div className="space-y-3 border-b border-[#e3e3e3] p-2.5  text-sm">
+                    <div className="space-y-3 border-b border-[#e3e3e3] px-2.5 pb-2.5 text-sm">
                         {/* Settings Item */}
                         <div className="flex items-center gap-2.5 text-[#848484] font-medium">
                             <FaGear />
@@ -122,20 +182,21 @@ function Page() {
                 </div>
             </div>
 
-            <div className="flex-4 space-y-4 border border-[#f4f4f4] rounded-[36px] p-[30px]">
+            {/* MAIN CONTENT */}
+            <div className="flex-4 space-y-4 border border-[#f4f4f4] rounded-[36px] p-[30px] overflow-y-scroll scrollbar-hide">
                 {/* CARDS SECTION (Profile, Orders & Returns, Legal) */}
                 <div className="flex items-center gap-3">
                     {/* PROFILE CARD */}
                     <div
-                        onClick={() => setActiveButton("profile")}
+                        onClick={() => changeCard("profile", "editDetails")}
                         className={`
                         border ${activeButton === "profile"
                                 ? "border-[#71BF45] bg-[#F4FAF0]"
                                 : "border-[#E3E3E3]"
                             }
-                         p-5 space-y-3 rounded-3xl 
-                         transition-all duration-500 
-                         ease-out cursor-pointer
+                            p-5 space-y-3 rounded-3xl
+                            transition-all duration-500
+                            ease-out cursor-pointer
                          `}
                     >
                         {/* Profile Icon */}
@@ -157,7 +218,7 @@ function Page() {
 
                     {/* ORDERS & RETURNS CARD */}
                     <div
-                        onClick={() => setActiveButton("ordersAndReturns")}
+                        onClick={() => changeCard("ordersAndReturns", "allOrders")}
                         className={`
                         border ${activeButton === "ordersAndReturns"
                                 ? "border-[#71BF45] bg-[#F4FAF0]"
@@ -213,7 +274,7 @@ function Page() {
 
                     {/* LEGAL CARD */}
                     <div
-                        onClick={() => setActiveButton("legal")}
+                        onClick={() => changeCard("legal", "termsOfUse")}
                         className={`
                             border ${activeButton === "legal"
                                 ? "border-[#71BF45] bg-[#F4FAF0]"
@@ -289,7 +350,7 @@ function Page() {
                         '
                     >
                         {/* EDIT DETAILS FORM*/}
-                        <div ref={editDetailsRef} className="space-y-4 p-2.5">
+                        <div ref={editDetailsRef} className="border-b border-[#e3e3e3] space-y-4 py-2.5">
                             <p className="font-semibold text-[#093C16]">
                                 Edit Details
                             </p>
@@ -301,22 +362,63 @@ function Page() {
                                     <div className="space-y-4">
                                         {/* Full Name Input */}
                                         <div className="flex flex-col space-y-1.5">
-                                            <label htmlFor='fullName' className="text-sm font-medium">Full Name *</label>
-                                            <input type="text" id="fullName" className="p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]" placeholder='Enter Full Name' />
+                                            <label
+                                                htmlFor='fullName'
+                                                className="text-sm font-medium"
+                                            >
+                                                Full Name *
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="fullName"
+                                                className="p-2.5 border border-[#CDCDCD]
+                                                rounded-[6px] text-xs text-[#848484] focus:outline-none"
+                                                placeholder='Enter Full Name'
+                                            />
                                         </div>
 
                                         {/* Mobile Number Input */}
                                         <div className="flex flex-col space-y-1.5">
-                                            <label htmlFor='mobildNumber' className="text-sm font-medium">Mobile Number *</label>
-                                            <input type="text" id="mobileNumber" className="p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]" placeholder='(+91)-' />
-                                            <p className='text-xs text-[#676767]'>*You will receive an OTP for confirmation.</p>
+                                            <label
+                                                htmlFor='mobildNumber'
+                                                className="text-sm font-medium"
+                                            >
+                                                Mobile Number *
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="mobileNumber"
+                                                className="p-2.5 border border-[#CDCDCD] 
+                                                rounded-[6px] text-xs text-[#848484] focus:outline-none"
+                                                placeholder='(+91)-'
+                                            />
+                                            <p className='text-xs text-[#676767]'>
+                                                *You will receive an OTP for confirmation.
+                                            </p>
                                         </div>
 
                                         {/* Email Input */}
                                         <div className="flex flex-col space-y-1.5">
-                                            <label htmlFor='email' className="text-sm font-medium">Email <span className='text-[#71BF45]'>(for order updates)</span></label>
-                                            <div className="flex justify-between items-center p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]">
-                                                <input type="email" id="email" className="" placeholder='Enter Email' />
+                                            <label
+                                                htmlFor='email'
+                                                className="text-sm font-medium"
+                                            >
+                                                Email
+                                                <span className='text-[#71BF45]'>
+                                                    {" "}(for order updates)
+                                                </span>
+                                            </label>
+                                            <div
+                                                className="flex justify-between items-center 
+                                                       p-2.5 border border-[#CDCDCD] rounded-[6px]
+                                                       text-xs text-[#848484]"
+                                            >
+                                                <input
+                                                    type="email"
+                                                    id="email"
+                                                    className="focus:outline-none"
+                                                    placeholder='Enter Email'
+                                                />
                                                 <p id='email'>@gmail.com</p>
                                             </div>
                                         </div>
@@ -326,14 +428,36 @@ function Page() {
                                     <div className="space-y-4">
                                         {/* DOB Field */}
                                         <div className="flex flex-col space-y-1.5">
-                                            <label htmlFor='dob' className="text-sm font-medium">DOB</label>
-                                            <input type="date" id="dob" className="p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]" placeholder='(dd/mm/yy)' />
+                                            <label
+                                                htmlFor='dob'
+                                                className="text-sm font-medium"
+                                            >
+                                                DOB
+                                            </label>
+                                            <input
+                                                type="date"
+                                                id="dob"
+                                                className="p-2.5 border border-[#CDCDCD]
+                                                rounded-[6px] text-xs text-[#848484] 
+                                                focus:outline-none"
+                                                placeholder='(dd/mm/yy)'
+                                            />
                                         </div>
 
                                         {/* Gender Dropdown */}
                                         <div className="flex flex-col space-y-1.5">
-                                            <label htmlFor='gender' className="text-sm font-medium">Gender</label>
-                                            <select id="gender" className="p-2.5 border border-[#CDCDCD] rounded-[6px] text-xs text-[#848484]">
+                                            <label
+                                                htmlFor='gender'
+                                                className="text-sm font-medium"
+                                            >
+                                                Gender
+                                            </label>
+                                            <select
+                                                id="gender"
+                                                className="p-2.5 border border-[#CDCDCD]
+                                                rounded-[6px] text-xs text-[#848484] 
+                                                focus:outline-none"
+                                            >
                                                 <option>(Select Option)</option>
                                                 <option value="male">Male</option>
                                                 <option value="female">Female</option>
@@ -357,9 +481,9 @@ function Page() {
                         </div>
 
                         {/* ADDRESS SECTION */}
-                        <div className="border-b border- space-y-4">
+                        <div ref={defaultAddressRef} className="border-b border-[#e3e3e3] space-y-4 py-2.5">
                             {/* Default Address Header */}
-                            <div ref={defaultAddressRef} className="flex items-center justify-between">
+                            <div className="flex items-center justify-between">
                                 <p className="font-semibold text-[#093C16]">Default Address</p>
                                 <button className='p-2.5 border border-[#71BF45] rounded-[6px] flex items-center gap-1.5 text-[#71BF45] text-sm font-medium'>
                                     <GoPlus /> Add New Address
@@ -367,7 +491,7 @@ function Page() {
                             </div>
 
                             {/* DEFAULT ADDRESS CARD */}
-                            <div className="border-b border-[#e3e3e3] p-2.5 space-y-3">
+                            <div className="space-y-3">
                                 <p className="font-medium text-sm">Harshita</p>
                                 <div className="flex gap-1.5">
                                     {/* Home Icon */}
@@ -408,12 +532,15 @@ function Page() {
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
+                        {/* OTHER ADDRESS SECTION */}
+                        <div ref={otherAddressRef} className='border-b border-[#e3e3e3] space-y-4 py-2.5'>
                             {/* OTHER ADDRESS HEADER */}
                             <p className="font-semibold text-[#093C16]">Other Address</p>
 
                             {/* OTHER ADDRESS CARD */}
-                            <div ref={otherAddressRef} className="border-b border-[#e3e3e3] p-2.5 space-y-3">
+                            <div className="space-y-3">
                                 <p className="font-medium text-sm">Prem</p>
                                 <div className="flex gap-1.5">
                                     {/* Home Icon */}
@@ -454,9 +581,166 @@ function Page() {
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
+                )}
+
+                {activeButton === "ordersAndReturns" && (
+                    <section className="px-2.5 space-y-4 transition-all duration-500 ease-out opacity-0 translate-y-2 animate-fadeInCart">
+                        {/* All Orders */}
+                        <div ref={allOrdersRef} className="space-y-4">
+                            <p className="font-semibold text-[#093C16]">All Orders</p>
+
+                            <div className="space-y-4">
+                                <div className='font-medium'>
+                                    <div className="flex items-center gap-1.5">
+                                        <BsBoxSeam />
+                                        <p>Delivered</p>
+                                    </div>
+
+                                    <p className="pl-6 text-sm text-[#848484]">
+                                        On Aug 31, 2025
+                                    </p>
+                                </div>
+
+                                <div className="py-2.5 space-y-3">
+                                    {/* Sample Products */}
+                                    {Array.from({ length: 2 }).map((_, idx) => (
+                                        <div key={idx}>
+                                            {/* Border */}
+                                            <div className="border border-[#e3e3e3] mx-3" />
+
+                                            {/* Cart Products */}
+                                            <div className="grid grid-cols-3 items-start py-2.5">
+                                                <div className="flex gap-3">
+                                                    {/* Serial N0. */}
+                                                    <p>{idx + 1}.</p>
+
+                                                    {/* Product Image*/}
+                                                    <div className="relative w-[96px] h-[93px]">
+                                                        <Image
+                                                            src="/aboutUs/1.jpg"
+                                                            alt="Diavinco"
+                                                            fill
+                                                            className='rounded-[10px] border-2 border-[#71BF45] object-cover'
+                                                        />
+                                                    </div>
+
+                                                    {/* Product details */}
+                                                    <div className="flex flex-col justify-between font-medium">
+                                                        <div>
+                                                            <p className='text-sm'>Diavinco</p>
+                                                            <p className='text-xs font-medium text-[#848484]'>Blood sugar tablet</p>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-[5px] text-xs text-[#093C16]">
+                                                            <p>Read More</p>
+                                                            <SlArrowDown />
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Product quantity */}
+                                                <div className="flex justify-center">
+                                                    <select
+                                                        id="quantity"
+                                                        className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
+                                                    >
+                                                        <option value="1">1</option>
+                                                        <option value="2">2</option>
+                                                        <option value="3">3</option>
+                                                    </select>
+                                                </div>
+
+                                                {/* Product Price */}
+                                                <div className="flex justify-between items-center px-5">
+                                                    <p className="text-base font-medium text-[#093C16]">₹1300.00</p>
+                                                    <MdKeyboardArrowRight className="cursor-pointer text-xl" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Track Orders */}
+                        <div ref={trackOrdersRef} className="space-y-4">
+                            <p className="font-semibold text-[#093C16]">Track Orders</p>
+
+                            <div className="space-y-4">
+                                <div className='font-medium'>
+                                    <div className="flex items-center gap-1.5">
+                                        <LiaTruckMovingSolid />
+                                        <p>Delivered</p>
+                                    </div>
+
+                                    <p className="pl-6 text-sm text-[#848484]">
+                                        On Aug 31, 2025
+                                    </p>
+                                </div>
+
+                                <div className="py-2.5 space-y-3">
+                                    {/* Sample Products */}
+                                    {Array.from({ length: 2 }).map((_, idx) => (
+                                        <div key={idx}>
+                                            {/* Border */}
+                                            <div className="border border-[#e3e3e3] mx-3" />
+
+                                            {/* Cart Products */}
+                                            <div className="grid grid-cols-3 items-start py-2.5">
+                                                <div className="flex gap-3">
+                                                    {/* Serial N0. */}
+                                                    <p>{idx + 1}.</p>
+
+                                                    {/* Product Image*/}
+                                                    <div className="relative w-[96px] h-[93px]">
+                                                        <Image
+                                                            src="/aboutUs/1.jpg"
+                                                            alt="Diavinco"
+                                                            fill
+                                                            className='rounded-[10px] border-2 border-[#71BF45] object-cover'
+                                                        />
+                                                    </div>
+
+                                                    {/* Product details */}
+                                                    <div className="flex flex-col justify-between font-medium">
+                                                        <div>
+                                                            <p className='text-sm'>Diavinco</p>
+                                                            <p className='text-xs font-medium text-[#848484]'>Blood sugar tablet</p>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-[5px] text-xs text-[#093C16]">
+                                                            <p>Read More</p>
+                                                            <SlArrowDown />
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Product quantity */}
+                                                <div className="flex justify-center">
+                                                    <select
+                                                        id="quantity"
+                                                        className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
+                                                    >
+                                                        <option value="1">1</option>
+                                                        <option value="2">2</option>
+                                                        <option value="3">3</option>
+                                                    </select>
+                                                </div>
+
+                                                {/* Product Price */}
+                                                <div className="flex justify-between items-center px-5">
+                                                    <p className="text-base font-medium text-[#093C16]">₹1300.00</p>
+                                                    <MdKeyboardArrowRight className="cursor-pointer text-xl" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
                 )}
             </div>
         </div>

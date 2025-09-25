@@ -23,6 +23,7 @@ import { FiHeart } from 'react-icons/fi'
 import { LuPen } from 'react-icons/lu'
 import { MdKeyboardArrowRight } from 'react-icons/md'
 import { RxCross1 } from 'react-icons/rx'
+import { SlArrowDown } from 'react-icons/sl'
 
 const paymentMehods = [
     "/cart/Visa.png",
@@ -203,6 +204,7 @@ function Page() {
 
                                                         <div className="flex items-center gap-[5px] text-xs">
                                                             <p>Read More</p>
+                                                            <SlArrowDown />
                                                         </div>
                                                     </div>
                                                 </div>
