@@ -16,6 +16,7 @@
 
 "use client"
 
+import { useAppSelector } from '@/lib/hooks'
 import Image from 'next/image'
 import React, { useState } from 'react'
 import { BiSolidOffer } from 'react-icons/bi'
@@ -35,6 +36,26 @@ const paymentMehods = [
 
 function Page() {
     const [activeButton, setActiveButton] = useState("cart")
+
+    // Get cart items from Redux store
+    const cart = useAppSelector((state) => state.cartSlice.cart)
+
+    // Calculate total items in cart
+    const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0)
+
+    // Calculate total price of cart items
+    const totalPrice = cart.reduce(
+        (acc, item) => acc + item.price * item.quantity, 0
+    )
+
+    // Check if cart is empty
+    const isCartEmpty = cart.length === 0
+
+    // Get wishlist products from Redux store
+    const wishlist = useAppSelector((state) => state.wishlistSlice.products)
+
+    // Check if wishlist is empty
+    const isWishlistEmpty = wishlist.length === 0
 
     return (
         <div className='flex flex-col items-center m-10'>
@@ -153,7 +174,7 @@ function Page() {
                 </ul>
             </div>
 
-            {/* MAIN CONTENT AREA */}
+            {/* ================ MAIN CONTENT AREA ================ */}
             <div className="space-y-[30px] mt-10">
                 <p className="font-semibold text-xl text-center">Your Cart</p>
 
@@ -161,9 +182,10 @@ function Page() {
                     {/* LEFT SECTION (Dynamic Step Content) */}
                     <div className="flex-2 space-y-[30px]">
 
-                        {/* Cart Section */}
+                        {/* Cart/Wishlist Section */}
                         {activeButton === "cart" && (
                             <>
+                                {/* ================ CART ================ */}
                                 <div className="p-2.5 border border-[#e3e3e3] rounded-[20px] transition-all duration-500 ease-out opacity-0 translate-y-2 animate-fadeInCart">
 
                                     {/* HEADERS */}
@@ -174,8 +196,8 @@ function Page() {
                                     </div>
 
                                     {/* Sample Products */}
-                                    {Array.from({ length: 5 }).map((_, idx) => (
-                                        <div key={idx}>
+                                    {cart.map((product, idx) => (
+                                        <div key={product._id}>
                                             {/* Border */}
                                             <div className="border border-[#e3e3e3] mx-3" />
 
@@ -188,8 +210,8 @@ function Page() {
                                                     {/* Product Image*/}
                                                     <div className="relative w-[96px] h-[93px]">
                                                         <Image
-                                                            src="/aboutUs/1.jpg"
-                                                            alt="Diavinco"
+                                                            src={product.img!}
+                                                            alt={product.name}
                                                             fill
                                                             className='rounded-[10px] border-2 border-[#71BF45] object-cover'
                                                         />
@@ -198,8 +220,8 @@ function Page() {
                                                     {/* Product details */}
                                                     <div className="flex flex-col justify-between font-medium">
                                                         <div>
-                                                            <p className='text-sm'>Diavinco</p>
-                                                            <p className='text-xs'>Blood sugar tablet</p>
+                                                            <p className='text-sm'>{product.name}</p>
+                                                            <p className='text-xs'>{product.about}</p>
                                                         </div>
 
                                                         <div className="flex items-center gap-[5px] text-xs">
@@ -213,6 +235,7 @@ function Page() {
                                                 <div className="flex justify-center">
                                                     <select
                                                         id="quantity"
+                                                        value={product.quantity}
                                                         className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
                                                     >
                                                         <option value="1">1</option>
@@ -223,7 +246,7 @@ function Page() {
 
                                                 {/* Product Price */}
                                                 <div className="flex justify-center items-center gap-4">
-                                                    <p className="text-base font-medium">₹1300.00</p>
+                                                    <p className="text-base font-medium">₹{product.price}.00</p>
                                                     <RxCross1 className="text-[#848484] cursor-pointer" />
                                                 </div>
                                             </div>
@@ -238,7 +261,9 @@ function Page() {
                                     {/* HEADERS */}
                                     <div className="flex items-center justify-between py-3 px-2.5">
                                         <div className="flex items-center gap-3">
-                                            <FiHeart className="p-0.5 rounded-[60px] bg-[#71BF45] text-white" />
+                                            <div className="p-1 rounded-[60px] bg-[#71BF45] text-white">
+                                                <FiHeart />
+                                            </div>
                                             <p className="font-medium text-sm">Add items from wishlist</p>
                                         </div>
 
@@ -248,8 +273,8 @@ function Page() {
                                         </div>
                                     </div>
 
-                                    {Array.from({ length: 4 }).map((_, idx) => (
-                                        <div key={idx}>
+                                    {wishlist.map((product, idx) => (
+                                        <div key={product._id}>
                                             {/* BORDER */}
                                             <div className="border border-[#e3e3e3] mx-3" />
 
@@ -262,8 +287,8 @@ function Page() {
                                                     {/* PRODUCT IMAGE */}
                                                     <div className="relative w-[96px] h-[93px]">
                                                         <Image
-                                                            src="/aboutUs/1.jpg"
-                                                            alt='productImg'
+                                                            src={product.img}
+                                                            alt={product.name}
                                                             fill
                                                             className='rounded-[10px] border-2 border-[#71BF45] object-cover'
                                                         />
@@ -272,8 +297,8 @@ function Page() {
                                                     {/* PRODUCT DETAILS */}
                                                     <div className="flex flex-col justify-between font-medium">
                                                         <div>
-                                                            <p className='text-sm'>Diavinco</p>
-                                                            <p className='text-xs'>Blood Sugar Control Tablet</p>
+                                                            <p className='text-sm'>{product.name}</p>
+                                                            <p className='text-xs'>{product.about}</p>
                                                         </div>
 
                                                         <div className="flex items-center gap-[5px] text-xs">
@@ -285,6 +310,7 @@ function Page() {
                                                 <div className="flex justify-center">
                                                     <select
                                                         id="quantity"
+                                                        value={product.quantity}
                                                         className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
                                                     >
                                                         <option value="1">1</option>
@@ -294,7 +320,7 @@ function Page() {
                                                 </div>
 
                                                 <div className="flex justify-center items-center gap-4">
-                                                    <p className="text-base font-medium">₹1,300.00</p>
+                                                    <p className="text-base font-medium">₹{product.price}.00</p>
                                                     <RxCross1 className="text-[#848484] cursor-pointer" />
                                                 </div>
                                             </div>
@@ -508,7 +534,6 @@ function Page() {
                         )}
                     </div>
 
-
                     {/* RIGHT SECTION */}
                     <div className="flex-1 space-y-[30px]">
                         {/* PRICE DETAILS */}
@@ -518,14 +543,14 @@ function Page() {
                                     Price Details
                                 </p>
                                 <p className="font-medium text-sm text-[#71BF45]">
-                                    (2 items)
+                                    ({totalItems} items)
                                 </p>
                             </div>
 
                             <div className="space-y-3 border-b-2 border-[#e3e3e3]">
                                 <div className="flex justify-between items-center p-2.5">
-                                    <p className="text-sm">Total MRP <span className="text-xs font-normal text-[#71BF45]">(2 items)</span></p>
-                                    <p className="text-sm font-medium">₹2,200.00</p>
+                                    <p className="text-sm">Total MRP <span className="text-xs font-normal text-[#71BF45]">({totalItems} items)</span></p>
+                                    <p className="text-sm font-medium">₹{totalPrice}.00</p>
                                 </div>
                                 <div className="flex justify-between items-center p-2.5">
                                     <p className="text-sm">Discount on MRP</p>
@@ -634,7 +659,6 @@ function Page() {
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
 

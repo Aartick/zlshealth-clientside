@@ -7,9 +7,11 @@ import { NextRequest } from "next/server";
 interface ProductDoc {
   _id: Types.ObjectId;
   name: string;
-  imageUrl: { url: string };
+  productImg: { url: string };
   price: number;
   discount: number;
+  quantity: number;
+  about: string;
 }
 
 interface WishlistProduct {
@@ -70,9 +72,11 @@ export async function POST(req: NextRequest) {
         return {
           _id: product._id,
           name: product.name,
-          img: product.imageUrl.url,
+          img: product.productImg.url,
           price: product.price,
+          quantity: product.quantity,
           discount: product.discount,
+          about: product.about,
         };
       }
     );
@@ -132,9 +136,11 @@ export async function PUT(req: NextRequest) {
         return {
           _id: product._id,
           name: product.name,
-          img: product.imageUrl?.url,
+          img: product.productImg?.url,
           price: product.price,
           discount: product.discount,
+          about: product.about,
+          quantity: product.quantity,
         };
       }
     );
@@ -158,7 +164,7 @@ export async function GET(req: NextRequest) {
     const { valid, response, _id } = await verifyAccessToken(req);
     if (!valid) return response!;
 
-    // FInd users's wishlist
+    // Find users's wishlist 
     const wishlist = await Wishlist.findOne({ customerId: _id }).populate(
       "products.productId"
     );
@@ -169,13 +175,15 @@ export async function GET(req: NextRequest) {
 
     // Map wishlist products to response format
     const responseWrapper = wishlist.products.map((pro: WishlistProduct) => {
-      const product = pro.productId as ProductDoc
+      const product = pro.productId as ProductDoc;
       return {
         _id: product._id,
         name: product.name,
-        img: product.imageUrl.url,
+        img: product.productImg.url,
         price: product.price,
         discount: product.discount,
+        about: product.about,
+        quantity: product.quantity,
       };
     });
 
