@@ -24,6 +24,7 @@
  */
 
 "use client"
+import UpdateAddresses from '@/components/UpdateAddresses'
 import Image from 'next/image'
 import React, { useRef, useState } from 'react'
 import { BsBoxSeam } from 'react-icons/bs'
@@ -61,6 +62,26 @@ function Page() {
         setActiveSection(section)
         ref.current?.scrollIntoView({ behavior: "smooth", block: "center" })
     }
+
+    const [updateAddresses, setUpdateAddresses] = useState(false)
+
+    const address = {
+        _id: "",
+        fullName: "",
+        phone: "",
+        landmark: "",
+        houseNo: "",
+        streetAddress: "",
+        streetAddress2: "",
+        addressType: "",
+        city: "",
+        district: "",
+        state: "",
+        pinCode: "",
+        isDefault: false,
+    }
+
+    const handleUpdate = () => { }
 
     return (
         <div className='flex gap-8 p-8 h-screen'>
@@ -380,7 +401,7 @@ function Page() {
                                         {/* Mobile Number Input */}
                                         <div className="flex flex-col space-y-1.5">
                                             <label
-                                                htmlFor='mobildNumber'
+                                                htmlFor='mobileNumber'
                                                 className="text-sm font-medium"
                                             >
                                                 Mobile Number *
@@ -491,47 +512,52 @@ function Page() {
                             </div>
 
                             {/* DEFAULT ADDRESS CARD */}
-                            <div className="space-y-3">
-                                <p className="font-medium text-sm">Harshita</p>
-                                <div className="flex gap-1.5">
-                                    {/* Home Icon */}
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g clip-path="url(#clip0_125_504)">
-                                            <path d="M15.8333 19.9998H4.16667C1.86917 19.9998 0 18.1307 0 15.8332V8.10318C0 6.71568 0.686667 5.42401 1.83667 4.64901L7.66917 0.712344C9.085 -0.242656 10.915 -0.242656 12.3308 0.712344L18.1642 4.64901C19.3133 5.42401 20 6.71484 20 8.10318V15.8332C20 18.1307 18.1308 19.9998 15.8333 19.9998Z" fill="#71BF45" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_125_504">
-                                                <rect width="20" height="20" fill="white" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                    {/* Address Details */}
-                                    <p className="flex flex-col text-[#848484] text-xs">
-                                        Plot No. 45, House No.: 3-7-112/5, Near Shanti Gardens, Suryapet, Hyderabad, Telangana - 508206.
-                                        <span>Suryapet</span>
-                                        <span>Hyderabad - 508206</span>
-                                        <span>TELANGANA</span>
-                                    </p>
-                                </div>
-                                {/* Phone Number */}
-                                <div className='flex items-center gap-2 text-sm font-medium'>
-                                    <p>Phone:</p>
-                                    <p className='text-[#848484]'>+91-9876543210</p>
-                                </div>
-                                {/* Edit & Remove Buttons */}
-                                <div className="flex items-center gap-1.5">
-                                    <div className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px]">
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M2.16667 13.8333H3.35417L11.5 5.6875L10.3125 4.5L2.16667 12.6458V13.8333ZM0.5 15.5V11.9583L11.5 0.979167C11.6667 0.826389 11.8508 0.708333 12.0525 0.625C12.2542 0.541667 12.4658 0.5 12.6875 0.5C12.9092 0.5 13.1244 0.541667 13.3333 0.625C13.5422 0.708333 13.7228 0.833333 13.875 1L15.0208 2.16667C15.1875 2.31944 15.3092 2.5 15.3858 2.70833C15.4625 2.91667 15.5006 3.125 15.5 3.33333C15.5 3.55556 15.4619 3.7675 15.3858 3.96917C15.3097 4.17083 15.1881 4.35472 15.0208 4.52083L4.04167 15.5H0.5ZM10.8958 5.10417L10.3125 4.5L11.5 5.6875L10.8958 5.10417Z" fill="#848484" />
+                            {updateAddresses ? <UpdateAddresses address={address} onUpdate={handleUpdate} onCancel={() => setUpdateAddresses(false)} /> : (
+                                <div className="space-y-3">
+                                    <p className="font-medium text-sm">Harshita</p>
+                                    <div className="flex gap-1.5">
+                                        {/* Home Icon */}
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <g clip-path="url(#clip0_125_504)">
+                                                <path d="M15.8333 19.9998H4.16667C1.86917 19.9998 0 18.1307 0 15.8332V8.10318C0 6.71568 0.686667 5.42401 1.83667 4.64901L7.66917 0.712344C9.085 -0.242656 10.915 -0.242656 12.3308 0.712344L18.1642 4.64901C19.3133 5.42401 20 6.71484 20 8.10318V15.8332C20 18.1307 18.1308 19.9998 15.8333 19.9998Z" fill="#71BF45" />
+                                            </g>
+                                            <defs>
+                                                <clipPath id="clip0_125_504">
+                                                    <rect width="20" height="20" fill="white" />
+                                                </clipPath>
+                                            </defs>
                                         </svg>
-                                        <p className="text-[#848484] font-medium text-sm">Edit</p>
+                                        {/* Address Details */}
+                                        <p className="flex flex-col text-[#848484] text-xs">
+                                            Plot No. 45, House No.: 3-7-112/5, Near Shanti Gardens, Suryapet, Hyderabad, Telangana - 508206.
+                                            <span>Suryapet</span>
+                                            <span>Hyderabad - 508206</span>
+                                            <span>TELANGANA</span>
+                                        </p>
                                     </div>
-                                    <div className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px] text-[#848484]">
-                                        <RxCross2 />
-                                        <p className="font-medium text-sm">Remove</p>
+                                    {/* Phone Number */}
+                                    <div className='flex items-center gap-2 text-sm font-medium'>
+                                        <p>Phone:</p>
+                                        <p className='text-[#848484]'>+91-9876543210</p>
+                                    </div>
+                                    {/* Edit & Remove Buttons */}
+                                    <div className="flex items-center gap-1.5">
+                                        <button
+                                            onClick={() => setUpdateAddresses(true)}
+                                            className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px] cursor-pointer"
+                                        >
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M2.16667 13.8333H3.35417L11.5 5.6875L10.3125 4.5L2.16667 12.6458V13.8333ZM0.5 15.5V11.9583L11.5 0.979167C11.6667 0.826389 11.8508 0.708333 12.0525 0.625C12.2542 0.541667 12.4658 0.5 12.6875 0.5C12.9092 0.5 13.1244 0.541667 13.3333 0.625C13.5422 0.708333 13.7228 0.833333 13.875 1L15.0208 2.16667C15.1875 2.31944 15.3092 2.5 15.3858 2.70833C15.4625 2.91667 15.5006 3.125 15.5 3.33333C15.5 3.55556 15.4619 3.7675 15.3858 3.96917C15.3097 4.17083 15.1881 4.35472 15.0208 4.52083L4.04167 15.5H0.5ZM10.8958 5.10417L10.3125 4.5L11.5 5.6875L10.8958 5.10417Z" fill="#848484" />
+                                            </svg>
+                                            <p className="text-[#848484] font-medium text-sm">Edit</p>
+                                        </button>
+                                        <button className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px] text-[#848484] cursor-pointer">
+                                            <RxCross2 />
+                                            <p className="font-medium text-sm">Remove</p>
+                                        </button>
                                     </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
 
                         {/* OTHER ADDRESS SECTION */}

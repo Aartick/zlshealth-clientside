@@ -64,3 +64,21 @@ export const removeFromWishlist = createAsyncThunk(
     }
   }
 );
+
+// Fetch the current wishlist from the backend
+export const getWishlist = createAsyncThunk(
+  "wishlist/getWishlist",
+  async () => {
+    try {
+      const response = await axios.get("/api/wishlist", {
+        headers: {
+          Authorization: `Bearer ${getItem(KEY_ACCESS_TOKEN)}`,
+        },
+      });
+      // Return wishlist data
+      return response.data.result;
+    } catch {
+      return [];
+    }
+  }
+);

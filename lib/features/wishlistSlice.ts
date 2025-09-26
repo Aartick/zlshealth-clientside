@@ -1,6 +1,6 @@
 /**
  * wishlistSlice
- * 
+ *
  * Redux slice for managing the wishlist state.
  * Handles wishlist actions for both guests (local state) and logged-in users (backend sync via thunks).
  *
@@ -22,7 +22,11 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { addToWishlist, removeFromWishlist } from "../thunks/wishlistThunks";
+import {
+  addToWishlist,
+  getWishlist,
+  removeFromWishlist,
+} from "../thunks/wishlistThunks";
 
 // Define your product type
 export interface ProductType {
@@ -30,6 +34,8 @@ export interface ProductType {
   name: string;
   img: string;
   price: number;
+  quantity: number;
+  about: string;
   discount: number;
 }
 
@@ -72,11 +78,27 @@ const wishlistSlice = createSlice({
   extraReducers: (builder) => {
     // Update wishlist state after backend add-to-wishlist
     builder.addCase(addToWishlist.fulfilled, (state, action) => {
-      state.products = action.payload;
+      // Make sure action.payload always be an array
+      const updatedWishlist = Array.isArray(action.payload)
+        ? action.payload
+        : [action.payload];
+      state.products = updatedWishlist;
     });
     // Update wishlist state after backend remove-from-wishlist
     builder.addCase(removeFromWishlist.fulfilled, (state, action) => {
-      state.products = action.payload;
+      // Make sure action.payload always be an array
+      const updatedWishlist = Array.isArray(action.payload)
+        ? action.payload
+        : [action.payload];
+      state.products = updatedWishlist;
+    });
+    // Update wishlist state from backend
+    builder.addCase(getWishlist.fulfilled, (state, action) => {
+      // Make sure action.payload always be an array
+      const updatedWishlist = Array.isArray(action.payload)
+        ? action.payload
+        : [action.payload];
+      state.products = updatedWishlist;
     });
   },
 });

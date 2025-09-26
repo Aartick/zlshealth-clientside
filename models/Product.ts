@@ -1,6 +1,6 @@
 /**
  * Product Model
- * 
+ *
  * Mongoose model for products in the catalog.
  * Supports categories, product types, benefits, images, pricing, tags, descriptions, FAQs, ratings, and more.
  *
@@ -11,23 +11,24 @@
  * - category: ObjectId reference to Category, required.
  * - productTypes: Array of ObjectIds referencing ProductType, required.
  * - benefits: Array of ObjectIds referencing Benefit, required.
- * - imageUrl: Object with public_id and url for product image.
+ * - descriptionImg: Object with public_id and url for product description image.
+ * - productImg: Object with public_id and url for product image.
+ * - thirdImg: Object with public_id and url for product third image.
+ * - fourthImg: Object with public_id and url for product fourth image.
  * - name: string, required.
  * - about: string, required.
- * - tags: array of strings, required.
  * - price: number, required.
  * - discount: number, required.
- * - quantity: number.
- * - shortDescription: string, required.
- * - highlights: array of strings, required.
- * - sku: string, required.
- * - brand: string, required.
- * - description: ObjectId reference to Description.
- * - additionalInfo: string.
- * - appliedFor: array of strings.
- * - faqs: ObjectId reference to Faqs.
- * - averageRating: number.
- * - numReviews: number.
+ * - stock: number.
+ * - expiryMonths: number.
+ * - form: string.
+ * - packSize: string.
+ * - appliedFor: string;
+ * - suitableFor: string;
+ * - safetyNote: string;
+ * - faqs: mongoose.Types.ObjectId;
+ * - averageRating: number;
+ * - numReviews: number;
  *
  * Usage:
  * - Use Product model to create, read, update, or delete products in MongoDB.
@@ -37,29 +38,41 @@ import mongoose, { Document, Schema } from "mongoose";
 
 // Interface for a Product document
 export interface IProduct extends Document {
-  category: mongoose.Types.ObjectId;         // Reference to Category
-  productTypes: mongoose.Types.ObjectId[];   // Array of ProductType references
-  benefits: mongoose.Types.ObjectId[];       // Array of Benefit references
-  imageUrl: {                               // Product image info
+  category: mongoose.Types.ObjectId; // Reference to Category
+  productTypes: mongoose.Types.ObjectId[]; // Array of ProductType references
+  benefits: mongoose.Types.ObjectId[]; // Array of Benefit references
+  // Different image fields with public_id and url for each unique images
+  descriptionImg: {
     public_id: string;
     url: string;
   };
-  name: string;                             // Product name
-  about: string;                            // Short about text
-  tags: string[];                           // Array of tags
-  price: number;                            // Product price
-  discount: number;                         // Discount percentage
-  shortDescription: string;                 // Short description
-  quantity: number;                         // Stock quantity
-  highlights: string[];                     // Array of highlights
-  sku: string;                              // SKU code
-  brand: string;                            // Brand name
-  description: mongoose.Types.ObjectId;     // Reference to Description
-  additionalInfo: string;                   // Additional info
-  appliedFor: string[];                     // Applied for (targeted uses)
-  faqs: mongoose.Types.ObjectId;            // Reference to Faqs
-  averageRating: number;                    // Average rating
-  numReviews: number;                       // Number of reviews
+  productImg: {
+    public_id: string;
+    url: string;
+  };
+  thirdImg: {
+    public_id: string;
+    url: string;
+  };
+  fourthImg: {
+    public_id: string;
+    url: string;
+  };
+  name: string; // Product name
+  about: string; // Brief about the product
+  price: number; // Product price
+  discount: number; // Discount percentage
+  description: string; // Description of the product
+  stock: number; // Stock quantity
+  expiryMonths: number; // Product expiry in months
+  form: string; // Caplet or tablet with weight
+  packSize: string; // Number of caplet or tablets
+  appliedFor: string; // Product benefits
+  suitableFor: string; // Age specific
+  safetyNote: string; // Describes products safety usage
+  faqs: mongoose.Types.ObjectId; // Reference to FAQs
+  averageRating: number; // Average rating
+  numReviews: number; // Number of reviews
 }
 
 // Mongoose schema for Product
@@ -84,11 +97,7 @@ const productSchema: Schema<IProduct> = new Schema(
         required: true, // Product must have at least one benefit
       },
     ],
-    name: {
-      type: String,
-      required: true, // Product name is required
-    },
-    imageUrl: {
+    descriptionImg: {
       public_id: {
         type: String,
         default: "",
@@ -98,16 +107,44 @@ const productSchema: Schema<IProduct> = new Schema(
         default: "",
       },
     },
+    productImg: {
+      public_id: {
+        type: String,
+        default: "",
+      },
+      url: {
+        type: String,
+        default: "",
+      },
+    },
+    thirdImg: {
+      public_id: {
+        type: String,
+        default: "",
+      },
+      url: {
+        type: String,
+        default: "",
+      },
+    },
+    fourthImg: {
+      public_id: {
+        type: String,
+        default: "",
+      },
+      url: {
+        type: String,
+        default: "",
+      },
+    },
+    name: {
+      type: String,
+      required: true, // Product name is required
+    },
     about: {
       type: String,
       required: true, // About text is required
     },
-    tags: [
-      {
-        type: String,
-        required: true, // At least one tag is required
-      },
-    ],
     price: {
       type: Number,
       required: true, // Price is required
@@ -118,39 +155,41 @@ const productSchema: Schema<IProduct> = new Schema(
       required: true, // Discount is required
       default: 0,
     },
-    quantity: {
-      type: Number,
-      default: 0, // Default quantity is 0
-    },
-    shortDescription: {
-      type: String,
-      required: true, // Short description is required
-    },
-    highlights: {
-      type: [String],
-      required: true, // At least one highlight is required
-    },
-    sku: {
-      type: String,
-      required: true, // SKU is required
-    },
-    brand: {
-      type: String,
-      required: true, // Brand is required
-    },
     description: {
-      type: Schema.Types.ObjectId,
-      ref: "Description", // Reference to Description model
+      type: String,
+      required: true, // Description is required
     },
-    additionalInfo: {
-      type: String, // Optional additional info
+    stock: {
+      type: Number,
+      default: 0, // Default stock quantity is 0
+    },
+    expiryMonths: {
+      type: Number,
+      default: 0, // Default stock quantity is 0
+    },
+    form: {
+      type: String,
+      required: true,
+    },
+    packSize: {
+      type: String,
+      required: true,
     },
     appliedFor: {
-      type: [String], // Optional appliedFor array
+      type: String,
+      required: true,
+    },
+    suitableFor: {
+      type: String,
+      required: true,
+    },
+    safetyNote: {
+      type: String,
+      required: true,
     },
     faqs: {
       type: Schema.Types.ObjectId,
-      ref: "Faqs", // Reference to Faqs model
+      ref: "Faqs", // Reference to FAQ's model
     },
     averageRating: {
       type: Number,

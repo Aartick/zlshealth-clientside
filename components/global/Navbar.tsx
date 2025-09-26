@@ -31,6 +31,9 @@ import { usePathname } from "next/navigation";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import ShopLink from "../topBar/ShopLink";
 import { isHiddenPath } from "@/utils/hiddenPaths";
+import { getWishlist } from "@/lib/thunks/wishlistThunks";
+import { resetWishlist } from "@/lib/features/wishlistSlice";
+import { signOut } from "next-auth/react";
 
 const placeholderTexts = [
     "Stress Relief Syrup",
@@ -106,10 +109,10 @@ function Navbar() {
     const isUser = getItem(KEY_ACCESS_TOKEN)
     const dispatch = useAppDispatch()
     // Get cart items from Redux store
-    const cart = useAppSelector((state) => state.cartSlice.cart) || []
+    const cart = useAppSelector((state) => state.cartSlice.cart)
     // Calculate total products in cart
     let totalProducts = 0;
-    Array.isArray(cart) && cart?.forEach((pro) => (totalProducts += pro.quantity))
+    cart.forEach((pro) => (totalProducts += pro.quantity))
 
     // Get wishlist products from Redux store
     const wishlist = useAppSelector((state) => state.wishlistSlice.products)
@@ -135,8 +138,10 @@ function Navbar() {
             if (isUser) {
                 // await dispatch(mergeGuestCart());
                 await dispatch(getCart());
+                await dispatch(getWishlist())
             } else {
                 dispatch(resetCart());
+                dispatch(resetWishlist())
             }
         };
         syncCart()
@@ -148,6 +153,7 @@ function Navbar() {
             if (isUser) {
                 const response = await axiosClient.get("/api/auth?type=logout")
                 removeItem(KEY_ACCESS_TOKEN)
+                signOut()
                 toast.success(response.data.result)
             }
         } catch { }

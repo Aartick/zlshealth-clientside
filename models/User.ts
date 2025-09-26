@@ -6,7 +6,7 @@
  * Supports both email/password and Google-based authentication.
  *
  * Interface:
- * - IUser: Extends mongoose Document, includes profile info, authentication details, 
+ * - IUser: Extends mongoose Document, includes profile info, authentication details,
  *   billing/shipping addresses, and related wishlist reference.
  *
  * Schema:
@@ -28,90 +28,144 @@
 
 import mongoose, { Document, Schema } from "mongoose";
 
-// Interface for a User document
-export interface IUser extends Document {
-  firstName: string; // User's first name
-  lastName: string; // User's last name
-  displayName: string; // Display name for profile
-  googleId: string; // Google authentication ID
-  email: string; // User email (unique, required)
-  password: string; // User password (hashed, excluded by default in queries)
-  hasAgreedToPrivacyPolicy: boolean; // Privacy policy agreement
-  VAT_Number: string; // Optional VAT number
-  SSN_Number: string; // Optional SSN number
-  GSTIN_Number: string; // Optional GSTIN number
-  billingAddress: string; // Billing address
-  shippingAddress: string; // Shipping address
-  country: string; // Country of residence
-  streetAddress: string; // Street name/address
+export interface IAddress {
+  fullName: string;
+  phone: string;
+  landmark?: string; // Nearby landmark (optional)
   houseNo: string; // House or apartment number
-  alternateAddress: string; // Optional alternate address
-  landmark: string; // Nearby landmark
+  streetAddress: string; // Street name/address
+  streetAddress2?: string;
+  addressType?: string; // Home, Work, Other
   city: string; // City
+  district: string;
   state: string; // State
-  phone: string; // Contact number
   pinCode: string; // Postal code
-  wishlist: mongoose.Types.ObjectId; // Reference to Wishlist collection
+  isDefault: boolean;
 }
 
-// Mongoose schema for User
-const userSchema: Schema<IUser> = new Schema({
-  firstName: {
+// Interface for a User document
+export interface IUser extends Document {
+  googleId?: string; // Google authentication ID
+  password?: string; // User password (hashed, excluded by default in queries)
+  hasAgreedToPrivacyPolicy: boolean; // Privacy policy agreement
+  userProfile: {
+    url: string;
+    public_id: string;
+  };
+  fullName: string; // User's full name
+  dob: string; // User's Date of Birth
+  phone: string; // Mobile number
+  gender: string; // User's gender
+  email: string; // User email (unique, required)
+  addresses: IAddress[];
+  wishlist: mongoose.Types.ObjectId; // Reference to Wishlist collection
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Address Schema (embedded inside user)
+const AddressSchema = new Schema<IAddress>({
+  fullName: {
     type: String,
-  },
-  lastName: {
-    type: String,
-  },
-  displayName: {
-    type: String,
-  },
-  googleId: String, // Google OAuth ID for SSO login
-  email: {
-    type: String,
-    required: [true, "Email is required"], // Email must be provided
-    unique: true, // Ensure uniqueness
-    lowercase: true, // Store email in lowercase
-    trim: true, // Trim whitespace
-    match: [/^\S+@\S+\.\S+$/, "Please use a valid email address"], // Validate format
-  },
-  password: {
-    type: String,
-    select: false, // Exclude password by default in queries
-  },
-  hasAgreedToPrivacyPolicy: {
-    type: Boolean,
     required: true,
+  },
+  phone: {
+    type: String,
+    required: true,
+  },
+  landmark: {
+    type: String,
+  },
+  houseNo: {
+    type: String,
+    required: true,
+  },
+  streetAddress: {
+    type: String,
+    required: true,
+  },
+  streetAddress2: {
+    type: String,
+  },
+  addressType: {
+    type: String,
+  },
+  city: {
+    type: String,
+    required: true,
+  },
+  district: {
+    type: String,
+    required: true,
+  },
+  state: {
+    type: String,
+    required: true,
+  },
+  pinCode: {
+    type: String,
+    required: true,
+  },
+  isDefault: {
+    type: Boolean,
     default: false,
   },
-  VAT_Number: {
-    type: String,
-  },
-  SSN_Number: {
-    type: String,
-  },
-  GSTIN_Number: {
-    type: String,
-  },
-  billingAddress: {
-    type: String,
-  },
-  shippingAddress: {
-    type: String,
-  },
-  country: String,
-  streetAddress: String,
-  houseNo: String,
-  alternateAddress: String,
-  landmark: String,
-  city: String,
-  state: String,
-  phone: String,
-  pinCode: String,
-  wishlist: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Wishlist", // Reference to Wishlist model
-  },
 });
+
+// Mongoose schema for User
+const userSchema: Schema<IUser> = new Schema(
+  {
+    googleId: String, // Google OAuth ID for SSO login
+    email: {
+      type: String,
+      required: [true, "Email is required"], // Email must be provided
+      unique: true, // Ensure uniqueness
+      lowercase: true, // Store email in lowercase
+      trim: true, // Trim whitespace
+      match: [/^\S+@\S+\.\S+$/, "Please use a valid email address"], // Validate format
+    },
+    password: {
+      type: String,
+      select: false, // Exclude password by default in queries
+    },
+    hasAgreedToPrivacyPolicy: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+    userProfile: {
+      url: {
+        type: String,
+        required: true,
+      },
+      public_id: {
+        type: String,
+        required: true,
+      },
+    },
+    fullName: {
+      type: String,
+    },
+    dob: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+    },
+    gender: {
+      type: String,
+      required: true,
+    },
+    addresses: [AddressSchema],
+    wishlist: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Wishlist", // Reference to Wishlist model
+    },
+  },
+  { timestamps: true }
+);
 
 // Create or reuse User model
 const User = mongoose.models.User || mongoose.model<IUser>("User", userSchema);
