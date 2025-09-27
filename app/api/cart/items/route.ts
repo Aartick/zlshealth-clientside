@@ -7,8 +7,10 @@ import { NextRequest } from "next/server";
 interface ProductDoc {
   _id: Types.ObjectId;
   name: string;
-  imageUrl: {url: string},
-  price: number
+  productImg: { url: string };
+  price: number;
+  about: string;
+  discount: number;
 }
 
 interface CartProduct {
@@ -74,7 +76,6 @@ export async function POST(req: NextRequest) {
  * @returns - Updated cart with product details
  */
 
-
 export async function PUT(req: NextRequest) {
   try {
     // Verify JWT and extract user ID
@@ -118,13 +119,15 @@ export async function PUT(req: NextRequest) {
 
     // Map cart products to response format
     const responseWrapper = updatedCart.products.map((pro: CartProduct) => {
-      const product = pro.productId as ProductDoc
+      const product = pro.productId as ProductDoc;
       return {
         _id: product._id,
         name: product.name,
-        img: product.imageUrl.url,
+        img: product.productImg.url,
         price: product.price,
         quantity: pro.quantity,
+        about: product.about,
+        discount: product.discount,
       };
     });
 

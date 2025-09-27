@@ -7,8 +7,10 @@ import { NextRequest } from "next/server";
 interface ProductDoc {
   _id: Types.ObjectId;
   name: string;
-  imageUrl: { url: string };
+  productImg: { url: string };
   price: number;
+  discount: number;
+  about: string;
 }
 
 interface CartProduct {
@@ -69,9 +71,11 @@ export async function POST(req: NextRequest) {
       return {
         _id: product._id,
         name: product.name,
-        img: product.imageUrl.url,
+        img: product.productImg.url,
         price: product.price,
         quantity: pro.quantity,
+        discount: product.discount,
+        about: product.about,
       };
     });
 
@@ -105,14 +109,16 @@ export async function GET(req: NextRequest) {
 
     // Map cart products to response format
     const responseWrapper = cart.products.map((pro: CartProduct) => {
-      const product = pro.productId as ProductDoc
+      const product = pro.productId as ProductDoc;
 
       return {
         _id: product._id,
         name: product.name,
-        img: product.imageUrl.url,
+        img: product.productImg.url,
         price: product.price,
         quantity: pro.quantity,
+        about: product.about,
+        discount: product.discount,
       };
     });
 

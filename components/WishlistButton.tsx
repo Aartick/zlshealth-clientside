@@ -20,25 +20,43 @@ import { addToWishlist, removeFromWishlist } from '@/lib/thunks/wishlistThunks';
 import React from 'react'
 import { BsSuitHeart, BsSuitHeartFill } from 'react-icons/bs';
 
+interface category {
+    _id: string,
+    name: string,
+    products: string[]
+}
+
+// Product interface defines the structure of product objects
 interface ProductType {
     _id: string,
-    category: string;
-    imageUrl: {
+    category: category;
+    descriptionImg: {
+        url: string,
         public_id: string,
-        url: string
+    };
+    productImg: {
+        url: string,
+        public_id: string,
+    };
+    thirdImg: {
+        url: string,
+        public_id: string,
+    };
+    fourthImg: {
+        url: string,
+        public_id: string,
     };
     name: string;
     about: string;
-    tags: string[];
     price: number;
+    description: string;
     discount: number;
-    shortDescription: string;
-    quantity: number;
-    highlights: string[];
-    sku: string;
-    brand: string;
-    additionalInfo: string;
-    appliedFor: string[];
+    stock: number;
+    expiryMonths: number,
+    form: string,
+    packSize: string,
+    appliedFor: string;
+    suitableFor: string
 }
 
 interface ProductProps {

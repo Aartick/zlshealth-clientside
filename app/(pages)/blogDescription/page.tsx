@@ -1,7 +1,12 @@
+"use client"
+
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 
 function Page() {
+  const router = useRouter()
+
   return (
     <div className='space-y-4 p-10 text-justify'>
       {/* Title */}
@@ -281,7 +286,11 @@ function Page() {
               science-backed solutions?
             </p>
 
-            <button className="py-2.5 px-5 rounded-[10px] bg-[#093C16] text-white">
+            <button
+              onClick={() => router.push("/products")}
+              className="py-2.5 px-5 rounded-[10px] bg-[#093C16]
+                         text-white cursor-pointer"
+            >
               Explore Our Products
             </button>
           </div>

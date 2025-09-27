@@ -21,26 +21,43 @@ import { CiFilter } from "react-icons/ci";
 import { MdKeyboardArrowDown } from 'react-icons/md'
 import { IoSearchOutline } from 'react-icons/io5'
 
+interface category {
+    _id: string,
+    name: string,
+    products: string[]
+}
+
 // Product interface defines the structure of product objects
 interface products {
     _id: string,
-    category: string;
-    imageUrl: {
+    category: category;
+    descriptionImg: {
+        url: string,
+        public_id: string,
+    };
+    productImg: {
+        url: string,
+        public_id: string,
+    };
+    thirdImg: {
+        url: string,
+        public_id: string,
+    };
+    fourthImg: {
         url: string,
         public_id: string,
     };
     name: string;
     about: string;
-    tags: string[];
     price: number;
+    description: string;
     discount: number;
-    shortDescription: string;
-    quantity: number;
-    highlights: string[];
-    sku: string;
-    brand: string;
-    additionalInfo: string;
-    appliedFor: string[];
+    stock: number;
+    expiryMonths: number,
+    form: string,
+    packSize: string,
+    appliedFor: string;
+    suitableFor: string
 }
 
 // Filters interface for categories, product types, and benefits
@@ -67,13 +84,13 @@ function Page() {
     // State for search input value
     const [inputValue, setInputValue] = useState("");
     // State for animated placeholder index
-    const [currentIndex, ] = useState(0);
+    const [currentIndex,] = useState(0);
     // State for animation trigger
-    const [isAnimating, ] = useState(false);
+    const [isAnimating,] = useState(false);
     // State for price range values
     const [values, setValues] = useState<number[]>([MIN, MAX]);
     // State for loading and storing categories
-    const [ , setLoadingCategories] = useState(true)
+    const [, setLoadingCategories] = useState(true)
     const [categories, setCategories] = useState<filters[]>([])
     // State for loading and storing product types
     const [loadingProductTypes, setLoadingProductTypes] = useState(true)
@@ -105,7 +122,7 @@ function Page() {
                 if (fetchedCategories.length > 0 && !selectedCategory) {
                     setSelectedCategory(fetchedCategories[0]._id)
                 }
-            } catch {}
+            } catch { }
             setLoadingCategories(false)
         }
 
@@ -114,7 +131,7 @@ function Page() {
                 setLoadingProductTypes(true)
                 const response = await axiosClient.get("/api/productTypes")
                 setProductTypes(response.data.result)
-            } catch {}
+            } catch { }
             setLoadingProductTypes(false)
         }
 
@@ -123,7 +140,7 @@ function Page() {
                 setLoadingBenefits(true)
                 const response = await axiosClient.get("/api/benefits")
                 setBenefits(response.data.result)
-            } catch {}
+            } catch { }
             setLoadingBenefits(false)
         }
 
@@ -375,21 +392,25 @@ function Page() {
                                         </div>
                                     );
                                 }}
-                                renderThumb={({ props }) => (
-                                    <div
-                                        {...props}
-                                        style={{
-                                            ...props.style,
-                                            height: "24px",
-                                            width: "24px",
-                                            borderRadius: "50%",
-                                            backgroundColor: "#fff",
-                                            border: "4px solid #71BF45",
-                                            boxShadow: "0 0 4px rgba(0, 0, 0, 0.3)",
-                                            cursor: "grab",
-                                        }}
-                                    />
-                                )}
+                                renderThumb={({ props, index }) => {
+                                    const { key, ...restProps } = props;
+                                    return (
+                                        <div
+                                            key={key || index}
+                                            {...restProps}
+                                            style={{
+                                                ...restProps.style,
+                                                height: "24px",
+                                                width: "24px",
+                                                borderRadius: "50%",
+                                                backgroundColor: "#fff",
+                                                border: "4px solid #71BF45",
+                                                boxShadow: "0 0 4px rgba(0, 0, 0, 0.3)",
+                                                cursor: "grab",
+                                            }}
+                                        />
+                                    )
+                                }}
                             />
 
                             {/* Display selected price range */}
@@ -407,7 +428,7 @@ function Page() {
 
                         {/* BENEFITS/CONCERNS FILTER */}
                         <div className="border border-[#e3e3e3] rounded-xl p-5 space-y-5">
-                            <h3 className='font-medium text-xl'>Benefits / Concerns</h3>
+                            <h3 className='font-medium text-xl'>Benefits / Conc</h3>
                             <div className="space-y-5">
                                 {loadingBenefits
                                     ? Array.from({ length: 5 }).map((_, i) => (

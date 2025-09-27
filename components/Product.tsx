@@ -26,25 +26,43 @@ import React from 'react'
 import CartButton from './CartButton';
 import WishlistButton from './WishlistButton';
 
+interface category {
+    _id: string,
+    name: string,
+    products: string[]
+}
+
+// Product interface defines the structure of product objects
 interface ProductType {
     _id: string,
-    category: string;
-    imageUrl: {
+    category: category;
+    descriptionImg: {
+        url: string,
         public_id: string,
-        url: string
+    };
+    productImg: {
+        url: string,
+        public_id: string,
+    };
+    thirdImg: {
+        url: string,
+        public_id: string,
+    };
+    fourthImg: {
+        url: string,
+        public_id: string,
     };
     name: string;
     about: string;
-    tags: string[];
     price: number;
+    description: string;
     discount: number;
-    shortDescription: string;
-    quantity: number;
-    highlights: string[];
-    sku: string;
-    brand: string;
-    additionalInfo: string;
-    appliedFor: string[];
+    stock: number;
+    expiryMonths: number,
+    form: string,
+    packSize: string,
+    appliedFor: string;
+    suitableFor: string
 }
 
 interface ProductProps {
@@ -91,7 +109,7 @@ function Product({ product }: ProductProps) {
             {/* Product image section */}
             <div className="relative h-[150px] sm:h-[300px]">
                 <Image
-                    src={product.imageUrl.url}
+                    src={product.productImg.url}
                     fill
                     alt="productImg"
                     className="border-[3px] border-[#e3e3e3] rounded-[10px] sm:rounded-[20px]"

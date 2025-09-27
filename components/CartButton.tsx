@@ -16,7 +16,7 @@ import React from 'react'
 
 interface ProductType {
     _id: string,
-    imageUrl?: {
+    productImg?: {
         public_id: string,
         url: string
     };
@@ -24,6 +24,7 @@ interface ProductType {
     name: string;
     price: number;
     discount: number;
+    about: string;
 }
 
 interface ProductProps {
@@ -38,7 +39,7 @@ function CartButton({ product }: ProductProps) {
     // Get cart items from Redux store
     const cart = useAppSelector((state) => state.cartSlice.cart)
     // Check if product is already in cart
-    const added = Array.isArray(cart) && cart.some((prod) => prod._id === product._id)
+    const added = cart.some((prod) => prod._id === product._id)
     // Get cart item details for quantity display
     const cartItem = cart.find((prod) => prod._id === product._id)
 
@@ -55,9 +56,11 @@ function CartButton({ product }: ProductProps) {
             dispatch(addToCartGuest({
                 _id: product._id,
                 name: product.name,
-                img: product?.imageUrl?.url || product.img,
+                img: product?.productImg?.url || product.img,
                 price: product.price,
-                quantity: 1
+                quantity: 1,
+                about: product.about,
+                discount: product.discount
             }))
         }
     }
