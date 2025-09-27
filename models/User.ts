@@ -48,7 +48,7 @@ export interface IUser extends Document {
   googleId?: string; // Google authentication ID
   password?: string; // User password (hashed, excluded by default in queries)
   hasAgreedToPrivacyPolicy: boolean; // Privacy policy agreement
-  userProfile: {
+  img: {
     url: string;
     public_id: string;
   };
@@ -75,10 +75,10 @@ const AddressSchema = new Schema<IAddress>({
   },
   landmark: {
     type: String,
+    required: true
   },
   houseNo: {
     type: String,
-    required: true,
   },
   streetAddress: {
     type: String,
@@ -133,14 +133,12 @@ const userSchema: Schema<IUser> = new Schema(
       required: true,
       default: false,
     },
-    userProfile: {
+    img: {
       url: {
         type: String,
-        required: true,
       },
       public_id: {
         type: String,
-        required: true,
       },
     },
     fullName: {
@@ -148,15 +146,12 @@ const userSchema: Schema<IUser> = new Schema(
     },
     dob: {
       type: String,
-      required: true,
     },
     phone: {
       type: String,
-      required: true,
     },
     gender: {
       type: String,
-      required: true,
     },
     addresses: [AddressSchema],
     wishlist: {

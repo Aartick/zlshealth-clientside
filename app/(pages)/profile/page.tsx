@@ -24,9 +24,12 @@
  */
 
 "use client"
-import UpdateAddresses from '@/components/UpdateAddresses'
+import Addresses from '@/components/Addresses'
+import UpdateAddresses from '@/components/Addresses'
+import { axiosClient } from '@/utils/axiosClient'
 import Image from 'next/image'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
 import { BsBoxSeam } from 'react-icons/bs'
 import { FaGear, FaUser } from 'react-icons/fa6'
 import { GoPlus } from 'react-icons/go'
@@ -37,7 +40,74 @@ import { MdKeyboardArrowRight } from 'react-icons/md'
 import { RxCross2 } from 'react-icons/rx'
 import { SlArrowDown } from 'react-icons/sl'
 
+interface UserDetails {
+    fullName: string;
+    dob: string;
+    phone: string;
+    gender: string;
+    email: string;
+    img?: string | null;
+}
+
+const initialDetails = {
+    fullName: "",
+    dob: "",
+    phone: "",
+    gender: "",
+    email: "",
+    img: ""
+}
+
+interface Address {
+    _id?: string;
+    fullName: string;
+    phone: string;
+    landmark?: string;
+    houseNo: string;
+    streetAddress: string;
+    streetAddress2?: string;
+    city: string;
+    district: string;
+    state: string;
+    pinCode: string;
+    isDefault: boolean;
+}
+
+const initialAddress = {
+    _id: "",
+    fullName: "",
+    phone: "",
+    landmark: "",
+    houseNo: "",
+    streetAddress: "",
+    streetAddress2: "",
+    city: "",
+    district: "",
+    state: "",
+    pinCode: "",
+    isDefault: false,
+}
+
+// Function to format Addresses
+const formatAddress = (address: Address) => {
+    // Create an array of address parts
+    const parts = [
+        address.houseNo,
+        address.landmark,
+        address.streetAddress,
+        address.streetAddress2,
+        address.city,
+        address.district,
+        address.state,
+        address.pinCode
+    ];
+
+    // Filter out empty or undefined values and join with comma
+    return parts.filter(part => part && part.trim() !== "").join(", ");
+};
+
 function Page() {
+    // ================ Scroll Events ================
     const [activeButton, setActiveButton] = useState("profile")
     const [activeSection, setActiveSection] = useState<string>("editDetails")
 
@@ -63,25 +133,94 @@ function Page() {
         ref.current?.scrollIntoView({ behavior: "smooth", block: "center" })
     }
 
-    const [updateAddresses, setUpdateAddresses] = useState(false)
 
-    const address = {
-        _id: "",
-        fullName: "",
-        phone: "",
-        landmark: "",
-        houseNo: "",
-        streetAddress: "",
-        streetAddress2: "",
-        addressType: "",
-        city: "",
-        district: "",
-        state: "",
-        pinCode: "",
-        isDefault: false,
+
+    // ================ Adding/Updating/Deleting Addresses ================
+    const [editType, setEditType] = useState("")
+    const [editAddressId, setEditAddressId] = useState("")
+    const [addresses, setAddresses] = useState<Address[]>([])
+
+    // Function to fetch addresses
+    const getAddresses = async () => {
+        try {
+            const response = await axiosClient.get("/api/users/addresses")
+            setAddresses(response.data.result)
+        } catch { }
     }
 
-    const handleUpdate = () => { }
+    // Function to update addresses
+    const handleUpdate = (updatedAddresses: Address[]) => {
+        setAddresses(updatedAddresses)
+    }
+
+    // Function to delete address
+    const deleteAddress = async (addressId: string) => {
+        try {
+            const response = await axiosClient.delete(`/api/users/addresses?addressId=${addressId}`)
+            setAddresses(response.data.result.addresses)
+            toast.success(response.data.result.message)
+        } catch { }
+    }
+
+    // Find default address from list
+    const defaultAddress = addresses.find(addr => addr.isDefault)
+    // Find other addresses form list
+    const otherAddresses = addresses.filter(addr => !addr.isDefault)
+
+
+
+    // ================ USER PROFILE RELATED LOGICS ================
+    const [formData, setFormData] = useState<UserDetails>(initialDetails)
+    const [submitting, setSubmitting] = useState<boolean>(false)
+
+    // Handle user details state
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        setFormData((prev) => ({
+            ...prev,
+            [e.target.name]: e.target.value
+        }))
+    }
+
+    // Handle file upload
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+        fileReader.onload = () => {
+            if (fileReader.readyState === FileReader.DONE) {
+                setFormData((prev) => ({
+                    ...prev,
+                    img: fileReader.result as string
+                }))
+            }
+        }
+    }
+
+    // Handle form submit
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        try {
+            setSubmitting(true)
+            const response = await axiosClient.put("/api/users", formData)
+            toast.success(response.data.result)
+            getProfile()
+        } catch { }
+        finally {
+            setSubmitting(false)
+        }
+    }
+
+    const getProfile = async () => {
+        const response = await axiosClient.get("/api/users")
+        setFormData(response.data.result)
+    }
+
+    useEffect(() => {
+        getProfile()
+        getAddresses()
+    }, [])
 
     return (
         <div className='flex gap-8 p-8 h-screen'>
@@ -203,8 +342,10 @@ function Page() {
                 </div>
             </div>
 
-            {/* MAIN CONTENT */}
+            {/* ================ MAIN CONTENT ================ */}
             <div className="flex-4 space-y-4 border border-[#f4f4f4] rounded-[36px] p-[30px] overflow-y-scroll scrollbar-hide">
+
+
                 {/* CARDS SECTION (Profile, Orders & Returns, Legal) */}
                 <div className="flex items-center gap-3">
                     {/* PROFILE CARD */}
@@ -271,16 +412,16 @@ function Page() {
                                     stroke={activeButton === "ordersAndReturns"
                                         ? "#FFFFFF"
                                         : "#71BF45"
-                                    } stroke-width="2"
-                                    stroke-linejoin="round"
+                                    } strokeWidth="2"
+                                    strokeLinejoin="round"
                                 />
                                 <path
                                     d="M6 1.5V4.5M12 1.5V4.5M5 9H13M5 13H11M5 17H9"
                                     stroke={activeButton === "ordersAndReturns"
                                         ? "#FFFFFF"
                                         : "#71BF45"
-                                    } stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round"
+                                    } strokeWidth="2"
+                                    strokeLinecap="round" strokeLinejoin="round"
                                 />
                             </svg>
                         </div>
@@ -330,8 +471,8 @@ function Page() {
                                     stroke={activeButton === "legal"
                                         ? "#FFFFFF"
                                         : "#71BF45"
-                                    } stroke-width="1.5"
-                                    stroke-linecap="round" stroke-linejoin="round"
+                                    } strokeWidth="1.5"
+                                    strokeLinecap="round" strokeLinejoin="round"
                                 />
                                 <path
                                     d="M19 10.683V7.78C19 6.14 19 5.32 18.596
@@ -347,8 +488,8 @@ function Page() {
                                     stroke={activeButton === "legal"
                                         ? "#FFFFFF"
                                         : "#71BF45"
-                                    } stroke-width="1.5"
-                                    stroke-linecap="round"
+                                    } strokeWidth="1.5"
+                                    strokeLinecap="round"
                                 />
                             </svg>
                         </div>
@@ -362,7 +503,9 @@ function Page() {
                     </div>
                 </div>
 
-                {/* PROFILE SECTION */}
+
+
+                {/* ================ PROFILE SECTION ================ */}
                 {activeButton === "profile" && (
                     <div className='
                           transition-all duration-500 
@@ -376,121 +519,168 @@ function Page() {
                                 Edit Details
                             </p>
 
-                            <div className="flex justify-between">
+                            <form onSubmit={handleSubmit} className="flex justify-between">
                                 {/* FORM FIELDS*/}
-                                <div className="flex gap-6">
-                                    {/* FIRST COLUMN */}
-                                    <div className="space-y-4">
-                                        {/* Full Name Input */}
-                                        <div className="flex flex-col space-y-1.5">
-                                            <label
-                                                htmlFor='fullName'
-                                                className="text-sm font-medium"
-                                            >
-                                                Full Name *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="fullName"
-                                                className="p-2.5 border border-[#CDCDCD]
+                                <div className="space-y-4">
+                                    <div className="flex gap-6">
+                                        {/* FIRST COLUMN */}
+                                        <div className="space-y-4">
+                                            {/* Full Name Input */}
+                                            <div className="flex flex-col space-y-1.5">
+                                                <label
+                                                    htmlFor='fullName'
+                                                    className="text-sm font-medium"
+                                                >
+                                                    Full Name *
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    name="fullName"
+                                                    id="fullName"
+                                                    value={formData.fullName}
+                                                    onChange={handleChange}
+                                                    className="p-2.5 border border-[#CDCDCD]
                                                 rounded-[6px] text-xs text-[#848484] focus:outline-none"
-                                                placeholder='Enter Full Name'
-                                            />
-                                        </div>
+                                                    placeholder='Enter Full Name'
+                                                />
+                                            </div>
 
-                                        {/* Mobile Number Input */}
-                                        <div className="flex flex-col space-y-1.5">
-                                            <label
-                                                htmlFor='mobileNumber'
-                                                className="text-sm font-medium"
-                                            >
-                                                Mobile Number *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="mobileNumber"
-                                                className="p-2.5 border border-[#CDCDCD] 
+                                            {/* Mobile Number Input */}
+                                            <div className="flex flex-col space-y-1.5">
+                                                <label
+                                                    htmlFor='phone'
+                                                    className="text-sm font-medium"
+                                                >
+                                                    Mobile Number *
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    name='phone'
+                                                    id="phone"
+                                                    value={formData.phone}
+                                                    onChange={handleChange}
+                                                    className="p-2.5 border border-[#CDCDCD] 
                                                 rounded-[6px] text-xs text-[#848484] focus:outline-none"
-                                                placeholder='(+91)-'
-                                            />
-                                            <p className='text-xs text-[#676767]'>
-                                                *You will receive an OTP for confirmation.
-                                            </p>
-                                        </div>
+                                                    placeholder='(+91)-'
+                                                />
+                                                <p className='text-xs text-[#676767]'>
+                                                    *You will receive an OTP for confirmation.
+                                                </p>
+                                            </div>
 
-                                        {/* Email Input */}
-                                        <div className="flex flex-col space-y-1.5">
-                                            <label
-                                                htmlFor='email'
-                                                className="text-sm font-medium"
-                                            >
-                                                Email
-                                                <span className='text-[#71BF45]'>
-                                                    {" "}(for order updates)
-                                                </span>
-                                            </label>
-                                            <div
-                                                className="flex justify-between items-center 
+                                            {/* Email Input */}
+                                            <div className="flex flex-col space-y-1.5">
+                                                <label
+                                                    htmlFor='email'
+                                                    className="text-sm font-medium"
+                                                >
+                                                    Email
+                                                    <span className='text-[#71BF45]'>
+                                                        {" "}(for order updates)
+                                                    </span>
+                                                </label>
+                                                <div
+                                                    className="flex justify-between items-center 
                                                        p-2.5 border border-[#CDCDCD] rounded-[6px]
                                                        text-xs text-[#848484]"
-                                            >
+                                                >
+                                                    <input
+                                                        type="email"
+                                                        name='email'
+                                                        id="email"
+                                                        value={formData.email}
+                                                        onChange={handleChange}
+                                                        className="focus:outline-none"
+                                                        placeholder='Enter Email'
+                                                    />
+                                                    {!formData.email && <p id='email'>@gmail.com</p>}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* SECOND COLUMN */}
+                                        <div className="space-y-4">
+                                            {/* DOB Field */}
+                                            <div className="flex flex-col space-y-1.5">
+                                                <label
+                                                    htmlFor='dob'
+                                                    className="text-sm font-medium"
+                                                >
+                                                    DOB
+                                                </label>
                                                 <input
-                                                    type="email"
-                                                    id="email"
-                                                    className="focus:outline-none"
-                                                    placeholder='Enter Email'
+                                                    type="date"
+                                                    name='dob'
+                                                    id="dob"
+                                                    value={formData.dob}
+                                                    onChange={handleChange}
+                                                    className="p-2.5 border border-[#CDCDCD]
+                                                rounded-[6px] text-xs text-[#848484] 
+                                                focus:outline-none"
+                                                    placeholder='(dd/mm/yy)'
                                                 />
-                                                <p id='email'>@gmail.com</p>
+                                            </div>
+
+                                            {/* Gender Dropdown */}
+                                            <div className="flex flex-col space-y-1.5">
+                                                <label
+                                                    htmlFor='gender'
+                                                    className="text-sm font-medium"
+                                                >
+                                                    Gender
+                                                </label>
+                                                <select
+                                                    name='gender'
+                                                    id="gender"
+                                                    value={formData.gender}
+                                                    onChange={handleChange}
+                                                    className="p-2.5 border border-[#CDCDCD]
+                                                rounded-[6px] text-xs text-[#848484] 
+                                                focus:outline-none"
+                                                >
+                                                    <option value="">(Select Option)</option>
+                                                    <option value="male">Male</option>
+                                                    <option value="female">Female</option>
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
-
-                                    {/* SECOND COLUMN */}
-                                    <div className="space-y-4">
-                                        {/* DOB Field */}
-                                        <div className="flex flex-col space-y-1.5">
-                                            <label
-                                                htmlFor='dob'
-                                                className="text-sm font-medium"
-                                            >
-                                                DOB
-                                            </label>
-                                            <input
-                                                type="date"
-                                                id="dob"
-                                                className="p-2.5 border border-[#CDCDCD]
-                                                rounded-[6px] text-xs text-[#848484] 
-                                                focus:outline-none"
-                                                placeholder='(dd/mm/yy)'
-                                            />
-                                        </div>
-
-                                        {/* Gender Dropdown */}
-                                        <div className="flex flex-col space-y-1.5">
-                                            <label
-                                                htmlFor='gender'
-                                                className="text-sm font-medium"
-                                            >
-                                                Gender
-                                            </label>
-                                            <select
-                                                id="gender"
-                                                className="p-2.5 border border-[#CDCDCD]
-                                                rounded-[6px] text-xs text-[#848484] 
-                                                focus:outline-none"
-                                            >
-                                                <option>(Select Option)</option>
-                                                <option value="male">Male</option>
-                                                <option value="female">Female</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                                    <input
+                                        type="submit"
+                                        value="Submit"
+                                        disabled={submitting}
+                                        className={`
+                                            py-2 bg-[#71BF45] text-white 
+                                            rounded-[6px] w-full hover:opacity-85
+                                            ${submitting
+                                                ? "cursor-not-allowed opacity-80"
+                                                : "cursor-pointer"
+                                            }
+                                        `}
+                                    />
                                 </div>
 
                                 {/* PROFILE PICTURE UPLOAD */}
-                                <label htmlFor="img" className='relative flex items-center justify-center p-5 bg-[#E3E3E3] w-[150px] h-[150px] rounded-full'>
-                                    {/* Default User Icon */}
-                                    <FaUser size={75} className='text-white' />
+                                <label
+                                    htmlFor="img"
+                                    className={`relative flex items-center justify-center
+                                         ${formData.img ? "border-3 border-[#E3E3E3]" : "p-5"}
+                                         bg-[#E3E3E3] w-[150px] h-[150px] rounded-full cursor-pointer`}
+                                >
+                                    {/* Show uploaded image if available */}
+                                    {formData.img ? (
+                                        <div className="relative w-full h-full">
+                                            <Image
+                                                src={formData.img}
+                                                fill
+                                                alt="l"
+                                                className='rounded-full object-cover'
+                                            />
+                                        </div>
+                                    ) : (
+                                        < FaUser size={75} className='text-white' />
+                                    )}
+
                                     {/* Edit Icon Overlay */}
                                     <div className="absolute top-1 -right-2 p-2.5 border-3 border-[#E3E3E3] rounded-full bg-white">
                                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -498,118 +688,204 @@ function Page() {
                                         </svg>
                                     </div>
                                 </label>
-                            </div>
+
+                                {/* Hidden File Input */}
+                                <input
+                                    type="file"
+                                    id='img'
+                                    name='img'
+                                    accept='image/*'
+                                    className='hidden'
+                                    onChange={handleFileUpload}
+                                />
+                            </form>
                         </div>
 
                         {/* ADDRESS SECTION */}
-                        <div ref={defaultAddressRef} className="border-b border-[#e3e3e3] space-y-4 py-2.5">
-                            {/* Default Address Header */}
-                            <div className="flex items-center justify-between">
-                                <p className="font-semibold text-[#093C16]">Default Address</p>
-                                <button className='p-2.5 border border-[#71BF45] rounded-[6px] flex items-center gap-1.5 text-[#71BF45] text-sm font-medium'>
-                                    <GoPlus /> Add New Address
-                                </button>
-                            </div>
+                        {editType === "newAddress"
+                            ?
+                            // Open form if user wants to add new address
+                            (
+                                <div className="py-2 5">
+                                    <Addresses
+                                        address={initialAddress}
+                                        editType={editType}
+                                        onUpdate={handleUpdate}
+                                        onCancel={() => setEditType("")}
+                                    />
+                                </div>
+                            )
+                            :
+                            // Otherwise show addresses if available otherwise "no address" messages
+                            (
+                                <>
+                                    {/* DEFAULT ADDRESS SECTION */}
+                                    <div ref={defaultAddressRef} className="border-b border-[#e3e3e3] space-y-4 py-2.5">
+                                        {/* Default Address Header */}
+                                        <div className="flex items-center justify-between">
+                                            <p className="font-semibold text-[#093C16]">Default Address</p>
+                                            <button
+                                                onClick={() => setEditType("newAddress")}
+                                                className='p-2.5 border border-[#71BF45] rounded-[6px] flex items-center gap-1.5 text-[#71BF45] text-sm font-medium cursor-pointer'
+                                            >
+                                                <GoPlus /> Add New Address
+                                            </button>
+                                        </div>
 
-                            {/* DEFAULT ADDRESS CARD */}
-                            {updateAddresses ? <UpdateAddresses address={address} onUpdate={handleUpdate} onCancel={() => setUpdateAddresses(false)} /> : (
-                                <div className="space-y-3">
-                                    <p className="font-medium text-sm">Harshita</p>
-                                    <div className="flex gap-1.5">
-                                        {/* Home Icon */}
-                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <g clip-path="url(#clip0_125_504)">
-                                                <path d="M15.8333 19.9998H4.16667C1.86917 19.9998 0 18.1307 0 15.8332V8.10318C0 6.71568 0.686667 5.42401 1.83667 4.64901L7.66917 0.712344C9.085 -0.242656 10.915 -0.242656 12.3308 0.712344L18.1642 4.64901C19.3133 5.42401 20 6.71484 20 8.10318V15.8332C20 18.1307 18.1308 19.9998 15.8333 19.9998Z" fill="#71BF45" />
-                                            </g>
-                                            <defs>
-                                                <clipPath id="clip0_125_504">
-                                                    <rect width="20" height="20" fill="white" />
-                                                </clipPath>
-                                            </defs>
-                                        </svg>
-                                        {/* Address Details */}
-                                        <p className="flex flex-col text-[#848484] text-xs">
-                                            Plot No. 45, House No.: 3-7-112/5, Near Shanti Gardens, Suryapet, Hyderabad, Telangana - 508206.
-                                            <span>Suryapet</span>
-                                            <span>Hyderabad - 508206</span>
-                                            <span>TELANGANA</span>
-                                        </p>
-                                    </div>
-                                    {/* Phone Number */}
-                                    <div className='flex items-center gap-2 text-sm font-medium'>
-                                        <p>Phone:</p>
-                                        <p className='text-[#848484]'>+91-9876543210</p>
-                                    </div>
-                                    {/* Edit & Remove Buttons */}
-                                    <div className="flex items-center gap-1.5">
-                                        <button
-                                            onClick={() => setUpdateAddresses(true)}
-                                            className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px] cursor-pointer"
-                                        >
-                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M2.16667 13.8333H3.35417L11.5 5.6875L10.3125 4.5L2.16667 12.6458V13.8333ZM0.5 15.5V11.9583L11.5 0.979167C11.6667 0.826389 11.8508 0.708333 12.0525 0.625C12.2542 0.541667 12.4658 0.5 12.6875 0.5C12.9092 0.5 13.1244 0.541667 13.3333 0.625C13.5422 0.708333 13.7228 0.833333 13.875 1L15.0208 2.16667C15.1875 2.31944 15.3092 2.5 15.3858 2.70833C15.4625 2.91667 15.5006 3.125 15.5 3.33333C15.5 3.55556 15.4619 3.7675 15.3858 3.96917C15.3097 4.17083 15.1881 4.35472 15.0208 4.52083L4.04167 15.5H0.5ZM10.8958 5.10417L10.3125 4.5L11.5 5.6875L10.8958 5.10417Z" fill="#848484" />
-                                            </svg>
-                                            <p className="text-[#848484] font-medium text-sm">Edit</p>
-                                        </button>
-                                        <button className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px] text-[#848484] cursor-pointer">
-                                            <RxCross2 />
-                                            <p className="font-medium text-sm">Remove</p>
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                                        {/* DEFAULT ADDRESS CARD */}
+                                        {editType === "defaultAddress"
+                                            ?
+                                            // Open form if user wants to update address
+                                            <UpdateAddresses
+                                                address={defaultAddress!}
+                                                editType={editType}
+                                                onUpdate={handleUpdate}
+                                                onCancel={() => setEditType("")}
+                                            />
+                                            : defaultAddress
+                                                ?
+                                                // Show default address if available
+                                                (
+                                                    <div className="space-y-3">
+                                                        <p className="font-medium text-sm">{defaultAddress.fullName}</p>
+                                                        <div className="flex gap-1.5">
+                                                            {/* Home Icon */}
+                                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                <g clipPath="url(#clip0_125_504)">
+                                                                    <path d="M15.8333 19.9998H4.16667C1.86917 19.9998 0 18.1307 0 15.8332V8.10318C0 6.71568 0.686667 5.42401 1.83667 4.64901L7.66917 0.712344C9.085 -0.242656 10.915 -0.242656 12.3308 0.712344L18.1642 4.64901C19.3133 5.42401 20 6.71484 20 8.10318V15.8332C20 18.1307 18.1308 19.9998 15.8333 19.9998Z" fill="#71BF45" />
+                                                                </g>
+                                                                <defs>
+                                                                    <clipPath id="clip0_125_504">
+                                                                        <rect width="20" height="20" fill="white" />
+                                                                    </clipPath>
+                                                                </defs>
+                                                            </svg>
+                                                            {/* Address Details */}
+                                                            <p className="flex flex-col text-[#848484] text-xs">
+                                                                {formatAddress(defaultAddress)}
+                                                                <span>{defaultAddress.city}</span>
+                                                                <span>{defaultAddress.district} - {defaultAddress.pinCode}</span>
+                                                                <span>{defaultAddress.state}</span>
+                                                            </p>
+                                                        </div>
+                                                        {/* Phone Number */}
+                                                        <div className='flex items-center gap-2 text-sm font-medium'>
+                                                            <p>Phone:</p>
+                                                            <p className='text-[#848484]'>{defaultAddress.phone}</p>
+                                                        </div>
+                                                        {/* Edit & Remove Buttons */}
+                                                        <div className="flex items-center gap-1.5">
+                                                            {/* Edit Button */}
+                                                            <button
+                                                                onClick={() => setEditType("defaultAddress")}
+                                                                className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px] cursor-pointer"
+                                                            >
+                                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M2.16667 13.8333H3.35417L11.5 5.6875L10.3125 4.5L2.16667 12.6458V13.8333ZM0.5 15.5V11.9583L11.5 0.979167C11.6667 0.826389 11.8508 0.708333 12.0525 0.625C12.2542 0.541667 12.4658 0.5 12.6875 0.5C12.9092 0.5 13.1244 0.541667 13.3333 0.625C13.5422 0.708333 13.7228 0.833333 13.875 1L15.0208 2.16667C15.1875 2.31944 15.3092 2.5 15.3858 2.70833C15.4625 2.91667 15.5006 3.125 15.5 3.33333C15.5 3.55556 15.4619 3.7675 15.3858 3.96917C15.3097 4.17083 15.1881 4.35472 15.0208 4.52083L4.04167 15.5H0.5ZM10.8958 5.10417L10.3125 4.5L11.5 5.6875L10.8958 5.10417Z" fill="#848484" />
+                                                                </svg>
+                                                                <p className="text-[#848484] font-medium text-sm">Edit</p>
+                                                            </button>
 
-                        {/* OTHER ADDRESS SECTION */}
-                        <div ref={otherAddressRef} className='border-b border-[#e3e3e3] space-y-4 py-2.5'>
-                            {/* OTHER ADDRESS HEADER */}
-                            <p className="font-semibold text-[#093C16]">Other Address</p>
+                                                            {/* Remove Button */}
+                                                            <button
+                                                                onClick={() => deleteAddress(defaultAddress._id!)}
+                                                                className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px] text-[#848484] cursor-pointer"
+                                                            >
+                                                                <RxCross2 />
+                                                                <p className="font-medium text-sm">Remove</p>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )
+                                                :
+                                                // Show message if no address available
+                                                (
+                                                    <p className="text-[#848484] text-center">No address available.</p>
+                                                )
+                                        }
+                                    </div>
 
-                            {/* OTHER ADDRESS CARD */}
-                            <div className="space-y-3">
-                                <p className="font-medium text-sm">Prem</p>
-                                <div className="flex gap-1.5">
-                                    {/* Home Icon */}
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g clip-path="url(#clip0_125_504)">
-                                            <path d="M15.8333 19.9998H4.16667C1.86917 19.9998 0 18.1307 0 15.8332V8.10318C0 6.71568 0.686667 5.42401 1.83667 4.64901L7.66917 0.712344C9.085 -0.242656 10.915 -0.242656 12.3308 0.712344L18.1642 4.64901C19.3133 5.42401 20 6.71484 20 8.10318V15.8332C20 18.1307 18.1308 19.9998 15.8333 19.9998Z" fill="#71BF45" />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_125_504">
-                                                <rect width="20" height="20" fill="white" />
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                    {/* Address Details */}
-                                    <p className="flex flex-col text-[#848484] text-xs">
-                                        Plot No. 45, House No.: 3-7-112/5, Near Shanti Gardens, Suryapet, Hyderabad, Telangana - 508206.
-                                        <span>Suryapet</span>
-                                        <span>Hyderabad - 508206</span>
-                                        <span>TELANGANA</span>
-                                    </p>
-                                </div>
-                                {/* Phone Number */}
-                                <div className='flex items-center gap-2 text-sm font-medium'>
-                                    <p>Phone:</p>
-                                    <p className='text-[#848484]'>+91-9876543210</p>
-                                </div>
-                                {/* Edit & Remove Buttons */}
-                                <div className="flex items-center gap-1.5">
-                                    <div className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px]">
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M2.16667 13.8333H3.35417L11.5 5.6875L10.3125 4.5L2.16667 12.6458V13.8333ZM0.5 15.5V11.9583L11.5 0.979167C11.6667 0.826389 11.8508 0.708333 12.0525 0.625C12.2542 0.541667 12.4658 0.5 12.6875 0.5C12.9092 0.5 13.1244 0.541667 13.3333 0.625C13.5422 0.708333 13.7228 0.833333 13.875 1L15.0208 2.16667C15.1875 2.31944 15.3092 2.5 15.3858 2.70833C15.4625 2.91667 15.5006 3.125 15.5 3.33333C15.5 3.55556 15.4619 3.7675 15.3858 3.96917C15.3097 4.17083 15.1881 4.35472 15.0208 4.52083L4.04167 15.5H0.5ZM10.8958 5.10417L10.3125 4.5L11.5 5.6875L10.8958 5.10417Z" fill="#848484" />
-                                        </svg>
-                                        <p className="text-[#848484] font-medium text-sm">Edit</p>
+                                    {/* OTHER ADDRESS SECTION */}
+                                    <div ref={otherAddressRef} className='border-b border-[#e3e3e3] space-y-4 py-2.5'>
+                                        {/* OTHER ADDRESS HEADER */}
+                                        <p className="font-semibold text-[#093C16]">Other Address</p>
+
+                                        {/* OTHER ADDRESS CARD */}
+                                        {editType === "otherAddress"
+                                            ? <UpdateAddresses
+                                                address={otherAddresses.find(data => data._id === editAddressId)!}
+                                                editType={editType}
+                                                onUpdate={handleUpdate}
+                                                onCancel={() => setEditType("")}
+                                            />
+                                            : otherAddresses.length !== 0
+                                                ? (
+                                                    <>
+                                                        {otherAddresses.map((data) => (
+                                                            <div className="space-y-3" key={data._id}>
+                                                                <p className="font-medium text-sm">{data.fullName}</p>
+                                                                <div className="flex gap-1.5">
+                                                                    {/* Home Icon */}
+                                                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                        <g clipPath="url(#clip0_125_504)">
+                                                                            <path d="M15.8333 19.9998H4.16667C1.86917 19.9998 0 18.1307 0 15.8332V8.10318C0 6.71568 0.686667 5.42401 1.83667 4.64901L7.66917 0.712344C9.085 -0.242656 10.915 -0.242656 12.3308 0.712344L18.1642 4.64901C19.3133 5.42401 20 6.71484 20 8.10318V15.8332C20 18.1307 18.1308 19.9998 15.8333 19.9998Z" fill="#71BF45" />
+                                                                        </g>
+                                                                        <defs>
+                                                                            <clipPath id="clip0_125_504">
+                                                                                <rect width="20" height="20" fill="white" />
+                                                                            </clipPath>
+                                                                        </defs>
+                                                                    </svg>
+                                                                    {/* Address Details */}
+                                                                    <p className="flex flex-col text-[#848484] text-xs">
+                                                                        {formatAddress(data)}
+                                                                        <span>{data.city}</span>
+                                                                        <span>{data.district} - {data.pinCode}</span>
+                                                                        <span>{data.state}</span>
+                                                                    </p>
+                                                                </div>
+                                                                {/* Phone Number */}
+                                                                <div className='flex items-center gap-2 text-sm font-medium'>
+                                                                    <p>Phone:</p>
+                                                                    <p className='text-[#848484]'>{data.phone}</p>
+                                                                </div>
+                                                                {/* Edit & Remove Buttons */}
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            setEditType("otherAddress")
+                                                                            setEditAddressId(data._id!)
+                                                                        }}
+                                                                        className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px] cursor-pointer">
+                                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                            <path d="M2.16667 13.8333H3.35417L11.5 5.6875L10.3125 4.5L2.16667 12.6458V13.8333ZM0.5 15.5V11.9583L11.5 0.979167C11.6667 0.826389 11.8508 0.708333 12.0525 0.625C12.2542 0.541667 12.4658 0.5 12.6875 0.5C12.9092 0.5 13.1244 0.541667 13.3333 0.625C13.5422 0.708333 13.7228 0.833333 13.875 1L15.0208 2.16667C15.1875 2.31944 15.3092 2.5 15.3858 2.70833C15.4625 2.91667 15.5006 3.125 15.5 3.33333C15.5 3.55556 15.4619 3.7675 15.3858 3.96917C15.3097 4.17083 15.1881 4.35472 15.0208 4.52083L4.04167 15.5H0.5ZM10.8958 5.10417L10.3125 4.5L11.5 5.6875L10.8958 5.10417Z" fill="#848484" />
+                                                                        </svg>
+                                                                        <p className="text-[#848484] font-medium text-sm">Edit</p>
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => deleteAddress(data._id!)}
+                                                                        className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px] text-[#848484] cursor-pointer"
+                                                                    >
+                                                                        <RxCross2 />
+                                                                        <p className="font-medium text-sm">Remove</p>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </>
+                                                )
+                                                : (
+                                                    <p className="text-[#848484] text-center">No address available.</p>
+                                                )
+                                        }
                                     </div>
-                                    <div className="flex items-center gap-1.5 border-[0.5px] border-[#848484] p-2.5 rounded-[6px] text-[#848484]">
-                                        <RxCross2 />
-                                        <p className="font-medium text-sm">Remove</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                </>
+                            )
+                        }
                     </div>
                 )}
+
+
 
                 {activeButton === "ordersAndReturns" && (
                     <section className="px-2.5 space-y-4 transition-all duration-500 ease-out opacity-0 translate-y-2 animate-fadeInCart">
@@ -769,7 +1045,7 @@ function Page() {
                     </section>
                 )}
             </div>
-        </div>
+        </div >
     )
 }
 
