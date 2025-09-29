@@ -31,13 +31,12 @@ import mongoose, { Document, Schema } from "mongoose";
 export interface IAddress {
   fullName: string;
   phone: string;
+  email?: string; // Email (optional)
   landmark?: string; // Nearby landmark (optional)
-  houseNo: string; // House or apartment number
-  streetAddress: string; // Street name/address
+  streetAddressHouseNo: string; // Street name/address House or apartment number
   streetAddress2?: string;
-  addressType?: string; // Home, Work, Other
-  city: string; // City
-  district: string;
+  addressType: string; // Home, Work, Other
+  cityTown: string; // City or Town
   state: string; // State
   pinCode: string; // Postal code
   isDefault: boolean;
@@ -73,14 +72,13 @@ const AddressSchema = new Schema<IAddress>({
     type: String,
     required: true,
   },
+  email: {
+    type: String,
+  },
   landmark: {
     type: String,
-    required: true
   },
-  houseNo: {
-    type: String,
-  },
-  streetAddress: {
+  streetAddressHouseNo: {
     type: String,
     required: true,
   },
@@ -89,12 +87,9 @@ const AddressSchema = new Schema<IAddress>({
   },
   addressType: {
     type: String,
-  },
-  city: {
-    type: String,
     required: true,
   },
-  district: {
+  cityTown: {
     type: String,
     required: true,
   },

@@ -99,7 +99,7 @@ const groceryCartSlice = createSlice({
         : [action.payload];
       state.cart = updatedCart;
     });
-    // Update cart state from backend
+    // Update cart state from backend (returns all the items)
     builder.addCase(getCart.fulfilled, (state, action) => {
       // Make sure action.payload always be an array
       const updatedCart = Array.isArray(action.payload)

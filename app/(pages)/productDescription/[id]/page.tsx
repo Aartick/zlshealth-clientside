@@ -13,7 +13,7 @@
 
 // Import required modules and components
 import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { IoStarSharp } from 'react-icons/io5'
 import { MdKeyboardArrowRight } from "react-icons/md";
 import Link from 'next/link';
@@ -23,6 +23,8 @@ import { axiosClient } from '@/utils/axiosClient';
 import CartButton from '@/components/CartButton';
 import WishlistButton from '@/components/WishlistButton';
 import ProductDescriptionSkeleton from '@/components/ProductDescriptionSkeleton';
+import Product from '@/components/Product';
+import { SlArrowLeft, SlArrowRight } from 'react-icons/sl';
 
 interface category {
     _id: string,
@@ -108,26 +110,44 @@ function Page() {
     // Store selecte image
     const [selectedImage, setSelectedImage] = useState(product.descriptionImg.url)
     const [loading, setLoading] = useState(false)
+
+    // State to hold similar products array
+    const [similarProducts, setSimilarProducts] = useState<product[]>([])
+
     // Get product ID from URL params
     const params = useParams()
+
     // Calculate discounted price
     const discountedPrice = product.price - (product.price * product.discount / 100)
 
-    // Fetch product details when component mounts
-    useEffect(() => {
-        const getDetails = async () => {
-            try {
-                setLoading(true)
-                // Fetch product data from backend
-                const details = await axiosClient.get(`/api/products?type=productId&id=${params.id}`)
-                setProduct(details.data.result)
-                setSelectedImage(details.data.result.descriptionImg.url)
-            } catch { }
-            finally {
-                setLoading(false)
-            }
+    // Fetch similar products
+    const getSimilarProducts = async () => {
+        try {
+            const response = await axiosClient.get(`/api/products/similarProducts?productId=${params.id}`)
+            setSimilarProducts(response.data.result)
+        } catch {
+
         }
+    }
+
+    // Fetch product details
+    const getDetails = async () => {
+        try {
+            setLoading(true)
+            // Fetch product data from backend
+            const details = await axiosClient.get(`/api/products?type=productId&id=${params.id}`)
+            setProduct(details.data.result)
+            setSelectedImage(details.data.result.descriptionImg.url)
+        } catch { }
+        finally {
+            setLoading(false)
+        }
+    }
+
+    // On mount get product details and similar products
+    useEffect(() => {
         getDetails()
+        getSimilarProducts()
     }, [params.id])
 
     const thumbnails = [
@@ -136,6 +156,28 @@ function Page() {
         product.thirdImg.url,
         product.fourthImg.url,
     ]
+
+    const scrollRef = useRef<HTMLDivElement | null>(null)
+
+    // Function to scroll left
+    const scrollLeft = () => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollBy({
+                left: -300,
+                behavior: "smooth"
+            })
+        }
+    }
+
+    // Function to scroll right
+    const scrollRight = () => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollBy({
+                left: 300,
+                behavior: "smooth"
+            })
+        }
+    }
 
     return (
         <div className='space-y-5 pb-10'>
@@ -397,11 +439,43 @@ function Page() {
             {/* FAQ and similar products section */}
             <div className="space-y-[30px] mx-3 md:mx-10">
                 <FAQ />
-                <p className="text-2xl font-semibold">Others Also Buy</p>
-                <div className="flex items-center overflow-x-scroll gap-5 scrollbar-hide">
-                    {/* {[...Array(11)].map((_, idx) => (
-                        // <Product key={idx} />
-                    ))} */}
+
+                {/* Similar products heading and scrolling buttons */}
+                <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-semibold">Others Also Buy</h2>
+                    <div className="flex items-center gap-3">
+                        {/* Left Button */}
+                        <div
+                            onClick={scrollLeft}
+                            className='border-2 border-[#093C16] text-[#093C16] hover:text-white hover:bg-[#093C16] rounded-full p-2.5 cursor-pointer'
+                        >
+                            <SlArrowLeft />
+                        </div>
+
+                        {/* Right Button */}
+                        <div
+                            onClick={scrollRight}
+                            className='border-2 border-[#093C16] text-[#093C16] hover:text-white hover:bg-[#093C16] rounded-full p-2.5 cursor-pointer'
+                        >
+                            <SlArrowRight />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Similar Products */}
+                <div
+                    ref={scrollRef}
+                    className="flex items-center scroll-smooth
+                    overflow-x-auto gap-5 scrollbar-hide"
+                >
+                    {similarProducts.map((product) => (
+                        <div
+                            className='w-[300px] shrink-0'
+                            key={product._id}
+                        >
+                            <Product product={product} />
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

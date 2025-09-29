@@ -76,11 +76,10 @@ interface Address {
     fullName: string;
     phone: string;
     landmark?: string;
-    houseNo: string;
-    streetAddress: string;
+    streetAddressHouseNo: string;
     streetAddress2?: string;
-    city: string;
-    district: string;
+    addressType: string;
+    cityTown: string;
     state: string;
     pinCode: string;
     isDefault: boolean;
@@ -161,7 +160,7 @@ const Addresses: React.FC<AddressFormProps> = ({
         >
             <h2 className="text-xl font-semibold">{editType === "newAddress" ? "Add" : "Update"} Address</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Full Name Input */}
                 <div className="flex flex-col space-y-1.5 w-full">
                     <label
@@ -203,26 +202,6 @@ const Addresses: React.FC<AddressFormProps> = ({
                         required
                     />
                 </div>
-
-                {/* House Number */}
-                <div className="flex flex-col space-y-1.5 w-full">
-                    <label
-                        htmlFor='houseNo'
-                        className="text-sm font-medium"
-                    >
-                        House Number
-                    </label>
-                    <input
-                        type="text"
-                        name='houseNo'
-                        id='houseNo'
-                        value={formData.houseNo}
-                        onChange={handleChange}
-                        placeholder='House No.'
-                        className="p-2.5 border border-[#CDCDCD]
-                        rounded-[6px] text-xs text-[#848484] focus:outline-none"
-                    />
-                </div>
             </div>
 
             {/* Street Addresses */}
@@ -237,9 +216,9 @@ const Addresses: React.FC<AddressFormProps> = ({
                     </label>
                     <input
                         type='text'
-                        name='streetAddress'
+                        name='streetAddressHouseNo'
                         id='streetAddress'
-                        value={formData.streetAddress}
+                        value={formData.streetAddressHouseNo}
                         onChange={handleChange}
                         placeholder='Street Address'
                         className="p-2.5 border border-[#CDCDCD]
@@ -297,13 +276,13 @@ const Addresses: React.FC<AddressFormProps> = ({
                         htmlFor='city'
                         className="text-sm font-medium"
                     >
-                        City *
+                        City / Town *
                     </label>
                     <input
                         type="text"
-                        name="city"
+                        name="cityTown"
                         id="city"
-                        value={formData.city}
+                        value={formData.cityTown}
                         onChange={handleChange}
                         placeholder='City'
                         className="p-2.5 border border-[#CDCDCD] 
@@ -312,29 +291,6 @@ const Addresses: React.FC<AddressFormProps> = ({
                     />
                 </div>
 
-                {/* District */}
-                <div className="flex flex-col space-y-1.5">
-                    <label
-                        htmlFor='district'
-                        className="text-sm font-medium"
-                    >
-                        District *
-                    </label>
-                    <input
-                        type="text"
-                        name="district"
-                        id="district"
-                        value={formData.district}
-                        onChange={handleChange}
-                        placeholder='District'
-                        className="p-2.5 border border-[#CDCDCD] 
-                        rounded-[6px] text-xs text-[#848484] focus:outline-none"
-                        required
-                    />
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* State */}
                 <div className="flex flex-col space-y-1.5">
                     <label
@@ -359,7 +315,9 @@ const Addresses: React.FC<AddressFormProps> = ({
                         ))}
                     </select>
                 </div>
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Pin Code */}
                 <div className="flex flex-col space-y-1.5">
                     <label
@@ -380,8 +338,33 @@ const Addresses: React.FC<AddressFormProps> = ({
                         required
                     />
                 </div>
+
+                {/* Address Type */}
+                <div className="flex flex-col space-y-1.5">
+                    <label
+                        htmlFor="addressType"
+                        className='text-sm font-medium'
+                    >
+                        Address Type (Home / Work / Other)
+                    </label>
+                    <select
+                        id="addressType"
+                        name='addressType'
+                        value={formData.addressType || ""}
+                        onChange={handleChange}
+                        className="p-2.5 border border-[#CDCDCD] 
+                        rounded-[6px] text-xs text-[#848484] focus:outline-none"
+                        required
+                    >
+                        <option value="" disabled>Select address type</option>
+                        <option value="home">Home</option>
+                        <option value="work">Work</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
             </div>
 
+            {/* Checkbox to mark address as default */}
             <label className='flex items-center space-x-2'>
                 <input
                     type="checkbox"

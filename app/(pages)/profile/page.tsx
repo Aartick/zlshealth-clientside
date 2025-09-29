@@ -63,11 +63,10 @@ interface Address {
     fullName: string;
     phone: string;
     landmark?: string;
-    houseNo: string;
-    streetAddress: string;
+    streetAddressHouseNo: string;
     streetAddress2?: string;
-    city: string;
-    district: string;
+    addressType: string;
+    cityTown: string;
     state: string;
     pinCode: string;
     isDefault: boolean;
@@ -78,11 +77,10 @@ const initialAddress = {
     fullName: "",
     phone: "",
     landmark: "",
-    houseNo: "",
-    streetAddress: "",
+    streetAddressHouseNo: "",
     streetAddress2: "",
-    city: "",
-    district: "",
+    addressType: "",
+    cityTown: "",
     state: "",
     pinCode: "",
     isDefault: false,
@@ -92,12 +90,11 @@ const initialAddress = {
 const formatAddress = (address: Address) => {
     // Create an array of address parts
     const parts = [
-        address.houseNo,
         address.landmark,
-        address.streetAddress,
-        address.streetAddress2,
-        address.city,
-        address.district,
+        address.streetAddressHouseNo,
+        !address.streetAddressHouseNo
+        && address.streetAddress2,
+        address.cityTown,
         address.state,
         address.pinCode
     ];
@@ -763,8 +760,7 @@ function Page() {
                                                             {/* Address Details */}
                                                             <p className="flex flex-col text-[#848484] text-xs">
                                                                 {formatAddress(defaultAddress)}
-                                                                <span>{defaultAddress.city}</span>
-                                                                <span>{defaultAddress.district} - {defaultAddress.pinCode}</span>
+                                                                <span>{defaultAddress.cityTown} - {defaultAddress.pinCode}</span>
                                                                 <span>{defaultAddress.state}</span>
                                                             </p>
                                                         </div>
@@ -839,8 +835,7 @@ function Page() {
                                                                     {/* Address Details */}
                                                                     <p className="flex flex-col text-[#848484] text-xs">
                                                                         {formatAddress(data)}
-                                                                        <span>{data.city}</span>
-                                                                        <span>{data.district} - {data.pinCode}</span>
+                                                                        <span>{data.cityTown} - {data.pinCode}</span>
                                                                         <span>{data.state}</span>
                                                                     </p>
                                                                 </div>

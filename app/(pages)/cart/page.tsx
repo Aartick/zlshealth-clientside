@@ -16,9 +16,14 @@
 
 "use client"
 
-import { useAppSelector } from '@/lib/hooks'
+import { useAppDispatch, useAppSelector } from '@/lib/hooks'
+import { deleteFromCart } from '@/lib/thunks/cartThunks'
+import { removeFromWishlist } from '@/lib/thunks/wishlistThunks'
+import { axiosClient } from '@/utils/axiosClient'
 import Image from 'next/image'
-import React, { useState } from 'react'
+import Link from 'next/link'
+import React, { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import { BiSolidOffer } from 'react-icons/bi'
 import { FiHeart } from 'react-icons/fi'
 import { LuPen } from 'react-icons/lu'
@@ -34,9 +39,77 @@ const paymentMehods = [
     "/cart/ApplePay.png"
 ]
 
+interface Address {
+    _id?: string;
+    fullName: string;
+    phone: string;
+    email?: string;
+    landmark?: string;
+    streetAddressHouseNo: string;
+    streetAddress2?: string;
+    addressType: string;
+    cityTown: string;
+    state: string;
+    pinCode: string;
+    isDefault: boolean;
+}
+
+const initialAddress = {
+    _id: "",
+    fullName: "",
+    phone: "",
+    email: "",
+    landmark: "",
+    streetAddressHouseNo: "",
+    streetAddress2: "",
+    addressType: "",
+    cityTown: "",
+    state: "",
+    pinCode: "",
+    isDefault: false,
+}
+
+// States of India
+const statesOfIndia = [
+    "", //default empty option
+    "Andhra Pradesh",
+    "Arunachal Pradesh",
+    "Assam",
+    "Bihar",
+    "Chhattisgarh",
+    "Goa",
+    "Gujarat",
+    "Haryana",
+    "Himachal Pradesh",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttar Pradesh",
+    "Uttarakhand",
+    "West Bengal"
+];
+
 function Page() {
     const [activeButton, setActiveButton] = useState("cart")
+    const [addresses, setAddresses] = useState<Address>(initialAddress)
+    const [futureAddress, setFutureAddress] = useState(false);
+    const [billingAddress, setBillingAddress] = useState(false)
 
+    // Dispatch items to the cart
+    const dispatch = useAppDispatch()
     // Get cart items from Redux store
     const cart = useAppSelector((state) => state.cartSlice.cart)
 
@@ -56,6 +129,66 @@ function Page() {
 
     // Check if wishlist is empty
     const isWishlistEmpty = wishlist.length === 0
+
+    // Function to fetch user default address from backend
+    const getAddresses = async () => {
+        try {
+            const response = await axiosClient.get("/api/users/addresses")
+            const defaultAddress = response.data.result.find((adrs: Address) => adrs.isDefault)
+            setAddresses(defaultAddress)
+            if (defaultAddress) setFutureAddress(true)
+        } catch { }
+    }
+
+    useEffect(() => {
+        getAddresses()
+    }, [])
+
+    /**
+          * Handles form input changes and updates `addresses` state.
+          *
+          * @param e - The change event from the input element.
+        */
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => {
+        const { name, value, type } = e.target;
+        setAddresses({
+            ...addresses,
+            [name]: type === "checkbox" && "checked" in e.target ? e.target.checked : value
+        })
+    }
+
+    /**
+       * Submits the form to either add a new address or update an existing one.
+       * - Removes `_id` if creating a new address.
+       * - Sends request to `/api/users/addresses`.
+       * - Passes updated addresses back to parent via `onUpdate`.
+       *
+       * @param e - The form submit event.
+    */
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            // Clone form data to avoid mutating state directly
+            const payload = { ...addresses }
+
+            // If adding a new address, remove `_id`
+            if (!addresses._id) {
+                delete payload._id;
+            }
+
+            // Send request to backend
+            const res = await axiosClient.put(
+                `/api/users/addresses`,
+                payload
+            );
+
+            // Set updated addresses
+            setAddresses(res.data.result.addresses)
+            toast.success(res.data.result.message)
+        } catch { }
+    }
 
     return (
         <div className='flex flex-col items-center m-10'>
@@ -196,62 +329,78 @@ function Page() {
                                     </div>
 
                                     {/* Sample Products */}
-                                    {cart.map((product, idx) => (
-                                        <div key={product._id}>
-                                            {/* Border */}
-                                            <div className="border border-[#e3e3e3] mx-3" />
+                                    {isCartEmpty ?
+                                        <div className="text-center border-t border-[#e3e3e3] pt-5 pb-4">
+                                            <p className="text-[#848484]">
+                                                Cart is empty.
+                                            </p>
+                                            <Link
+                                                href="/products"
+                                                className='text-sm underline decoration-[#71BF45] text-[#71BF45]'
+                                            >
+                                                Add Products
+                                            </Link>
+                                        </div>
+                                        :
+                                        cart.map((product, idx) => (
+                                            <div key={product._id}>
+                                                {/* Border */}
+                                                <div className="border border-[#e3e3e3] mx-3" />
 
-                                            {/* Cart Products */}
-                                            <div className="grid grid-cols-3 items-start py-2.5">
-                                                <div className="flex gap-3">
-                                                    {/* Serial N0. */}
-                                                    <p>{idx + 1}.</p>
+                                                {/* Cart Products */}
+                                                <div className="grid grid-cols-3 items-start py-2.5">
+                                                    <div className="flex gap-3">
+                                                        {/* Serial N0. */}
+                                                        <p>{idx + 1}.</p>
 
-                                                    {/* Product Image*/}
-                                                    <div className="relative w-[96px] h-[93px]">
-                                                        <Image
-                                                            src={product.img!}
-                                                            alt={product.name}
-                                                            fill
-                                                            className='rounded-[10px] border-2 border-[#71BF45] object-cover'
+                                                        {/* Product Image*/}
+                                                        <div className="relative w-[96px] h-[93px]">
+                                                            <Image
+                                                                src={product.img!}
+                                                                alt={product.name}
+                                                                fill
+                                                                className='rounded-[10px] border-2 border-[#71BF45] object-cover'
+                                                            />
+                                                        </div>
+
+                                                        {/* Product details */}
+                                                        <div className="flex flex-col justify-between font-medium">
+                                                            <div>
+                                                                <p className='text-sm'>{product.name}</p>
+                                                                <p className='text-xs'>{product.about}</p>
+                                                            </div>
+
+                                                            <div className="flex items-center gap-[5px] text-xs">
+                                                                <p>Read More</p>
+                                                                <SlArrowDown />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Product quantity */}
+                                                    <div className="flex justify-center">
+                                                        <select
+                                                            id="quantity"
+                                                            value={product.quantity}
+                                                            className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
+                                                        >
+                                                            <option value="1">1</option>
+                                                            <option value="2">2</option>
+                                                            <option value="3">3</option>
+                                                        </select>
+                                                    </div>
+
+                                                    {/* Product Price */}
+                                                    <div className="flex justify-center items-center gap-4">
+                                                        <p className="text-base font-medium">₹{product.price}.00</p>
+                                                        <RxCross1
+                                                            className="text-[#848484] cursor-pointer"
+                                                            onClick={() => dispatch(deleteFromCart({ productId: product._id }))}
                                                         />
                                                     </div>
-
-                                                    {/* Product details */}
-                                                    <div className="flex flex-col justify-between font-medium">
-                                                        <div>
-                                                            <p className='text-sm'>{product.name}</p>
-                                                            <p className='text-xs'>{product.about}</p>
-                                                        </div>
-
-                                                        <div className="flex items-center gap-[5px] text-xs">
-                                                            <p>Read More</p>
-                                                            <SlArrowDown />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Product quantity */}
-                                                <div className="flex justify-center">
-                                                    <select
-                                                        id="quantity"
-                                                        value={product.quantity}
-                                                        className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
-                                                    >
-                                                        <option value="1">1</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-                                                    </select>
-                                                </div>
-
-                                                {/* Product Price */}
-                                                <div className="flex justify-center items-center gap-4">
-                                                    <p className="text-base font-medium">₹{product.price}.00</p>
-                                                    <RxCross1 className="text-[#848484] cursor-pointer" />
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))}
 
                                 </div>
 
@@ -273,59 +422,74 @@ function Page() {
                                         </div>
                                     </div>
 
-                                    {wishlist.map((product, idx) => (
-                                        <div key={product._id}>
-                                            {/* BORDER */}
-                                            <div className="border border-[#e3e3e3] mx-3" />
+                                    {isWishlistEmpty ?
+                                        <div className="text-center border-t border-[#e3e3e3] pt-5 pb-4">
+                                            <p className="text-[#848484]">
+                                                Wishlist is empty.
+                                            </p>
+                                            <Link
+                                                href="/products"
+                                                className='text-sm underline decoration-[#71BF45] text-[#71BF45]'
+                                            >
+                                                Add Products
+                                            </Link>
+                                        </div>
+                                        : wishlist.map((product, idx) => (
+                                            <div key={product._id}>
+                                                {/* BORDER */}
+                                                <div className="border border-[#e3e3e3] mx-3" />
 
-                                            {/* CART PRODUCTS */}
-                                            <div className="grid grid-cols-3 items-start py-2.5">
-                                                <div className="flex gap-3">
-                                                    {/* SERIAL NO. */}
-                                                    <p>{idx + 1}.</p>
+                                                {/* CART PRODUCTS */}
+                                                <div className="grid grid-cols-3 items-start py-2.5">
+                                                    <div className="flex gap-3">
+                                                        {/* SERIAL NO. */}
+                                                        <p>{idx + 1}.</p>
 
-                                                    {/* PRODUCT IMAGE */}
-                                                    <div className="relative w-[96px] h-[93px]">
-                                                        <Image
-                                                            src={product.img}
-                                                            alt={product.name}
-                                                            fill
-                                                            className='rounded-[10px] border-2 border-[#71BF45] object-cover'
+                                                        {/* PRODUCT IMAGE */}
+                                                        <div className="relative w-[96px] h-[93px]">
+                                                            <Image
+                                                                src={product.img}
+                                                                alt={product.name}
+                                                                fill
+                                                                className='rounded-[10px] border-2 border-[#71BF45] object-cover'
+                                                            />
+                                                        </div>
+
+                                                        {/* PRODUCT DETAILS */}
+                                                        <div className="flex flex-col justify-between font-medium">
+                                                            <div>
+                                                                <p className='text-sm'>{product.name}</p>
+                                                                <p className='text-xs'>{product.about}</p>
+                                                            </div>
+
+                                                            <div className="flex items-center gap-[5px] text-xs">
+                                                                <p className='text-[#093C16]'>Read More</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex justify-center">
+                                                        <select
+                                                            id="quantity"
+                                                            value={product.quantity}
+                                                            className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
+                                                        >
+                                                            <option value="1">1</option>
+                                                            <option value="2">2</option>
+                                                            <option value="3">3</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div className="flex justify-center items-center gap-4">
+                                                        <p className="text-base font-medium">₹{product.price}.00</p>
+                                                        <RxCross1
+                                                            className="text-[#848484] cursor-pointer"
+                                                            onClick={() => dispatch(removeFromWishlist({ productId: product._id }))}
                                                         />
                                                     </div>
-
-                                                    {/* PRODUCT DETAILS */}
-                                                    <div className="flex flex-col justify-between font-medium">
-                                                        <div>
-                                                            <p className='text-sm'>{product.name}</p>
-                                                            <p className='text-xs'>{product.about}</p>
-                                                        </div>
-
-                                                        <div className="flex items-center gap-[5px] text-xs">
-                                                            <p className='text-[#093C16]'>Read More</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex justify-center">
-                                                    <select
-                                                        id="quantity"
-                                                        value={product.quantity}
-                                                        className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
-                                                    >
-                                                        <option value="1">1</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-                                                    </select>
-                                                </div>
-
-                                                <div className="flex justify-center items-center gap-4">
-                                                    <p className="text-base font-medium">₹{product.price}.00</p>
-                                                    <RxCross1 className="text-[#848484] cursor-pointer" />
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))}
 
                                 </div>
                             </>
@@ -337,7 +501,7 @@ function Page() {
                                 className="p-2.5 border-[3px] border-[#e3e3e3] rounded-[20px] transition-all
                                 duration-500 ease-out opacity-0 translate-y-2 animate-fadeInCart min-w-60"
                             >
-                                <div className="space-y-3">
+                                <form className="space-y-3">
                                     {/* HEADER */}
                                     <div className="border-b-2 p-2.5 border-[#e3e3e3] font-medium">
                                         Contact Information
@@ -349,19 +513,31 @@ function Page() {
                                             <label htmlFor="fullName" className='font-medium px-2.5'>Full Name *</label>
                                             <input
                                                 type="text"
+                                                name='fullName'
                                                 id="fullName"
+                                                value={addresses.fullName}
+                                                onChange={handleChange}
                                                 placeholder='Enter Full Name'
                                                 className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none'
+                                                required
                                             />
                                         </div>
 
                                         <div className="flex flex-col space-y-3 text-sm text-[#848484]">
-                                            <label htmlFor="mobileNumber" className='font-medium px-2.5'>Mobile Number *</label>
+                                            <label
+                                                htmlFor="phone"
+                                                className='font-medium px-2.5'>
+                                                Mobile Number *
+                                            </label>
                                             <input
-                                                type="number"
-                                                id="mobileNumber"
+                                                type="text"
+                                                name='phone'
+                                                id="phone"
+                                                value={addresses.phone}
+                                                onChange={handleChange}
                                                 placeholder='(+91)-'
                                                 className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none'
+                                                required
                                             />
                                             <div className="text-xs">*You will receive an OTP for confirmation.</div>
                                         </div>
@@ -385,22 +561,29 @@ function Page() {
                                             >
                                                 <input
                                                     type="email"
+                                                    name='email'
                                                     id="email"
+                                                    value={addresses.email}
+                                                    onChange={handleChange}
                                                     placeholder='Enter email'
                                                     className='focus:outline-none'
                                                 />
-                                                <p className="text-xs">@gmail.com</p>
+                                                {!addresses.email && <p className="text-xs">@gmail.com</p>}
                                             </div>
                                         </div>
                                         <div className="" />
                                     </div>
 
                                     {/* ================ SHIPPING ADDRESS ================ */}
+
+                                    {/* Heading */}
                                     <p className="border-b-2 p-2.5 border-[#e3e3e3] font-medium">
                                         Shipping Address
                                     </p>
 
+                                    {/* Street Addresss inputs */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+                                        {/* Street Address / House No. */}
                                         <div className="flex flex-col space-y-3 text-sm text-[#848484]">
                                             <label
                                                 htmlFor="streetAddress"
@@ -410,12 +593,16 @@ function Page() {
                                             </label>
                                             <input
                                                 type="text"
+                                                name="streetAddressHouseNo"
                                                 id="streetAddress"
+                                                value={addresses.streetAddressHouseNo}
+                                                onChange={handleChange}
                                                 placeholder='Street Address / House No.'
                                                 className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none'
                                             />
                                         </div>
 
+                                        {/* Street Address 2 */}
                                         <div className=" flex flex-col space-y-3 text-sm text-[#848484]">
                                             <label
                                                 htmlFor="streetAddressLine2"
@@ -423,55 +610,141 @@ function Page() {
                                             >
                                                 Street Address Line 2
                                             </label>
-                                            <input type="text" id="streetAddressLine2" placeholder='Street Address Line 2' className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none' />
+                                            <input
+                                                type="text"
+                                                name='streetAddress2'
+                                                id="streetAddressLine2"
+                                                value={addresses.streetAddress2}
+                                                onChange={handleChange}
+                                                placeholder='Street Address Line 2'
+                                                className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none'
+                                            />
                                         </div>
                                     </div>
 
+                                    {/* Address Type and Landmark inputs */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+                                        {/* Address Type */}
                                         <div className="flex flex-col space-y-3 text-sm text-[#848484]">
-                                            <label htmlFor="addressType" className='font-medium px-2.5'>Address Type (Home / Work / Other)</label>
-                                            <select id="addressType" className='rounded-[10px] border border-[#cdcdcd] p-3 focus:outline-none'>
+                                            <label
+                                                htmlFor="addressType"
+                                                className='font-medium px-2.5'
+                                            >
+                                                Address Type (Home / Work / Other)
+                                            </label>
+                                            <select
+                                                id="addressType"
+                                                name='addressType'
+                                                value={addresses.addressType || "home"}
+                                                onChange={handleChange}
+                                                className='rounded-[10px] border border-[#cdcdcd] p-3 focus:outline-none'
+                                                required
+                                            >
                                                 <option value="home">Home</option>
                                                 <option value="work">Work</option>
                                                 <option value="other">Other</option>
                                             </select>
                                         </div>
 
+                                        {/* Landmark */}
                                         <div className="flex flex-col space-y-3 text-sm text-[#848484]">
-                                            <label htmlFor="landmark" className='font-medium px-2.5'>Landmark (Optional)</label>
-                                            <input type="text" id="landmark" placeholder='Landmark (Optional)' className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none' />
+                                            <label
+                                                htmlFor="landmark"
+                                                className='font-medium px-2.5'
+                                            >
+                                                Landmark (Optional)
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name='landmark'
+                                                id="landmark"
+                                                value={addresses.landmark}
+                                                onChange={handleChange}
+                                                placeholder='Landmark (Optional)'
+                                                className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none'
+                                            />
                                         </div>
                                     </div>
 
+                                    {/* City/Town and State inputs */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+                                        {/* City input */}
                                         <div className="flex-1 flex flex-col space-y-3 text-sm text-[#848484]">
-                                            <label htmlFor="cityTown" className='font-medium px-2.5'>City / Town</label>
-                                            <input type="text" id="cityTown" placeholder='City / Town' className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none' />
+                                            <label
+                                                htmlFor="cityTown"
+                                                className='font-medium px-2.5'
+                                            >
+                                                City / Town
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="cityTown"
+                                                id="cityTown"
+                                                value={addresses.cityTown}
+                                                onChange={handleChange}
+                                                placeholder='City / Town'
+                                                className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none'
+                                                required
+                                            />
                                         </div>
 
+                                        {/* State input */}
                                         <div className="flex-1 flex flex-col space-y-3 text-sm text-[#848484]">
-                                            <label htmlFor="state" className='font-medium px-2.5'>State</label>
-                                            <select id="state" className='rounded-[10px] border border-[#cdcdcd] p-3 focus:outline-none'>
-                                                <option value="Delhi">Delhi</option>
-                                                <option value="UttarPradesh">Uttar Pradesh</option>
-                                                <option value="Maharashtra">Maharashtra</option>
+                                            <label
+                                                htmlFor="state"
+                                                className='font-medium px-2.5'
+                                            >
+                                                State
+                                            </label>
+                                            <select
+                                                name='state'
+                                                id="state"
+                                                value={addresses.state}
+                                                onChange={handleChange}
+                                                className='rounded-[10px] border border-[#cdcdcd] p-3 focus:outline-none'
+                                                required
+                                            >
+                                                {statesOfIndia.map((state, idx) => (
+                                                    <option key={idx} value={state}>
+                                                        {state === "" ? "(Select Your State)" : state}
+                                                    </option>
+                                                ))}
                                             </select>
                                         </div>
                                     </div>
 
+                                    {/* Pincode input */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+                                        {/* Pincode input */}
                                         <div className=" flex flex-col space-y-3 text-sm text-[#848484]">
-                                            <label htmlFor="pincode" className='font-medium px-2.5'>Pincode</label>
-                                            <div className="flex items-center justify-between rounded-[10px] border border-[#cdcdcd] p-2.5">
-                                                <input type="text" id="pincode" placeholder='Enter PINCODE' className='focus:outline-none' />
+                                            <label
+                                                htmlFor="pincode"
+                                                className='font-medium px-2.5'
+                                            >
+                                                Pincode
+                                            </label>
+                                            <div
+                                                className="flex items-center justify-between rounded-[10px] border border-[#cdcdcd] p-2.5"
+                                            >
+                                                <input
+                                                    type="text"
+                                                    name="pinCode"
+                                                    id="pincode"
+                                                    value={addresses.pinCode}
+                                                    onChange={handleChange}
+                                                    placeholder='Enter PINCODE'
+                                                    className='focus:outline-none'
+                                                />
                                                 <LuPen className="text-xs" />
                                             </div>
                                         </div>
+                                        {/* Empty div */}
                                         <div className="" />
                                     </div>
 
-                                    {/* BOTTOM OPTIONS */}
+                                    {/* Delivery and Quick Options */}
                                     <div className="flex items-center justify-between">
+                                        {/* Delivery Options */}
                                         <div className="space-y-4">
                                             <p className="relative p-2.5 font-medium">
                                                 Delivery Options
@@ -493,6 +766,7 @@ function Page() {
                                                 <label htmlFor="scheduleDelivery" className='text-sm'>Schedule Delivery (Choose Date & Time)</label>
                                             </div>
                                         </div>
+                                        {/* Quick Options */}
                                         <div className="space-y-4">
                                             <p className="relative p-2.5 font-medium">
                                                 Quick Options
@@ -500,22 +774,43 @@ function Page() {
                                             </p>
 
                                             <div className="flex items-center gap-1.5">
-                                                <input type="checkbox" id="futureOrders" className='text-[#848484] border-[1.5px]' />
+                                                <input
+                                                    type="checkbox"
+                                                    id="futureOrders"
+                                                    name='futureOrders'
+                                                    checked={futureAddress}
+                                                    onChange={() => setFutureAddress(!futureAddress)}
+                                                    className='text-[#848484] border-[1.5px]'
+                                                />
                                                 <label htmlFor="futureOrders" className='text-sm'>Save This Address For Future Orders</label>
                                             </div>
 
                                             <div className="flex items-center gap-1.5">
-                                                <input type="checkbox" id="defaultAddress" className='text-[#848484] border-[1.5px]' />
+                                                <input
+                                                    type="checkbox"
+                                                    id="defaultAddress"
+                                                    name='isDefault'
+                                                    checked={addresses.isDefault}
+                                                    onChange={handleChange}
+                                                    className='text-[#848484] border-[1.5px]'
+                                                />
                                                 <label htmlFor="defaultAddress" className='text-sm'>Mark As Default Address</label>
                                             </div>
 
                                             <div className="flex items-center gap-1.5">
-                                                <input type="checkbox" id="billingAddress" className='text-[#848484] border-[1.5px]' />
+                                                <input
+                                                    type="checkbox"
+                                                    id="billingAddress"
+                                                    name='billingAddress'
+                                                    checked={billingAddress}
+                                                    onChange={() => setBillingAddress(!billingAddress)}
+                                                    className='text-[#848484] border-[1.5px]'
+                                                />
                                                 <label htmlFor="billingAddress" className='text-sm'>Same As Billing Address</label>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </form>
                             </div>
                         )}
 
@@ -575,7 +870,7 @@ function Page() {
                                 <p className='font-semibold text-[#093C16]'>₹2,200.00</p>
                             </div>
 
-                            <button className="rounded-[10px] py-3 px-2.5 text-white bg-[#093C16] w-full">
+                            <button onClick={handleSubmit} className="rounded-[10px] py-3 px-2.5 text-white bg-[#093C16] w-full">
                                 Place Order
                             </button>
 
