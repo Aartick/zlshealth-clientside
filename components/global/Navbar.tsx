@@ -333,7 +333,7 @@ function Navbar() {
                             {myProfile ?
                                 <div className="relative size-6">
                                     <Image
-                                        src={myProfile?.img!}
+                                        src={myProfile.img!}
                                         alt={myProfile?.fullName}
                                         fill
                                         className="rounded-full"
