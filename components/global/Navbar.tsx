@@ -16,24 +16,29 @@ import { IoIosArrowDown } from "react-icons/io";
 import { VscSettings } from "react-icons/vsc";
 import { BsCart2, BsSuitHeart } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
+import { MdKeyboardArrowDown } from "react-icons/md";
+import { RxHamburgerMenu } from "react-icons/rx";
+
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { RxHamburgerMenu } from "react-icons/rx";
-import Sidebar from "./Sidebar";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
+
 import { getItem, KEY_ACCESS_TOKEN, removeItem } from "@/utils/localStorageManager";
 import { axiosClient } from "@/utils/axiosClient";
 import toast from "react-hot-toast";
+
+import Sidebar from "./Sidebar";
+import ShopLink from "./ShopLink";
+
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { getCart } from "@/lib/thunks/cartThunks";
 import { resetCart } from "@/lib/features/cartSlice";
-import { usePathname } from "next/navigation";
-import { MdKeyboardArrowDown } from "react-icons/md";
-import ShopLink from "../topBar/ShopLink";
 import { isHiddenPath } from "@/utils/hiddenPaths";
 import { getWishlist } from "@/lib/thunks/wishlistThunks";
 import { resetWishlist } from "@/lib/features/wishlistSlice";
-import { signOut } from "next-auth/react";
+import { getMyAddress, getMyInfo } from "@/lib/thunks/userThunks";
 
 const placeholderTexts = [
     "Stress Relief Syrup",
@@ -90,34 +95,10 @@ const initialLinks: NavLink[] = [
 ];
 
 function Navbar() {
-    // State for search input value
+    // States for search bar
     const [inputValue, setInputValue] = useState("");
-    // State for animated placeholder index
     const [currentIndex, setCurrentIndex] = useState(0);
-    // State for animation trigger
     const [isAnimating, setIsAnimating] = useState(false);
-    // State for sidebar open/close
-    const [openSidebar, setOpenSidebar] = useState<boolean>(false)
-    // State for navigation links
-    const [navLinks,] = useState(initialLinks)
-    // State for shop dropdown open/close
-    const [open, setOpen] = useState(false);
-
-    const pathname = usePathname();
-
-    // Check if user is logged in
-    const isUser = getItem(KEY_ACCESS_TOKEN)
-    const dispatch = useAppDispatch()
-    // Get cart items from Redux store
-    const cart = useAppSelector((state) => state.cartSlice.cart)
-    // Calculate total products in cart
-    let totalProducts = 0;
-    cart.forEach((pro) => (totalProducts += pro.quantity))
-
-    // Get wishlist products from Redux store
-    const wishlist = useAppSelector((state) => state.wishlistSlice.products)
-    // Calculate total wishlist products
-    const totalWishlistProducts = wishlist.length;
 
     // Animated placeholder effect for search bar
     useEffect(() => {
@@ -132,11 +113,44 @@ function Navbar() {
         return () => clearInterval(interval);
     }, []);
 
-    // Sync cart with backend or reset for guest
+
+
+    // ================= Sidebar and navigation logics ================
+
+    // States for sidebar and navigation links
+    const [openSidebar, setOpenSidebar] = useState<boolean>(false)
+    const [navLinks,] = useState(initialLinks)
+    const [open, setOpen] = useState(false);
+
+    const pathname = usePathname();
+    const dispatch = useAppDispatch()
+    const isUser = getItem(KEY_ACCESS_TOKEN) // Check if user is logged in
+
+
+
+    // ================ User Related Info. logics ================
+
+    // Get cart products from Redux store and calculate total products
+    const cart = useAppSelector((state) => state.cartSlice.cart)
+    let totalProducts = 0;
+    cart.forEach((pro) => (totalProducts += pro.quantity))
+
+    // Get wishlist products from Redux store and calculate number of products
+    const wishlist = useAppSelector((state) => state.wishlistSlice.products)
+    const totalWishlistProducts = wishlist.length;
+
+    // Get user profile and address from redux store and found the default address
+    const myProfile = useAppSelector((state) => state.appConfig.myProfile)
+    const myAddress = useAppSelector((state) => state.appConfig.myAddress)
+    const address = myAddress?.find((adrs) => adrs.isDefault)
+
+    // Sync user info, address, cart and wishlist with backend
     useEffect(() => {
         const syncCart = async () => {
             if (isUser) {
                 // await dispatch(mergeGuestCart());
+                await dispatch(getMyInfo())
+                await dispatch(getMyAddress())
                 await dispatch(getCart());
                 await dispatch(getWishlist())
             } else {
@@ -147,7 +161,9 @@ function Navbar() {
         syncCart()
     }, [isUser, dispatch])
 
-    // Handle logout action
+
+
+    // ================= Handle logout action ================
     const handleLogout = async () => {
         try {
             if (isUser) {
@@ -160,10 +176,12 @@ function Navbar() {
     }
 
     return (
-        <div className="z-40 fixed w-full">
-            <div className={`py-[10px] sm:py-2 px-4 sm:px-10 drop-shadow-[0px_4px_15.8px_rgba(0,0,0,0.06)] ${pathname === "/" ? "bg-transparent backdrop-blur-md" : "bg-white"} text-black`}>
+        <nav className="z-40 fixed w-full">
+
+            {/* ================ Navbar Section ================ */}
+            <section className={`py-[10px] sm:py-2 px-4 sm:px-10 drop-shadow-[0px_4px_15.8px_rgba(0,0,0,0.06)] ${pathname === "/" ? "bg-transparent backdrop-blur-md" : "bg-white"} text-black`}>
                 <div className="container mx-auto w-full flex justify-between items-center sm:gap-[40px]">
-                    {/* Logo and location section */}
+                    {/* ====== Company Logo and location section ====== */}
                     <div className="flex flex-col lg:flex-row gap-[21px]">
                         <Link
                             className="relative flex items-center gap-3"
@@ -180,29 +198,42 @@ function Navbar() {
                         </Link>
 
                         {/* Location info */}
-                        <div className="flex items-center gap-[10px]">
-                            <div className={`${pathname === "/" ? "bg-white" : "bg-[#71BF451A]"} text-[#36810B] p-1 rounded-full`}>
+                        <Link
+                            href="/profile"
+                            className="flex items-center gap-[10px]"
+                        >
+                            <div className={`${pathname === "/" ? "bg-white"
+                                : "bg-[#71BF451A]"} text-[#36810B] p-1 rounded-full`}
+                            >
                                 <IoLocationOutline size={24} />
                             </div>
                             <div>
-                                <p className={`text-xs ${pathname === "/" ? "text-[#e4e4e4]" : ""}`}>Delivered to</p>
-                                <div className={`flex items-center ${pathname === "/" ? "text-[#f9f9f9]" : "text-[#36810B]"}`}>
-                                    <p>Suryapet 508206</p>
+                                <p className={`text-xs ${pathname === "/" ? "text-[#e4e4e4]" : ""}`}>
+                                    Delivered to
+                                </p>
+                                <div className={`flex items-center ${pathname === "/"
+                                    ? "text-[#f9f9f9]" : "text-[#36810B]"}`}
+                                >
+                                    <p>{address?.cityTown || "Suryapet"} {address?.pinCode || "508206"}</p>
                                     <IoIosArrowDown size={12} />
                                 </div>
                             </div>
-                        </div>
+                        </Link>
                     </div>
 
-                    {/* Search bar section (desktop only) */}
+                    {/* ====== Search bar section (desktop only) ====== */}
                     <div className="hidden relative flex-1 lg:flex justify-between bg-[#f3f3f3] border-[0.5px] border-[#71BF45] rounded-[10px] py-5 px-2.5 drop-shadow-[0px_4px_15.8px_rgba(132, 132, 132, 0.2)]">
-                        <div className="flex items-center gap-[10px] relative">
+                        <label htmlFor="search" className="flex items-center gap-[10px] relative">
+                            {/* Search Icon */}
                             <div className="p-[2px] rounded-full bg-[#71bf45] text-[#ffffff]">
                                 <IoSearchOutline size={15} />
                             </div>
+
+                            {/* Input Logic */}
                             <div className="relative">
                                 {/* Search input */}
                                 <input
+                                    id="search"
                                     type="text"
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
@@ -224,13 +255,15 @@ function Navbar() {
                                     </div>
                                 )}
                             </div>
-                        </div>
+                        </label>
+
+                        {/* Filter Logo */}
                         <div className="text-[#848484] border-l border-[#848484] pl-1">
                             <VscSettings size={24} />
                         </div>
                     </div>
 
-                    {/* Cart, wishlist, and login/logout section */}
+                    {/* ====== Cart, wishlist, and login/logout section ====== */}
                     <div className="flex items-center gap-3 sm:gap-5">
                         <div className="flex items-center gap-3 text-lg sm:text-2xl">
                             {/* Cart icon with product count */}
@@ -254,9 +287,10 @@ function Navbar() {
                                     </span>
                                 )}
                             </Link>
+
                             {/* Wishlist icon with product count */}
                             <Link
-                                href="/wishlist"
+                                href="/"
                                 className={`
                                     relative p-2 sm:p-5 rounded-full
                                      ${pathname === "/"
@@ -276,6 +310,7 @@ function Navbar() {
                                 )}
                             </Link>
                         </div>
+
                         {/* Login/Logout button */}
                         <Link
                             className={`
@@ -291,13 +326,25 @@ function Navbar() {
                             href={isUser ? "" : "/login"}
                             onClick={handleLogout}
                         >
+                            {/* Login based text */}
                             <p className="font-semibold">{isUser ? "Logout" : "Login"}</p>
-                            <CgProfile size={16} />
+
+                            {/* Login based user profile */}
+                            {myProfile ?
+                                <div className="relative size-6">
+                                    <Image
+                                        src={myProfile?.img!}
+                                        alt={myProfile?.fullName}
+                                        fill
+                                        className="rounded-full"
+                                    />
+                                </div>
+                                : <CgProfile size={20} />}
                         </Link>
                     </div>
                 </div>
 
-                {/* Sidebar popup (mobile) */}
+                {/* ============ Sidebar popup (mobile) ============ */}
                 {openSidebar && (
                     <Sidebar
                         links={navLinks}
@@ -306,9 +353,9 @@ function Navbar() {
                         }}
                     />
                 )}
-            </div>
+            </section>
 
-            {/* TOP BAR: Navigation and shop dropdown */}
+            {/* ================ Navigation and Shop Dropdown Section ================ */}
             <section className={isHiddenPath(pathname) ? "hidden" : "relative w-full"}>
                 <div className="hidden lg:flex justify-center">
                     <div className={`flex items-center gap-5 rounded-br-xl rounded-bl-xl ${pathname === "/" ? "bg-transpare backdrop-blur-md" : "bg-[#71BF45]/10"} py-5 px-2.5`}>
@@ -401,7 +448,7 @@ function Navbar() {
                 </div>
             </section>
 
-        </div>
+        </nav>
     );
 }
 

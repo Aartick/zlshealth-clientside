@@ -16,20 +16,24 @@
 
 "use client"
 
+import Product from '@/components/Product'
+import { Address, initialAddress, statesOfIndia } from '@/interfaces/user'
+import { product } from '@/interfaces/products'
 import { useAppDispatch, useAppSelector } from '@/lib/hooks'
 import { deleteFromCart } from '@/lib/thunks/cartThunks'
+import { getMyAddress } from '@/lib/thunks/userThunks'
 import { removeFromWishlist } from '@/lib/thunks/wishlistThunks'
 import { axiosClient } from '@/utils/axiosClient'
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { BiSolidOffer } from 'react-icons/bi'
 import { FiHeart } from 'react-icons/fi'
 import { LuPen } from 'react-icons/lu'
 import { MdKeyboardArrowRight } from 'react-icons/md'
 import { RxCross1 } from 'react-icons/rx'
-import { SlArrowDown } from 'react-icons/sl'
+import { SlArrowDown, SlArrowLeft, SlArrowRight } from 'react-icons/sl'
 
 const paymentMehods = [
     "/cart/Visa.png",
@@ -39,77 +43,21 @@ const paymentMehods = [
     "/cart/ApplePay.png"
 ]
 
-interface Address {
-    _id?: string;
-    fullName: string;
-    phone: string;
-    email?: string;
-    landmark?: string;
-    streetAddressHouseNo: string;
-    streetAddress2?: string;
-    addressType: string;
-    cityTown: string;
-    state: string;
-    pinCode: string;
-    isDefault: boolean;
-}
-
-const initialAddress = {
-    _id: "",
-    fullName: "",
-    phone: "",
-    email: "",
-    landmark: "",
-    streetAddressHouseNo: "",
-    streetAddress2: "",
-    addressType: "",
-    cityTown: "",
-    state: "",
-    pinCode: "",
-    isDefault: false,
-}
-
-// States of India
-const statesOfIndia = [
-    "", //default empty option
-    "Andhra Pradesh",
-    "Arunachal Pradesh",
-    "Assam",
-    "Bihar",
-    "Chhattisgarh",
-    "Goa",
-    "Gujarat",
-    "Haryana",
-    "Himachal Pradesh",
-    "Jharkhand",
-    "Karnataka",
-    "Kerala",
-    "Madhya Pradesh",
-    "Maharashtra",
-    "Manipur",
-    "Meghalaya",
-    "Mizoram",
-    "Nagaland",
-    "Odisha",
-    "Punjab",
-    "Rajasthan",
-    "Sikkim",
-    "Tamil Nadu",
-    "Telangana",
-    "Tripura",
-    "Uttar Pradesh",
-    "Uttarakhand",
-    "West Bengal"
-];
-
 function Page() {
     const [activeButton, setActiveButton] = useState("cart")
     const [addresses, setAddresses] = useState<Address>(initialAddress)
     const [futureAddress, setFutureAddress] = useState(false);
     const [billingAddress, setBillingAddress] = useState(false)
+    const [similarProducts, setSimilarProducts] = useState<product[]>([])
+    const scrollRef = useRef<HTMLDivElement | null>(null)
 
-    // Dispatch items to the cart
+    // Dispatch items to the cart / appConfig
     const dispatch = useAppDispatch()
+
+
+
+    // ================ Cart And Wishlist Logics ================
+
     // Get cart items from Redux store
     const cart = useAppSelector((state) => state.cartSlice.cart)
 
@@ -130,19 +78,23 @@ function Page() {
     // Check if wishlist is empty
     const isWishlistEmpty = wishlist.length === 0
 
+
+
+    // ================ Addresses/Shopping Logics ================
+    const address = useAppSelector((state) => state.appConfig.myAddress)
+
     // Function to fetch user default address from backend
     const getAddresses = async () => {
         try {
-            const response = await axiosClient.get("/api/users/addresses")
-            const defaultAddress = response.data.result.find((adrs: Address) => adrs.isDefault)
-            setAddresses(defaultAddress)
+            const defaultAddress = address.find((adrs: Address) => adrs.isDefault)
+            setAddresses(defaultAddress!)
             if (defaultAddress) setFutureAddress(true)
         } catch { }
     }
 
     useEffect(() => {
         getAddresses()
-    }, [])
+    }, [dispatch])
 
     /**
           * Handles form input changes and updates `addresses` state.
@@ -184,11 +136,58 @@ function Page() {
                 payload
             );
 
-            // Set updated addresses
-            setAddresses(res.data.result.addresses)
-            toast.success(res.data.result.message)
+            // Dispatch to update addresses
+            await dispatch(getMyAddress())
+            toast.success(res.data.result)
         } catch { }
     }
+
+
+
+    // ================ Suggested Items Logics ================
+
+    // Function to scroll left
+    const scrollLeft = () => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollBy({
+                left: -300,
+                behavior: "smooth"
+            })
+        }
+    }
+
+    // Function to scroll right
+    const scrollRight = () => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollBy({
+                left: 300,
+                behavior: "smooth"
+            })
+        }
+    }
+
+    useEffect(() => {
+        const categories = [...new Set(cart.map(item => item.category))]
+        const productTypes = [...new Set(cart.flatMap(item => item.productTypes))]
+        const benefits = [...new Set(cart.flatMap(item => item.benefits))]
+        const exclude = [...new Set(cart.map(item => item._id))]
+
+        const params = new URLSearchParams();
+
+        categories.forEach(id => params.append("category", id))
+        productTypes.forEach(id => params.append("productTypes", id))
+        benefits.forEach(id => params.append("benefits", id))
+        exclude.forEach(id => params.append("exclude", id))
+
+        const url = `/api/products/similarProducts?${params.toString()}`
+
+        const getSimilarProducts = async () => {
+            const response = await axiosClient.get(url);
+            setSimilarProducts(response.data.result)
+        }
+
+        getSimilarProducts()
+    }, [cart])
 
     return (
         <div className='flex flex-col items-center m-10'>
@@ -308,7 +307,7 @@ function Page() {
             </div>
 
             {/* ================ MAIN CONTENT AREA ================ */}
-            <div className="space-y-[30px] mt-10">
+            <div className="space-y-[30px] my-10">
                 <p className="font-semibold text-xl text-center">Your Cart</p>
 
                 <div className="flex gap-3">
@@ -766,6 +765,7 @@ function Page() {
                                                 <label htmlFor="scheduleDelivery" className='text-sm'>Schedule Delivery (Choose Date & Time)</label>
                                             </div>
                                         </div>
+
                                         {/* Quick Options */}
                                         <div className="space-y-4">
                                             <p className="relative p-2.5 font-medium">
@@ -958,6 +958,45 @@ function Page() {
             </div>
 
             {/* SUGGESTED PRODUCTS */}
+            <div className="space-y-[30px] w-full">
+                {/* Similar products heading and scrolling buttons */}
+                <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-semibold">Others Also Buy</h2>
+                    <div className="flex items-center gap-3">
+                        {/* Left Button */}
+                        <div
+                            onClick={scrollLeft}
+                            className='border-2 border-[#093C16] text-[#093C16] hover:text-white hover:bg-[#093C16] rounded-full p-2.5 cursor-pointer'
+                        >
+                            <SlArrowLeft />
+                        </div>
+
+                        {/* Right Button */}
+                        <div
+                            onClick={scrollRight}
+                            className='border-2 border-[#093C16] text-[#093C16] hover:text-white hover:bg-[#093C16] rounded-full p-2.5 cursor-pointer'
+                        >
+                            <SlArrowRight />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Similar Products */}
+                <div
+                    ref={scrollRef}
+                    className="flex items-center scroll-smooth
+                    overflow-x-auto gap-5 scrollbar-hide"
+                >
+                    {similarProducts.map((product) => (
+                        <div
+                            className='w-[300px] shrink-0'
+                            key={product._id}
+                        >
+                            <Product product={product} />
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     )
 }

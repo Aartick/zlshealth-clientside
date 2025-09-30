@@ -34,42 +34,12 @@
 
 "use client"
 
+import { statesOfIndia } from '@/interfaces/user';
+import { useAppDispatch } from '@/lib/hooks';
+import { getMyAddress } from '@/lib/thunks/userThunks';
 import { axiosClient } from '@/utils/axiosClient';
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
-
-// States of India
-const statesOfIndia = [
-    "", //default empty option
-    "Andhra Pradesh",
-    "Arunachal Pradesh",
-    "Assam",
-    "Bihar",
-    "Chhattisgarh",
-    "Goa",
-    "Gujarat",
-    "Haryana",
-    "Himachal Pradesh",
-    "Jharkhand",
-    "Karnataka",
-    "Kerala",
-    "Madhya Pradesh",
-    "Maharashtra",
-    "Manipur",
-    "Meghalaya",
-    "Mizoram",
-    "Nagaland",
-    "Odisha",
-    "Punjab",
-    "Rajasthan",
-    "Sikkim",
-    "Tamil Nadu",
-    "Telangana",
-    "Tripura",
-    "Uttar Pradesh",
-    "Uttarakhand",
-    "West Bengal"
-];
 
 interface Address {
     _id?: string;
@@ -88,7 +58,6 @@ interface Address {
 interface AddressFormProps {
     address: Address
     editType: string;
-    onUpdate: (updatedAddress: Address[]) => void;
     onCancel: () => void;
 }
 
@@ -96,10 +65,10 @@ const Addresses: React.FC<AddressFormProps> = ({
     address,
     editType,
     onCancel,
-    onUpdate
 }) => {
     const [formData, setFormData] = useState<Address>(address)
     const [loading, setLoading] = useState(false)
+    const dispatch = useAppDispatch()
 
     /**
       * Handles form input changes and updates `formData` state.
@@ -144,8 +113,8 @@ const Addresses: React.FC<AddressFormProps> = ({
             );
 
             // Pass updated addresses back to parent
-            onUpdate(res.data.result.addresses)
-            toast.success(res.data.result.message)
+            await dispatch(getMyAddress())
+            toast.success(res.data.result)
             onCancel() // Close the form after success
         } catch { }
         finally {

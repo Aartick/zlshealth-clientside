@@ -6,6 +6,9 @@ import { NextRequest } from "next/server";
 
 interface ProductDoc {
   _id: Types.ObjectId;
+  category: string;
+  benefits: string[];
+  productTypes: string[];
   name: string;
   productImg: { url: string };
   price: number;
@@ -70,6 +73,9 @@ export async function POST(req: NextRequest) {
       const product = pro.productId as ProductDoc;
       return {
         _id: product._id,
+        category: product.category,
+        benefits: product.benefits,
+        productTypes: product.productTypes,
         name: product.name,
         img: product.productImg.url,
         price: product.price,
@@ -113,6 +119,9 @@ export async function GET(req: NextRequest) {
 
       return {
         _id: product._id,
+        category: product.category,
+        benefits: product.benefits,
+        productTypes: product.productTypes,
         name: product.name,
         img: product.productImg.url,
         price: product.price,

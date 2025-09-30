@@ -15,6 +15,8 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { getMyAddress, getMyInfo } from "../thunks/userThunks";
+import { Address, initialDetails, UserDetails } from "@/interfaces/user";
 
 // Payload interface for toast notifications
 interface ToastPayload {
@@ -25,11 +27,15 @@ interface ToastPayload {
 // State interface for app config
 interface AppState {
   toastData: ToastPayload | null;
+  myProfile: UserDetails;
+  myAddress: Address[] | [];
 }
 
 // Initial state for app config
 const initialState: AppState = {
   toastData: null,
+  myProfile: initialDetails,
+  myAddress: [],
 };
 
 // Create Redux slice for app config
@@ -41,6 +47,14 @@ const appConfigSlice = createSlice({
     showToast: (state, action: PayloadAction<ToastPayload>) => {
       state.toastData = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(getMyInfo.fulfilled, (state, action) => {
+      state.myProfile = action.payload;
+    });
+    builder.addCase(getMyAddress.fulfilled, (state, action) => {
+      state.myAddress = action.payload;
+    });
   },
 });
 

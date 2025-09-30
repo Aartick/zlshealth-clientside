@@ -27,21 +27,11 @@ import {
   getWishlist,
   removeFromWishlist,
 } from "../thunks/wishlistThunks";
-
-// Define your product type
-export interface ProductType {
-  _id: string;
-  name: string;
-  img: string;
-  price: number;
-  quantity: number;
-  about: string;
-  discount: number;
-}
+import { productType } from "@/interfaces/cartWish";
 
 // Wishlist state definition
 interface WishlistState {
-  products: ProductType[];
+  products:productType[];
 }
 
 // Initial wishlist state
@@ -55,7 +45,7 @@ const wishlistSlice = createSlice({
   initialState,
   reducers: {
     // Add product to wishlist for guest users
-    addToWishlistGuest: (state, action: PayloadAction<ProductType>) => {
+    addToWishlistGuest: (state, action: PayloadAction<productType>) => {
       const exists = state.products.find(
         (item) => item._id === action.payload._id
       );

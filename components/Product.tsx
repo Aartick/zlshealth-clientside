@@ -25,48 +25,10 @@ import Link from 'next/link';
 import React from 'react'
 import CartButton from './CartButton';
 import WishlistButton from './WishlistButton';
-
-interface category {
-    _id: string,
-    name: string,
-    products: string[]
-}
-
-// Product interface defines the structure of product objects
-interface ProductType {
-    _id: string,
-    category: category;
-    descriptionImg: {
-        url: string,
-        public_id: string,
-    };
-    productImg: {
-        url: string,
-        public_id: string,
-    };
-    thirdImg: {
-        url: string,
-        public_id: string,
-    };
-    fourthImg: {
-        url: string,
-        public_id: string,
-    };
-    name: string;
-    about: string;
-    price: number;
-    description: string;
-    discount: number;
-    stock: number;
-    expiryMonths: number,
-    form: string,
-    packSize: string,
-    appliedFor: string;
-    suitableFor: string
-}
+import { product } from '@/interfaces/products';
 
 interface ProductProps {
-    product: ProductType
+    product: product
 }
 
 function Product({ product }: ProductProps) {

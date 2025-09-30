@@ -26,6 +26,9 @@
 "use client"
 import Addresses from '@/components/Addresses'
 import UpdateAddresses from '@/components/Addresses'
+import { Address, initialAddress, initialDetails, UserDetails } from '@/interfaces/user'
+import { useAppDispatch, useAppSelector } from '@/lib/hooks'
+import { getMyAddress, getMyInfo } from '@/lib/thunks/userThunks'
 import { axiosClient } from '@/utils/axiosClient'
 import Image from 'next/image'
 import React, { useEffect, useRef, useState } from 'react'
@@ -39,52 +42,6 @@ import { LuLogOut } from 'react-icons/lu'
 import { MdKeyboardArrowRight } from 'react-icons/md'
 import { RxCross2 } from 'react-icons/rx'
 import { SlArrowDown } from 'react-icons/sl'
-
-interface UserDetails {
-    fullName: string;
-    dob: string;
-    phone: string;
-    gender: string;
-    email: string;
-    img?: string | null;
-}
-
-const initialDetails = {
-    fullName: "",
-    dob: "",
-    phone: "",
-    gender: "",
-    email: "",
-    img: ""
-}
-
-interface Address {
-    _id?: string;
-    fullName: string;
-    phone: string;
-    landmark?: string;
-    streetAddressHouseNo: string;
-    streetAddress2?: string;
-    addressType: string;
-    cityTown: string;
-    state: string;
-    pinCode: string;
-    isDefault: boolean;
-}
-
-const initialAddress = {
-    _id: "",
-    fullName: "",
-    phone: "",
-    landmark: "",
-    streetAddressHouseNo: "",
-    streetAddress2: "",
-    addressType: "",
-    cityTown: "",
-    state: "",
-    pinCode: "",
-    isDefault: false,
-}
 
 // Function to format Addresses
 const formatAddress = (address: Address) => {
@@ -137,27 +94,24 @@ function Page() {
     const [editAddressId, setEditAddressId] = useState("")
     const [addresses, setAddresses] = useState<Address[]>([])
 
-    // Function to fetch addresses
-    const getAddresses = async () => {
-        try {
-            const response = await axiosClient.get("/api/users/addresses")
-            setAddresses(response.data.result)
-        } catch { }
-    }
+    const dispatch = useAppDispatch()
 
-    // Function to update addresses
-    const handleUpdate = (updatedAddresses: Address[]) => {
-        setAddresses(updatedAddresses)
-    }
+    // Get user profile from redux store
+    const myAddress = useAppSelector((state) => state.appConfig.myAddress)
 
     // Function to delete address
     const deleteAddress = async (addressId: string) => {
         try {
             const response = await axiosClient.delete(`/api/users/addresses?addressId=${addressId}`)
             setAddresses(response.data.result.addresses)
+            await dispatch(getMyAddress())
             toast.success(response.data.result.message)
         } catch { }
     }
+
+    useEffect(() => {
+        setAddresses(myAddress)
+    }, [myAddress])
 
     // Find default address from list
     const defaultAddress = addresses.find(addr => addr.isDefault)
@@ -169,6 +123,9 @@ function Page() {
     // ================ USER PROFILE RELATED LOGICS ================
     const [formData, setFormData] = useState<UserDetails>(initialDetails)
     const [submitting, setSubmitting] = useState<boolean>(false)
+
+    // Get user profile from redux store
+    const myProfile = useAppSelector((state) => state.appConfig.myProfile)
 
     // Handle user details state
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -202,22 +159,16 @@ function Page() {
             setSubmitting(true)
             const response = await axiosClient.put("/api/users", formData)
             toast.success(response.data.result)
-            getProfile()
+            await dispatch(getMyInfo())
         } catch { }
         finally {
             setSubmitting(false)
         }
     }
 
-    const getProfile = async () => {
-        const response = await axiosClient.get("/api/users")
-        setFormData(response.data.result)
-    }
-
     useEffect(() => {
-        getProfile()
-        getAddresses()
-    }, [])
+        setFormData(myProfile!)
+    }, [myProfile])
 
     return (
         <div className='flex gap-8 p-8 h-screen'>
@@ -707,7 +658,6 @@ function Page() {
                                     <Addresses
                                         address={initialAddress}
                                         editType={editType}
-                                        onUpdate={handleUpdate}
                                         onCancel={() => setEditType("")}
                                     />
                                 </div>
@@ -736,7 +686,6 @@ function Page() {
                                             <UpdateAddresses
                                                 address={defaultAddress!}
                                                 editType={editType}
-                                                onUpdate={handleUpdate}
                                                 onCancel={() => setEditType("")}
                                             />
                                             : defaultAddress
@@ -811,7 +760,6 @@ function Page() {
                                             ? <UpdateAddresses
                                                 address={otherAddresses.find(data => data._id === editAddressId)!}
                                                 editType={editType}
-                                                onUpdate={handleUpdate}
                                                 onCancel={() => setEditType("")}
                                             />
                                             : otherAddresses.length !== 0

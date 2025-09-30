@@ -20,45 +20,7 @@ import { Range } from 'react-range'
 import { CiFilter } from "react-icons/ci";
 import { MdKeyboardArrowDown } from 'react-icons/md'
 import { IoSearchOutline } from 'react-icons/io5'
-
-interface category {
-    _id: string,
-    name: string,
-    products: string[]
-}
-
-// Product interface defines the structure of product objects
-interface products {
-    _id: string,
-    category: category;
-    descriptionImg: {
-        url: string,
-        public_id: string,
-    };
-    productImg: {
-        url: string,
-        public_id: string,
-    };
-    thirdImg: {
-        url: string,
-        public_id: string,
-    };
-    fourthImg: {
-        url: string,
-        public_id: string,
-    };
-    name: string;
-    about: string;
-    price: number;
-    description: string;
-    discount: number;
-    stock: number;
-    expiryMonths: number,
-    form: string,
-    packSize: string,
-    appliedFor: string;
-    suitableFor: string
-}
+import { product } from '@/interfaces/products'
 
 // Filters interface for categories, product types, and benefits
 interface filters {
@@ -105,9 +67,9 @@ function Page() {
     const [selectedBenefits, setSelectedBenefits] = useState<string[]>([])
     // State for loading and storing products
     const [loadingProducts, setLoadingProducts] = useState(true);
-    const [products, setProducts] = useState<products[]>([])
+    const [products, setProducts] = useState<product[]>([])
     // State for filtered products based on price range
-    const [filteredProducts, setFilteredProducts] = useState<products[]>([])
+    const [filteredProducts, setFilteredProducts] = useState<product[]>([])
 
     // Fetch categories, product types, and benefits on mount
     useEffect(() => {

@@ -120,7 +120,7 @@ export async function PUT(req: NextRequest) {
     // Save user
     await user.save();
 
-    return success(200, { message, addresses: user.addresses });
+    return success(200, message);
   } catch (e) {
     console.log(e);
     return error(500, "Something went wrong.");

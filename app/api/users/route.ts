@@ -5,11 +5,8 @@ import { error, success } from "@/utils/responseWrapper";
 import { NextRequest } from "next/server";
 
 /**
- * @route GET /api/users?type=<me | "">
- * @description - Fetch Products
- * 1. Supports two modes:
- *    - 'type=me': Fetch single user by ID.
- *    - 'type= ' : Fetch all the users in DB.
+ * @route GET /api/users
+ * @description - Fetch User
  * @param req
  * @returns
  */
