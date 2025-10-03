@@ -106,7 +106,7 @@ export const removeFromCart = createAsyncThunk(
 );
 
 // Fetch the current cart from backend
-export const getCart = createAsyncThunk("cart/removeFromCart", async () => {
+export const getCart = createAsyncThunk("cart/getCart", async () => {
   try {
     const response = await axios.get("/api/cart", {
       headers: {

@@ -22,9 +22,11 @@ interface CartItemType {
     img?: string;
     price: number;
     quantity: number;
+    about: string;
+    discount: number;
 }
 
-function CartItem({ _id, name, img, price, quantity }: CartItemType) {
+function CartItem({ _id, name, img, price, quantity, about, discount }: CartItemType) {
     // Check if user is logged in
     const isUser = getItem(KEY_ACCESS_TOKEN)
     const dispatch = useAppDispatch()
@@ -44,7 +46,9 @@ function CartItem({ _id, name, img, price, quantity }: CartItemType) {
                 name,
                 img,
                 price,
-                quantity: 1
+                quantity: 1,
+                about,
+                discount
             }))
         }
     }

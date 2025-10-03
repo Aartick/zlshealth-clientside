@@ -171,7 +171,7 @@ export async function GET(req: NextRequest) {
 
       // Find all the products according to filter ID's
       const products = await Product.find(filter)
-        .populate("description")
+        .populate("category")
         .populate("faqs");
 
       return success(200, products);
@@ -185,7 +185,7 @@ export async function GET(req: NextRequest) {
 
       // Find the product details by ID
       const product = await Product.findById(id)
-        .populate("description")
+        .populate("category")
         .populate("faqs");
 
       if (!product) {
@@ -245,7 +245,7 @@ export async function PUT(req: NextRequest) {
 }
 
 /**
- * @description 
+ * @description
  * Delete a product by ID.
  * 1. Verifies authentication.
  * 2. Deletes product and removes reference from its category.

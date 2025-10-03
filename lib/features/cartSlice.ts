@@ -22,7 +22,7 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { addToCart, removeFromCart } from "../thunks/cartThunks";
+import { addToCart, getCart, removeFromCart } from "../thunks/cartThunks";
 
 // Cart item type definition
 interface CartItemType {
@@ -31,6 +31,8 @@ interface CartItemType {
   img: string | undefined;
   price: number;
   quantity: number;
+  about: string;
+  discount: number;
 }
 
 // Cart state definition
@@ -83,11 +85,27 @@ const groceryCartSlice = createSlice({
   extraReducers: (builder) => {
     // Update cart state after backend add-to-cart
     builder.addCase(addToCart.fulfilled, (state, action) => {
-      state.cart = action.payload;
+      // Make sure action.payload always be an array
+      const updatedCart = Array.isArray(action.payload)
+        ? action.payload
+        : [action.payload];
+      state.cart = updatedCart;
     });
     // Update cart state after backend remove-from-cart
     builder.addCase(removeFromCart.fulfilled, (state, action) => {
-      state.cart = action.payload;
+      // Make sure action.payload always be an array
+      const updatedCart = Array.isArray(action.payload)
+        ? action.payload
+        : [action.payload];
+      state.cart = updatedCart;
+    });
+    // Update cart state from backend
+    builder.addCase(getCart.fulfilled, (state, action) => {
+      // Make sure action.payload always be an array
+      const updatedCart = Array.isArray(action.payload)
+        ? action.payload
+        : [action.payload];
+      state.cart = updatedCart;
     });
   },
 });
