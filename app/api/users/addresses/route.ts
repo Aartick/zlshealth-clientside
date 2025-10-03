@@ -35,15 +35,16 @@ export interface IAddress {
   _id?: string;
   fullName: string;
   phone: string;
-  landmark: string;
-  streetAddress: string;
-  city: string;
+  email?: string;
+  landmark?: string;
+  streetAddressHouseNo: string;
+  streetAddress2?: string;
+  addressType: string;
+  cityTown: string;
   district: string;
   state: string;
   pinCode: string;
-  streetAddress2?: string;
-  houseNo?: string;
-  isDefault?: boolean;
+  isDefault: boolean;
 }
 export async function PUT(req: NextRequest) {
   try {
@@ -58,16 +59,17 @@ export async function PUT(req: NextRequest) {
       "fullName",
       "phone",
       "landmark",
-      "streetAddress",
-      "city",
-      "district",
+      "streetAddressHouseNo",
+      "addressType",
+      "cityTown",
       "state",
       "pinCode",
     ];
 
     for (const field of requiredFields) {
       if (!addressData[field]) {
-        return error(400, `Please provide required fields.`);
+        console.log(field);
+        return error(400, `Please provide required fields ${field}.`);
       }
     }
 
@@ -108,6 +110,11 @@ export async function PUT(req: NextRequest) {
       }
       user.addresses.push(addressData);
       message = "Address added successfully";
+    }
+
+    // Ensure at least one address is default
+    if (!user.addresses.some((addr: IAddress) => addr.isDefault)) {
+      user.addresses[0].isDefault = true;
     }
 
     // Save user
