@@ -4,45 +4,116 @@ import { error, success } from "@/utils/responseWrapper";
 import { NextRequest } from "next/server";
 
 /**
- * @route PUT /api/users
- * @description - Updates the user profile
+ * @route GET /api/users
+ * @description - Get the user addresses
  * @param req
  * @returns
  */
+export async function GET(req: NextRequest) {
+  try {
+    // Verify JWT token and extract customer ID
+    const { valid, response, _id } = await verifyAccessToken(req);
+    if (!valid) return response!;
+
+    const user = await User.findById(_id).select("addresses");
+
+    return success(200, user.addresses);
+  } catch (e) {
+    console.log(e);
+    return error(500, "Something went wrong.");
+  }
+}
+
+/**
+ * @route PUT /api/users
+ * @description - Add/Updates the user addresses
+ * @param req
+ * @returns
+ */
+
+export interface IAddress {
+  _id?: string;
+  fullName: string;
+  phone: string;
+  landmark: string;
+  streetAddress: string;
+  city: string;
+  district: string;
+  state: string;
+  pinCode: string;
+  streetAddress2?: string;
+  houseNo?: string;
+  isDefault?: boolean;
+}
 export async function PUT(req: NextRequest) {
   try {
     // Verify JWT token and extract customer ID
     const { valid, response, _id } = await verifyAccessToken(req);
     if (!valid) return response!;
 
-    const newAddress = await req.json();
+    const addressData = await req.json();
 
     // Validate all the required fields
+    const requiredFields = [
+      "fullName",
+      "phone",
+      "landmark",
+      "streetAddress",
+      "city",
+      "district",
+      "state",
+      "pinCode",
+    ];
 
-    // If this is the first address, automatically make it default
-    const user = await User.findById(_id);
-
-    if (user.addresses.length === 0) {
-      newAddress.isDefault = true;
+    for (const field of requiredFields) {
+      if (!addressData[field]) {
+        return error(400, `Please provide required fields.`);
+      }
     }
 
-    // If user marks this as default, unset other defaults first
-    if (newAddress.isDefault) {
-      await User.updateOne(
-        { _id },
-        { $set: { "addresses.$[].isDefault": false } }
+    // Fetch user
+    const user = await User.findById(_id).select("addresses");
+
+    let message = "";
+
+    if (!user.addresses || user.addresses.length === 0) {
+      // Create first address and make it default;
+      addressData.isDefault = true;
+      user.addresses.push(addressData);
+      message = "Address added successfully";
+    } else if (addressData._id) {
+      // Update existing address
+      const idx = user.addresses.findIndex(
+        (addr: IAddress) => addr._id?.toString() === addressData._id
       );
+
+      if (idx === -1) return error(404, "Address not found");
+
+      // If marked as default, unset other defaults
+      if (addressData.isDefault) {
+        user.addresses.forEach((addr: IAddress) => (addr.isDefault = false));
+      }
+
+      // Update the specific address
+      user.addresses[idx] = {
+        ...user.addresses[idx].toObject(),
+        ...addressData,
+      };
+
+      message = "Address updated successfully";
+    } else {
+      // Add new address (not first, no _id)
+      if (addressData.isDefault) {
+        user.addresses.forEach((addr: IAddress) => (addr.isDefault = false));
+      }
+      user.addresses.push(addressData);
+      message = "Address added successfully";
     }
 
-    // Find the user by ID and push the new address
-    // const updatedUser =
-    await User.findByIdAndUpdate(
-      _id,
-      { $push: { addresses: newAddress } },
-      { new: true }
-    );
-    // updatedUser?.addresses
-    return success(200, "Profile updated successfully");
+    // Save user
+    await user.save();
+
+    return success(200, { message, addresses: user.addresses });
   } catch (e) {
     console.log(e);
     return error(500, "Something went wrong.");
@@ -80,9 +151,9 @@ export async function DELETE(req: NextRequest) {
     const wasDefault = addressToDelete.isDefault;
 
     // Remove the address
-    // user.addresses = user.addresses.filter(
-    //   (addr: any) => addr._id.toString() !== addressId
-    // );
+    user.addresses = user.addresses.filter(
+      (addr: IAddress) => addr._id?.toString() !== addressId
+    );
 
     // If the deleted address was default, assign another one as default
     if (wasDefault && user.addresses.length > 0) {
@@ -90,7 +161,10 @@ export async function DELETE(req: NextRequest) {
     }
 
     await user.save();
-    return success(200, "Address removed successfully");
+    return success(200, {
+      message: "Address removed successfully",
+      addresses: user.addresses,
+    });
   } catch (e) {
     console.log(e);
     return error(500, "Something went wrong.");
