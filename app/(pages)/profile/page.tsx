@@ -30,6 +30,7 @@ import { Address, initialAddress, initialDetails, UserDetails } from '@/interfac
 import { useAppDispatch, useAppSelector } from '@/lib/hooks'
 import { getMyAddress, getMyInfo } from '@/lib/thunks/userThunks'
 import { axiosClient } from '@/utils/axiosClient'
+import { formatAddress } from '@/utils/formatAddress'
 import Image from 'next/image'
 import React, { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -42,23 +43,6 @@ import { LuLogOut } from 'react-icons/lu'
 import { MdKeyboardArrowRight } from 'react-icons/md'
 import { RxCross2 } from 'react-icons/rx'
 import { SlArrowDown } from 'react-icons/sl'
-
-// Function to format Addresses
-const formatAddress = (address: Address) => {
-    // Create an array of address parts
-    const parts = [
-        address.landmark,
-        address.streetAddressHouseNo,
-        !address.streetAddressHouseNo
-        && address.streetAddress2,
-        address.cityTown,
-        address.state,
-        address.pinCode
-    ];
-
-    // Filter out empty or undefined values and join with comma
-    return parts.filter(part => part && part.trim() !== "").join(", ");
-};
 
 function Page() {
     // ================ Scroll Events ================

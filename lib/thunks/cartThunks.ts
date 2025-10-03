@@ -18,8 +18,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import { resetCart } from "../features/cartSlice";
-import axios from "axios";
-import { getItem, KEY_ACCESS_TOKEN } from "@/utils/localStorageManager";
+import { axiosClient } from "@/utils/axiosClient";
 
 // Merge guest cart items into user cart on login
 export const mergeGuestCart = createAsyncThunk(
@@ -39,15 +38,7 @@ export const mergeGuestCart = createAsyncThunk(
       }));
 
       // Send merge request to backend
-      await axios.post(
-        "/api/cart/items",
-        { products: productsToMerge },
-        {
-          headers: {
-            Authorization: `Bearer ${getItem(KEY_ACCESS_TOKEN)}`,
-          },
-        }
-      );
+      await axiosClient.post("/api/cart/items", { products: productsToMerge });
 
       // Reset guest cart after merging
       dispatch(resetCart());
@@ -60,18 +51,10 @@ export const addToCart = createAsyncThunk(
   "cart/addToCart",
   async ({ productId, quantity }: { productId: string; quantity: number }) => {
     try {
-      const response = await axios.post(
-        "/api/cart",
-        {
-          productId,
-          quantity,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${getItem(KEY_ACCESS_TOKEN)}`,
-          },
-        }
-      );
+      const response = await axiosClient.post("/api/cart", {
+        productId,
+        quantity,
+      });
       // Return updated cart from backend
       return response.data.result;
     } catch {
@@ -85,17 +68,9 @@ export const removeFromCart = createAsyncThunk(
   "cart/removeFromCart",
   async ({ productId }: { productId: string }) => {
     try {
-      const response = await axios.put(
-        "/api/cart/items",
-        {
-          productId,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${getItem(KEY_ACCESS_TOKEN)}`,
-          },
-        }
-      );
+      const response = await axiosClient.put("/api/cart/items", {
+        productId,
+      });
 
       // Return updated cart from backend
       return response.data.result;
@@ -108,11 +83,7 @@ export const removeFromCart = createAsyncThunk(
 // Fetch the current cart from backend
 export const getCart = createAsyncThunk("cart/getCart", async () => {
   try {
-    const response = await axios.get("/api/cart", {
-      headers: {
-        Authorization: `Bearer ${getItem(KEY_ACCESS_TOKEN)}`,
-      },
-    });
+    const response = await axiosClient.get("/api/cart");
     // Return cart data
     return response.data.result;
   } catch {
@@ -126,12 +97,21 @@ export const deleteFromCart = createAsyncThunk(
   async ({ productId }: { productId: string }, thunkAPI) => {
     try {
       // Send delete request to backend
-      await axios.delete(`/api/cart/items?productId=${productId}`, {
-        headers: {
-          Authorization: `Bearer ${getItem(KEY_ACCESS_TOKEN)}`,
-        },
-      });
+      await axiosClient.delete(`/api/cart/items?productId=${productId}`);
       // Refresh cart after deletion
+      thunkAPI.dispatch(getCart());
+    } catch {
+      return [];
+    }
+  }
+);
+
+// Delete cart entirely (backend)
+export const deleteCart = createAsyncThunk(
+  "cart/deleteCart",
+  async (_, thunkAPI) => {
+    try {
+      await axiosClient.delete("/api/cart");
       thunkAPI.dispatch(getCart());
     } catch {
       return [];

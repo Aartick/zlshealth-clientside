@@ -1,6 +1,6 @@
 /**
  * Redux Store Configuration
- * 
+ *
  * Sets up the Redux store for the application using @reduxjs/toolkit.
  * Combines appConfig, cart, and wishlist slices as reducers.
  *
@@ -9,19 +9,39 @@
  * - Exports store instance and types for RootState and AppDispatch.
  */
 
-import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import appConfigSlice from "./features/appConfigSlice";
 import cartSlice from "./features/cartSlice";
 import wishlistSlice from "./features/wishlistSlice";
+import storage from "redux-persist/lib/storage";
+import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER  } from "redux-persist";
+
+const rootReducer = combineReducers({
+  appConfig: appConfigSlice, // App configuration state
+  cartSlice, // Shopping cart state
+  wishlistSlice, // Wishlist state
+});
+
+const persistConfig = {
+  key: "root",
+  storage,
+  whitelist: ["cartSlice", "wishlistSlice"],
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 // Create Redux store with combined reducers
 export const store = configureStore({
-  reducer: {
-    appConfig: appConfigSlice,   // App configuration state
-    cartSlice,                   // Shopping cart state
-    wishlistSlice,               // Wishlist state
-  },
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
 });
+
+export const persistor = persistStore(store);
 
 // Infer the type of makeStore
 export type AppStore = typeof store;

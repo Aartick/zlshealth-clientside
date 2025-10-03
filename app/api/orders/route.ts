@@ -1,7 +1,9 @@
+import { Address } from "@/interfaces/user";
 import Order from "@/models/Order";
 import Product from "@/models/Product";
 import User from "@/models/User";
 import { verifyAccessToken } from "@/utils/authMiddleware";
+import { formatAddress } from "@/utils/formatAddress";
 import { getShiprocketToken } from "@/utils/getShiprocketToken";
 import { error, success } from "@/utils/responseWrapper";
 import axios from "axios";
@@ -39,14 +41,16 @@ export async function POST(req: NextRequest) {
 
       const product = await Product.findById(item._id);
       if (!product) {
-        return error(404, `Product not found: ${item._id}`);
+        return error(404, `Product not found: ${item.name}`);
       }
 
       // Calculate total price for the product
-      const totalAmount = product.price * item.quantity;
+      const totalAmount =
+        product.price * item.quantity * (1 - product.discount / 100);
 
       productDetails.push({
         productId: product._id,
+        name: product.name,
         quantity: item.quantity,
         totalAmount,
       });
@@ -62,39 +66,35 @@ export async function POST(req: NextRequest) {
       0
     );
 
+    // Get default address
+    const defaultAddress = user.addresses.find(
+      (addr: Address) => addr.isDefault
+    );
+
     // Create order in Shiprocket
     const shippingResponse = await axios.post(
       "https://apiv2.shiprocket.in/v1/external/orders/create/adhoc",
       {
-        order_id: `ORD-${Date.now()}`,
-        order_date: new Date().toISOString(),
+        order_id: `ORD-alskdjf`,
+        order_date: new Date().toISOString().slice(0, 16).replace("T", " "),
         pickup_location: "Home",
-        reseller_name: "",
         company_name: "Zealous",
-        billing_customer_name: user.firstName,
-        billing_last_name: user.lastName,
-        billing_address: `${user.houseNo ? user.houseNo + ", " : ""}
-          ${user.streetAddress},
-          ${user.landmark},
-          ${user.city},
-          ${user.state},
-          ${user.country},
-          ${user.pinCode}`,
-        billing_address_2: "",
-        billing_isd_code: "",
-        billing_city: user.city,
-        billing_pincode: user.pinCode,
-        billing_state: user.state,
-        billing_country: user.country,
-        billing_email: user.email,
-        billing_phone: user.phone,
-        billing_alternate_phone: "",
+        billing_customer_name: defaultAddress.fullName || user.fullName,
+        billing_last_name: "",
+        billing_address: `${formatAddress(defaultAddress)}`,
+        billing_city: defaultAddress.cityTown,
+        billing_pincode: Number(defaultAddress.pinCode),
+        billing_state: defaultAddress.state,
+        billing_country: "India",
+        billing_email: defaultAddress.email || user.email,
+        billing_phone: Number(defaultAddress.phone || user.phone),
+        billing_alternate_phone: Number(user.phone),
         shipping_is_billing: 1,
-        order_items: cart.map((product) => ({
+        order_items: productDetails.map((product) => ({
           name: product.name,
           sku: "SKU123",
-          units: 1,
-          selling_price: product.price,
+          units: product.quantity,
+          selling_price: product.totalAmount / product.quantity,
         })),
         payment_method: "COD",
         sub_total,
@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
     return success(201, "Ordered successfully.");
   } catch (e) {
     console.error(e);
-    return error(500, "Something went wrong.");
+    return error(500, "Something went wrong while making order");
   }
 }
 
@@ -141,7 +141,7 @@ interface ProductDoc {
 
 interface OrderProduct {
   _id: Types.ObjectId;
-  productId: ProductDoc; 
+  productId: ProductDoc;
   quantity: number;
   totalAmount: number;
 }
