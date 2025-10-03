@@ -1,3 +1,4 @@
+import dbConnect from "@/dbConnect/dbConnect";
 import Product from "@/models/Product";
 import { error, success } from "@/utils/responseWrapper";
 import mongoose from "mongoose";
@@ -15,6 +16,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
 
   try {
+    await dbConnect();
     // Product ID of the product currently being viewed (optional)
     const productId = searchParams.get("productId");
 

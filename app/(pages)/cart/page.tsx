@@ -20,7 +20,7 @@ import Product from '@/components/Product'
 import { Address, initialAddress, statesOfIndia } from '@/interfaces/user'
 import { product } from '@/interfaces/products'
 import { useAppDispatch, useAppSelector } from '@/lib/hooks'
-import { deleteFromCart } from '@/lib/thunks/cartThunks'
+import { deleteCart, deleteFromCart, getCart } from '@/lib/thunks/cartThunks'
 import { getMyAddress } from '@/lib/thunks/userThunks'
 import { removeFromWishlist } from '@/lib/thunks/wishlistThunks'
 import { axiosClient } from '@/utils/axiosClient'
@@ -69,6 +69,16 @@ function Page() {
         (acc, item) => acc + item.price * item.quantity, 0
     )
 
+    // Calculate total price after discount
+    const discountedTotalPrice = cart.reduce(
+        (acc, item) =>
+            acc + (item.price - (item.price * item.discount) / 100) * item.quantity,
+        0
+    );
+
+    // Fixed packaging price for now
+    const packagingPrice = 20
+
     // Check if cart is empty
     const isCartEmpty = cart.length === 0
 
@@ -87,14 +97,14 @@ function Page() {
     const getAddresses = async () => {
         try {
             const defaultAddress = address.find((adrs: Address) => adrs.isDefault)
-            setAddresses(defaultAddress!)
+            setAddresses(defaultAddress || initialAddress)
             if (defaultAddress) setFutureAddress(true)
         } catch { }
     }
 
     useEffect(() => {
         getAddresses()
-    }, [dispatch])
+    }, [address])
 
     /**
           * Handles form input changes and updates `addresses` state.
@@ -126,7 +136,7 @@ function Page() {
             const payload = { ...addresses }
 
             // If adding a new address, remove `_id`
-            if (!addresses._id) {
+            if (!addresses?._id) {
                 delete payload._id;
             }
 
@@ -139,6 +149,18 @@ function Page() {
             // Dispatch to update addresses
             await dispatch(getMyAddress())
             toast.success(res.data.result)
+
+            // Call place order function on address updation
+            placeOrder()
+        } catch { }
+    }
+
+    const placeOrder = async () => {
+        try {
+            const response = await axiosClient.post('/api/orders', { cart })
+            toast.success(response.data.result);
+
+            await dispatch(deleteCart())
         } catch { }
     }
 
@@ -365,7 +387,11 @@ function Page() {
                                                         {/* Product details */}
                                                         <div className="flex flex-col justify-between font-medium">
                                                             <div>
-                                                                <p className='text-sm'>{product.name}</p>
+                                                                <Link href={`/productDescription/${product._id}`}
+                                                                    className='text-sm'
+                                                                >
+                                                                    {product.name}
+                                                                </Link>
                                                                 <p className='text-xs'>{product.about}</p>
                                                             </div>
 
@@ -391,7 +417,13 @@ function Page() {
 
                                                     {/* Product Price */}
                                                     <div className="flex justify-center items-center gap-4">
-                                                        <p className="text-base font-medium">₹{product.price}.00</p>
+                                                        <p className="font-medium text-base text-[#093C16]">
+                                                            ₹{(product.price - (product.price * product.discount) / 100)}{" "}
+                                                            <span className="font-normal text-[10px] line-through text-[#848484]">
+                                                                ₹{product.price}
+                                                            </span>{" "}
+                                                            <span className="font-medium text-[10px] text-[#71BF45]">({product.discount}% off)</span>
+                                                        </p>
                                                         <RxCross1
                                                             className="text-[#848484] cursor-pointer"
                                                             onClick={() => dispatch(deleteFromCart({ productId: product._id }))}
@@ -480,7 +512,13 @@ function Page() {
                                                     </div>
 
                                                     <div className="flex justify-center items-center gap-4">
-                                                        <p className="text-base font-medium">₹{product.price}.00</p>
+                                                        <p className="font-medium text-base text-[#093C16]">
+                                                            ₹{(product.price - (product.price * product.discount) / 100)}{" "}
+                                                            <span className="font-normal text-[10px] line-through text-[#848484]">
+                                                                ₹{product.price}
+                                                            </span>{" "}
+                                                            <span className="font-medium text-[10px] text-[#71BF45]">({product.discount}% off)</span>
+                                                        </p>
                                                         <RxCross1
                                                             className="text-[#848484] cursor-pointer"
                                                             onClick={() => dispatch(removeFromWishlist({ productId: product._id }))}
@@ -514,7 +552,7 @@ function Page() {
                                                 type="text"
                                                 name='fullName'
                                                 id="fullName"
-                                                value={addresses.fullName}
+                                                value={addresses?.fullName}
                                                 onChange={handleChange}
                                                 placeholder='Enter Full Name'
                                                 className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none'
@@ -532,7 +570,7 @@ function Page() {
                                                 type="text"
                                                 name='phone'
                                                 id="phone"
-                                                value={addresses.phone}
+                                                value={addresses?.phone}
                                                 onChange={handleChange}
                                                 placeholder='(+91)-'
                                                 className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none'
@@ -554,7 +592,8 @@ function Page() {
                                                     (Optional, For Order Updates)
                                                 </span> *
                                             </label>
-                                            <div
+                                            <label
+                                                htmlFor='email'
                                                 className="flex items-center justify-between rounded-[10px] 
                                                 border border-[#cdcdcd] p-2.5"
                                             >
@@ -562,13 +601,13 @@ function Page() {
                                                     type="email"
                                                     name='email'
                                                     id="email"
-                                                    value={addresses.email}
+                                                    value={addresses?.email}
                                                     onChange={handleChange}
                                                     placeholder='Enter email'
                                                     className='focus:outline-none'
                                                 />
-                                                {!addresses.email && <p className="text-xs">@gmail.com</p>}
-                                            </div>
+                                                {!addresses?.email && <p className="text-xs">@gmail.com</p>}
+                                            </label>
                                         </div>
                                         <div className="" />
                                     </div>
@@ -594,7 +633,7 @@ function Page() {
                                                 type="text"
                                                 name="streetAddressHouseNo"
                                                 id="streetAddress"
-                                                value={addresses.streetAddressHouseNo}
+                                                value={addresses?.streetAddressHouseNo}
                                                 onChange={handleChange}
                                                 placeholder='Street Address / House No.'
                                                 className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none'
@@ -613,7 +652,7 @@ function Page() {
                                                 type="text"
                                                 name='streetAddress2'
                                                 id="streetAddressLine2"
-                                                value={addresses.streetAddress2}
+                                                value={addresses?.streetAddress2}
                                                 onChange={handleChange}
                                                 placeholder='Street Address Line 2'
                                                 className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none'
@@ -634,7 +673,7 @@ function Page() {
                                             <select
                                                 id="addressType"
                                                 name='addressType'
-                                                value={addresses.addressType || "home"}
+                                                value={addresses?.addressType || "home"}
                                                 onChange={handleChange}
                                                 className='rounded-[10px] border border-[#cdcdcd] p-3 focus:outline-none'
                                                 required
@@ -657,7 +696,7 @@ function Page() {
                                                 type="text"
                                                 name='landmark'
                                                 id="landmark"
-                                                value={addresses.landmark}
+                                                value={addresses?.landmark}
                                                 onChange={handleChange}
                                                 placeholder='Landmark (Optional)'
                                                 className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none'
@@ -679,7 +718,7 @@ function Page() {
                                                 type="text"
                                                 name="cityTown"
                                                 id="cityTown"
-                                                value={addresses.cityTown}
+                                                value={addresses?.cityTown}
                                                 onChange={handleChange}
                                                 placeholder='City / Town'
                                                 className='rounded-[10px] border border-[#cdcdcd] p-2.5 focus:outline-none'
@@ -698,7 +737,7 @@ function Page() {
                                             <select
                                                 name='state'
                                                 id="state"
-                                                value={addresses.state}
+                                                value={addresses?.state}
                                                 onChange={handleChange}
                                                 className='rounded-[10px] border border-[#cdcdcd] p-3 focus:outline-none'
                                                 required
@@ -729,7 +768,7 @@ function Page() {
                                                     type="text"
                                                     name="pinCode"
                                                     id="pincode"
-                                                    value={addresses.pinCode}
+                                                    value={addresses?.pinCode}
                                                     onChange={handleChange}
                                                     placeholder='Enter PINCODE'
                                                     className='focus:outline-none'
@@ -790,7 +829,7 @@ function Page() {
                                                     type="checkbox"
                                                     id="defaultAddress"
                                                     name='isDefault'
-                                                    checked={addresses.isDefault}
+                                                    checked={addresses?.isDefault}
                                                     onChange={handleChange}
                                                     className='text-[#848484] border-[1.5px]'
                                                 />
@@ -849,7 +888,7 @@ function Page() {
                                 </div>
                                 <div className="flex justify-between items-center p-2.5">
                                     <p className="text-sm">Discount on MRP</p>
-                                    <p className="text-sm font-medium">-₹0</p>
+                                    <p className="text-sm font-medium">-₹{totalPrice - discountedTotalPrice}.00</p>
                                 </div>
                                 <div className="flex justify-between items-center p-2.5">
                                     <p className="text-sm">Coupon Discount</p>
@@ -861,16 +900,19 @@ function Page() {
                                 </div>
                                 <div className="flex justify-between items-center p-2.5">
                                     <p className="text-sm">Packaging / Handling Fee</p>
-                                    <p className="text-sm font-medium">₹20.00</p>
+                                    <p className="text-sm font-medium">₹{packagingPrice}.00</p>
                                 </div>
                             </div>
 
                             <div className="flex justify-between p-2.5">
                                 <p className='font-medium'>Total Amount</p>
-                                <p className='font-semibold text-[#093C16]'>₹2,200.00</p>
+                                <p className='font-semibold text-[#093C16]'>₹{discountedTotalPrice + packagingPrice}.00</p>
                             </div>
 
-                            <button onClick={handleSubmit} className="rounded-[10px] py-3 px-2.5 text-white bg-[#093C16] w-full">
+                            <button
+                                onClick={handleSubmit}
+                                className="rounded-[10px] py-3 px-2.5 text-white bg-[#093C16] w-full cursor-pointer"
+                            >
                                 Place Order
                             </button>
 

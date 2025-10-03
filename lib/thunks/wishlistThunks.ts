@@ -13,9 +13,8 @@
  * - Dispatch these thunks for wishlist operations that require backend sync.
  */
 
-import { getItem, KEY_ACCESS_TOKEN } from "@/utils/localStorageManager";
+import { axiosClient } from "@/utils/axiosClient";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
 
 // Add a product to the wishlist (backend)
 export const addToWishlist = createAsyncThunk(
@@ -23,15 +22,7 @@ export const addToWishlist = createAsyncThunk(
   async ({ productId }: { productId: string }) => {
     try {
       // Send POST request to backend to add product to wishlist
-      const response = await axios.post(
-        "/api/wishlist",
-        { productId },
-        {
-          headers: {
-            Authorization: `Bearer ${getItem(KEY_ACCESS_TOKEN)}`,
-          },
-        }
-      );
+      const response = await axiosClient.post("/api/wishlist", { productId });
       // Return updated wishlist from backend
       return response.data.result;
     } catch {
@@ -47,15 +38,7 @@ export const removeFromWishlist = createAsyncThunk(
   async ({ productId }: { productId: string }) => {
     try {
       // Send PUT request to backend to remove product from wishlist
-      const response = await axios.put(
-        "/api/wishlist",
-        { productId },
-        {
-          headers: {
-            Authorization: `Bearer ${getItem(KEY_ACCESS_TOKEN)}`,
-          },
-        }
-      );
+      const response = await axiosClient.put("/api/wishlist", { productId });
       // Return updated wishlist from backend
       return response.data.result;
     } catch {
@@ -70,11 +53,7 @@ export const getWishlist = createAsyncThunk(
   "wishlist/getWishlist",
   async () => {
     try {
-      const response = await axios.get("/api/wishlist", {
-        headers: {
-          Authorization: `Bearer ${getItem(KEY_ACCESS_TOKEN)}`,
-        },
-      });
+      const response = await axiosClient.get("/api/wishlist");
       // Return wishlist data
       return response.data.result;
     } catch {

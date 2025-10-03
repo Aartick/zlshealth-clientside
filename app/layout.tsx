@@ -20,7 +20,6 @@ import "./globals.css";
 import Navbar from "@/components/global/Navbar";
 import Footer from "@/components/global/Footer";
 import StoreProvider from "./StoreProvider";
-import ToastHandler from "@/components/global/ToastHandler";
 import { Toaster } from "react-hot-toast";
 import Providers from "./Providers";
 import { SessionProvider } from "next-auth/react";
@@ -58,8 +57,6 @@ export default function RootLayout({
         <SessionProvider>
           {/* Provide Redux store context */}
           <StoreProvider>
-            {/* Listen for toast notifications from Redux */}
-            <ToastHandler />
             {/* Provide additional UI context/providers */}
             <Providers />
             {/* Render global navigation bar */}

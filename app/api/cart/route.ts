@@ -137,3 +137,23 @@ export async function GET(req: NextRequest) {
     return error(500, "Something went wrong.");
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    // Verify JWT token and extract customer ID
+    const { valid, response, _id } = await verifyAccessToken(req);
+    if (!valid) return response!;
+
+    // Delete the user's cart from the database
+    const cart = await Cart.deleteOne({ customerId: _id });
+
+    // Check if any cart was actually deleted
+    if (cart.deletedCount === 0) {
+      return error(404, "Cart not found.");
+    }
+
+    return success(200, "Cart cleared successfuly.");
+  } catch (e) {
+    return error(500, "Something went wrong.");
+  }
+}

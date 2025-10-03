@@ -19,9 +19,10 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 function Footer() {
+    // Get current route path
     const pathname = usePathname()
     return (
-        <div className={`${pathname === "/"
+        <footer className={`${pathname === "/"
             ? "bg-gradient-to-b from-[#093C16] to-[#71BF45] text-white"
             : "bg-white text-black"} border-t border-[#000000] p-5 
             sm:p-10 lg:py-20 lg:px-16`
@@ -31,25 +32,25 @@ function Footer() {
             <div className="container mx-auto flex flex-col lg:flex-row 
             gap-6 md:gap-[50px] lg:justify-between"
             >
-                {/* LEFT PART: Logo, tagline, address, contact */}
+                {/* LEFT SECTION: Logo, tagline, address, contact */}
                 <div className="space-y-6">
                     {/* Company logo */}
                     <div className="relative w-[120px] h-[60px] sm:w-[140px] sm:h-[70px] md:w-[165px] md:h-[85px]">
                         <Image src="/logo.png" fill alt="logo" />
                     </div>
-                    {/* Tagline */}
+                    {/* Tagline text -> changes color based no route*/}
                     <p className={`${pathname === "/"
                         ? "text-[#71BF45]" : "text-[#36810B]"}
                          text-sm sm:text-base md:text-lg lg:text-xl font-medium italic`}
                     >
                         Herbal Solutions For Your Health
                     </p>
-                    {/* Address */}
+                    {/* Company Address */}
                     <div className="text-sm sm:text-base md:text-lg lg::text-xl text-nowrap">
                         <p >Sy.no.312, H.no.3-14/2, 2nd Floor Narsingi Village,</p>
                         <p> Rajendra Nagar Mandal Hyderabad - 500089</p>
                     </div>
-                    {/* Contact number */}
+                    {/* Contact number with phone icon -> changes color based on route */}
                     <div className="flex items-center gap-1.5 sm:gap-5">
                         <div className="bg-[#093C16] p-[3px] rounded-full text-white">
                             <MdOutlineCall size={12} />
@@ -65,7 +66,7 @@ function Footer() {
                     </div>
                 </div>
 
-                {/* RIGHT PART: Quick links and social media */}
+                {/* RIGHT SECTION: Quick links and social media */}
                 <div className="flex gap-10">
                     {/* Quick Links section */}
                     <div className="space-y-4 text-xs sm:text-sm md:text-base">
@@ -96,6 +97,8 @@ function Footer() {
                             </span>
                             th Us
                         </p>
+
+                        {/* Instagram */}
                         <Link
                             href="/"
                             className="flex items-center gap-3">
@@ -106,6 +109,8 @@ function Footer() {
                             />
                             <p>Instagram</p>
                         </Link>
+
+                        {/* Facebook */}
                         <Link
                             href="/"
                             className="flex items-center gap-3">
@@ -116,6 +121,8 @@ function Footer() {
                             />
                             <p>Facebook</p>
                         </Link>
+
+                        {/* LinkedIn */}
                         <Link
                             href="/"
                             className="flex items-center gap-3"
@@ -131,7 +138,7 @@ function Footer() {
                 </div>
             </div>
 
-            {/* Divider line */}
+            {/* Divider line (changes color by route) */}
             <hr className={`${pathname === "/"
                 ? "border-[#CDC9C9]"
                 : "border-black"} 
@@ -139,7 +146,7 @@ function Footer() {
             }
             />
 
-            {/* BOTTOM PART: Copyright and legal links */}
+            {/* BOTTOM SECTION: Copyright and legal links */}
             <div className="container mx-auto
                     flex flex-col lg:flex-row 
                     gap-2 lg:justify-between items-center"
@@ -162,7 +169,7 @@ function Footer() {
                     </Link>
                 </div>
             </div>
-        </div>
+        </footer>
     );
 }
 
