@@ -12,97 +12,23 @@
 "use client"
 
 // Import required modules and components
-import Image from 'next/image'
 import React, { useEffect, useRef, useState } from 'react'
 import { IoStarSharp } from 'react-icons/io5'
 import { MdKeyboardArrowRight } from "react-icons/md";
+import { SlArrowLeft, SlArrowRight } from 'react-icons/sl';
+
 import Link from 'next/link';
-import FAQ from '@/components/FAQ';
+import Image from 'next/image'
 import { useParams } from 'next/navigation';
-import { axiosClient } from '@/utils/axiosClient';
+
+import FAQ from '@/components/FAQ';
+import Product from '@/components/Product';
 import CartButton from '@/components/CartButton';
 import WishlistButton from '@/components/WishlistButton';
 import ProductDescriptionSkeleton from '@/components/ProductDescriptionSkeleton';
-import Product from '@/components/Product';
-import { SlArrowLeft, SlArrowRight } from 'react-icons/sl';
 
-interface category {
-    _id: string,
-    name: string,
-    products: string[]
-}
-
-// Product interface defines the structure of product objects
-interface product {
-    _id: string,
-    category: category;
-    descriptionImg: {
-        url: string,
-        public_id: string,
-    };
-    productImg: {
-        url: string,
-        public_id: string,
-    };
-    thirdImg: {
-        url: string,
-        public_id: string,
-    };
-    fourthImg: {
-        url: string,
-        public_id: string,
-    };
-    name: string;
-    about: string;
-    price: number;
-    description: string;
-    discount: number;
-    stock: number;
-    expiryMonths: number,
-    form: string,
-    packSize: string,
-    appliedFor: string,
-    suitableFor: string,
-    safetyNote: string
-}
-
-// Initial product state for loading
-const initialProduct = {
-    _id: "",
-    category: {
-        _id: "",
-        name: "",
-        products: []
-    },
-    descriptionImg: {
-        url: "",
-        public_id: "",
-    },
-    productImg: {
-        url: "",
-        public_id: "",
-    },
-    thirdImg: {
-        url: "",
-        public_id: "",
-    },
-    fourthImg: {
-        url: "",
-        public_id: "",
-    },
-    name: "",
-    about: "",
-    price: 0,
-    description: "",
-    discount: 0,
-    stock: 0,
-    expiryMonths: 0,
-    form: "",
-    packSize: "",
-    appliedFor: "",
-    suitableFor: "",
-    safetyNote: ""
-}
+import { initialProduct, product } from '@/interfaces/products';
+import { axiosClient } from '@/utils/axiosClient';
 
 function Page() {
     // State to hold product details

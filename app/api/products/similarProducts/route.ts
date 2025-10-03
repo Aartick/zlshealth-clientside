@@ -111,45 +111,80 @@ export async function GET(req: NextRequest) {
     } else {
       // If no productId → fallback to query param filters
 
-      // Extract category, productTypes, benefits from query params
-      const category = searchParams.get("category");
+      // Extract multiple query params
+      const categories = searchParams.getAll("category");
       const productTypes = searchParams.getAll("productTypes");
       const benefits = searchParams.getAll("benefits");
 
-      // Build filter object dynamically
-      const filter: Record<string, unknown> = {};
+      // Parse productIds to exclude (e.g., from cart or currently viewed)
+      const excludeIds = searchParams.getAll("exclude"); // pass ?exclude=id1&exclude=id2
+      const validExcludeIds = excludeIds.filter((id) =>
+        mongoose.Types.ObjectId.isValid(id)
+      );
 
-      // Category filter
-      if (category && mongoose.Types.ObjectId.isValid(category)) {
-        filter.category = new mongoose.Types.ObjectId(category);
+      // Prepare conditions for OR filter
+      const orConditions: Record<string, unknown>[] = [];
+
+      // Category filter (support multiple)
+      if (categories.length > 0) {
+        const validCategories = categories.filter((id) =>
+          mongoose.Types.ObjectId.isValid(id)
+        );
+        if (validCategories.length > 0) {
+          orConditions.push({
+            category: {
+              $in: validCategories.map((id) => new mongoose.Types.ObjectId(id)),
+            },
+          });
+        }
       }
 
-      // Product types filter (array of ObjectIds)
+      // Product types filter (support multiple)
       if (productTypes.length > 0) {
         const validProductTypes = productTypes.filter((id) =>
           mongoose.Types.ObjectId.isValid(id)
         );
         if (validProductTypes.length > 0) {
-          filter.productTypes = {
-            $in: validProductTypes.map((id) => new mongoose.Types.ObjectId(id)),
-          };
+          orConditions.push({
+            productTypes: {
+              $in: validProductTypes.map(
+                (id) => new mongoose.Types.ObjectId(id)
+              ),
+            },
+          });
         }
       }
 
-      // Benefits filter (array of ObjectIds)
+      // Benefits filter (support multiple)
       if (benefits.length > 0) {
         const validBenefits = benefits.filter((id) =>
           mongoose.Types.ObjectId.isValid(id)
         );
         if (validBenefits.length > 0) {
-          filter.benefits = {
-            $in: validBenefits.map((id) => new mongoose.Types.ObjectId(id)),
-          };
+          orConditions.push({
+            benefits: {
+              $in: validBenefits.map((id) => new mongoose.Types.ObjectId(id)),
+            },
+          });
         }
       }
 
-      // Fetch products that match filters
-      products = await Product.find(filter).limit(limit); // apply limit
+      // Build final filter (OR-based for recommendations)
+      const filter: Record<string, unknown> =
+        orConditions.length > 0 ? { $or: orConditions } : {};
+
+      // Exclude already viewed/added products
+      if (validExcludeIds.length > 0) {
+        filter._id = {
+          $nin: validExcludeIds.map((id) => new mongoose.Types.ObjectId(id)),
+        };
+      }
+
+      // Use aggregation pipeline to randomize recommendations
+      products = await Product.aggregate([
+        { $match: filter },
+        { $sample: { size: limit } }, // randomly pick 'limit' number of products
+      ]);
     }
 
     // Return the list of products

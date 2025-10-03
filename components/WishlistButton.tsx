@@ -15,52 +15,14 @@
  * - Used on product cards and product detail pages for quick wishlist actions.
  */
 
+import { product } from '@/interfaces/products';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks'
 import { addToWishlist, removeFromWishlist } from '@/lib/thunks/wishlistThunks';
 import React from 'react'
 import { BsSuitHeart, BsSuitHeartFill } from 'react-icons/bs';
 
-interface category {
-    _id: string,
-    name: string,
-    products: string[]
-}
-
-// Product interface defines the structure of product objects
-interface ProductType {
-    _id: string,
-    category: category;
-    descriptionImg: {
-        url: string,
-        public_id: string,
-    };
-    productImg: {
-        url: string,
-        public_id: string,
-    };
-    thirdImg: {
-        url: string,
-        public_id: string,
-    };
-    fourthImg: {
-        url: string,
-        public_id: string,
-    };
-    name: string;
-    about: string;
-    price: number;
-    description: string;
-    discount: number;
-    stock: number;
-    expiryMonths: number,
-    form: string,
-    packSize: string,
-    appliedFor: string;
-    suitableFor: string
-}
-
 interface ProductProps {
-    product: ProductType
+    product: product
 }
 
 function WishlistButton({ product }: ProductProps) {

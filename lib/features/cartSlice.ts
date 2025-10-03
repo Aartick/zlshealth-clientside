@@ -23,21 +23,14 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { addToCart, getCart, removeFromCart } from "../thunks/cartThunks";
+import { productType } from "@/interfaces/cartWish";
 
 // Cart item type definition
-interface CartItemType {
-  _id: string;
-  name: string;
-  img: string | undefined;
-  price: number;
-  quantity: number;
-  about: string;
-  discount: number;
-}
+
 
 // Cart state definition
 interface GroceryCartState {
-  cart: CartItemType[];
+  cart: productType[];
 }
 
 // Initial cart state
@@ -51,7 +44,7 @@ const groceryCartSlice = createSlice({
   initialState,
   reducers: {
     // Add product to cart for guest users
-    addToCartGuest: (state, action: PayloadAction<CartItemType>) => {
+    addToCartGuest: (state, action: PayloadAction<productType>) => {
       const curProduct = action.payload;
       const index = state.cart.findIndex((item) => item._id === curProduct._id);
 

@@ -8,27 +8,15 @@
  */
 
 // Import required modules and components
+import { product } from '@/interfaces/products';
 import { addToCartGuest, removeFromCartGuest } from '@/lib/features/cartSlice';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks'
 import { addToCart, removeFromCart } from '@/lib/thunks/cartThunks';
 import { getItem, KEY_ACCESS_TOKEN } from '@/utils/localStorageManager';
 import React from 'react'
 
-interface ProductType {
-    _id: string,
-    productImg?: {
-        public_id: string,
-        url: string
-    };
-    img?: string;
-    name: string;
-    price: number;
-    discount: number;
-    about: string;
-}
-
 interface ProductProps {
-    product: ProductType
+    product: product
 }
 
 function CartButton({ product }: ProductProps) {
@@ -55,8 +43,11 @@ function CartButton({ product }: ProductProps) {
             // For guest, update Redux cart
             dispatch(addToCartGuest({
                 _id: product._id,
+                category: product.category._id,
+                productTypes: product.productTypes,
+                benefits: product.benefits,
                 name: product.name,
-                img: product?.productImg?.url || product.img,
+                img: product?.productImg?.url,
                 price: product.price,
                 quantity: 1,
                 about: product.about,
