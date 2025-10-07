@@ -26,12 +26,15 @@
 "use client"
 import Addresses from '@/components/Addresses'
 import UpdateAddresses from '@/components/Addresses'
+import { Order } from '@/interfaces/orders'
 import { Address, initialAddress, initialDetails, UserDetails } from '@/interfaces/user'
 import { useAppDispatch, useAppSelector } from '@/lib/hooks'
 import { getMyAddress, getMyInfo } from '@/lib/thunks/userThunks'
 import { axiosClient } from '@/utils/axiosClient'
 import { formatAddress } from '@/utils/formatAddress'
+import { formatDate } from '@/utils/formatDate'
 import Image from 'next/image'
+import Link from 'next/link'
 import React, { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { BsBoxSeam } from 'react-icons/bs'
@@ -152,6 +155,26 @@ function Page() {
 
     useEffect(() => {
         setFormData(myProfile!)
+    }, [myProfile])
+
+
+    // =============== ORDERS RELATED LOGICS ================
+    const [orders, setOrders] = useState<Order[]>([])
+    const [trackOrders, setTrackOrders] = useState<Order[]>([])
+
+    useEffect(() => {
+        const getOrders = async () => {
+            const response = await axiosClient.get("/api/orders")
+            const allOrders = response.data.result;
+            const trackingOrders = allOrders.filter(
+                (order: Order) =>
+                    !["Delivered", "Canceled", "Returned"].includes(order.orderStatus)
+            )
+            setOrders(allOrders)
+            setTrackOrders(trackingOrders)
+        }
+
+        if (myProfile.email) getOrders();
     }, [myProfile])
 
     return (
@@ -813,161 +836,181 @@ function Page() {
                 )}
 
 
-
+                {/* =============== ORDERS AND RETURNS ================ */}
                 {activeButton === "ordersAndReturns" && (
                     <section className="px-2.5 space-y-4 transition-all duration-500 ease-out opacity-0 translate-y-2 animate-fadeInCart">
                         {/* All Orders */}
                         <div ref={allOrdersRef} className="space-y-4">
                             <p className="font-semibold text-[#093C16]">All Orders</p>
 
-                            <div className="space-y-4">
-                                <div className='font-medium'>
-                                    <div className="flex items-center gap-1.5">
-                                        <BsBoxSeam />
-                                        <p>Delivered</p>
-                                    </div>
-
-                                    <p className="pl-6 text-sm text-[#848484]">
-                                        On Aug 31, 2025
-                                    </p>
-                                </div>
-
-                                <div className="py-2.5 space-y-3">
-                                    {/* Sample Products */}
-                                    {Array.from({ length: 2 }).map((_, idx) => (
-                                        <div key={idx}>
-                                            {/* Border */}
-                                            <div className="border border-[#e3e3e3] mx-3" />
-
-                                            {/* Cart Products */}
-                                            <div className="grid grid-cols-3 items-start py-2.5">
-                                                <div className="flex gap-3">
-                                                    {/* Serial N0. */}
-                                                    <p>{idx + 1}.</p>
-
-                                                    {/* Product Image*/}
-                                                    <div className="relative w-[96px] h-[93px]">
-                                                        <Image
-                                                            src="/aboutUs/1.jpg"
-                                                            alt="Diavinco"
-                                                            fill
-                                                            className='rounded-[10px] border-2 border-[#71BF45] object-cover'
-                                                        />
-                                                    </div>
-
-                                                    {/* Product details */}
-                                                    <div className="flex flex-col justify-between font-medium">
-                                                        <div>
-                                                            <p className='text-sm'>Diavinco</p>
-                                                            <p className='text-xs font-medium text-[#848484]'>Blood sugar tablet</p>
-                                                        </div>
-
-                                                        <div className="flex items-center gap-[5px] text-xs text-[#093C16]">
-                                                            <p>Read More</p>
-                                                            <SlArrowDown />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Product quantity */}
-                                                <div className="flex justify-center">
-                                                    <select
-                                                        id="quantity"
-                                                        className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
-                                                    >
-                                                        <option value="1">1</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-                                                    </select>
-                                                </div>
-
-                                                {/* Product Price */}
-                                                <div className="flex justify-between items-center px-5">
-                                                    <p className="text-base font-medium text-[#093C16]">₹1300.00</p>
-                                                    <MdKeyboardArrowRight className="cursor-pointer text-xl" />
-                                                </div>
+                            {orders.length === 0 ? (
+                                <p className="text-[#848484] text-center">No orders available.</p>
+                            ) : (
+                                orders.map((order) => (
+                                    <div className="space-y-4" key={order._id}>
+                                        <div className='font-medium'>
+                                            <div className="flex items-center gap-1.5">
+                                                {
+                                                    order.orderStatus === "Delivered"
+                                                        ? <LiaTruckMovingSolid />
+                                                        : <BsBoxSeam />
+                                                }
+                                                <p>{order.orderStatus}</p>
                                             </div>
+
+                                            <p className="pl-6 text-sm text-[#848484]">
+                                                On {formatDate(order.orderDate)}
+                                            </p>
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
+
+                                        <div className="py-2.5 space-y-3">
+                                            {/* Products */}
+                                            {order.products.map((product, idx) => (
+                                                <div key={product._id}>
+                                                    {/* Border */}
+                                                    <div className="border border-[#e3e3e3] mx-3" />
+
+                                                    {/* Cart Products */}
+                                                    <div className="grid grid-cols-3 items-start py-2.5">
+                                                        <div className="flex gap-3">
+                                                            {/* Serial N0. */}
+                                                            <p>{idx + 1}.</p>
+
+                                                            {/* Product Image*/}
+                                                            <div className="relative w-[96px] h-[93px]">
+                                                                <Image
+                                                                    src={product.imgUrl}
+                                                                    alt={product.name}
+                                                                    fill
+                                                                    className='rounded-[10px] border-2 border-[#71BF45] object-cover'
+                                                                />
+                                                            </div>
+
+                                                            {/* Product details */}
+                                                            <div className="flex flex-col justify-between font-medium">
+                                                                <div>
+                                                                    <p className='text-sm'>{product.name}</p>
+                                                                    <p className='text-xs font-medium text-[#848484]'>{product.about}</p>
+                                                                </div>
+
+                                                                <div className="flex items-center gap-[5px] text-xs text-[#093C16]">
+                                                                    <p>Read More</p>
+                                                                    <SlArrowDown />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Product quantity */}
+                                                        <div className="flex justify-center">
+                                                            <select
+                                                                id="quantity"
+                                                                value={product.quantity}
+                                                                className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
+                                                            >
+                                                                <option value="1">1</option>
+                                                                <option value="2">2</option>
+                                                                <option value="3">3</option>
+                                                            </select>
+                                                        </div>
+
+                                                        {/* Product Price */}
+                                                        <div className="flex justify-between items-center px-5">
+                                                            <p className="text-base font-medium text-[#093C16]">₹{product.totalAmount}</p>
+                                                            <Link href={`/productDescription/${product._id}`}>
+                                                                <MdKeyboardArrowRight className="cursor-pointer text-xl" />
+                                                            </Link>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
 
                         {/* Track Orders */}
                         <div ref={trackOrdersRef} className="space-y-4">
                             <p className="font-semibold text-[#093C16]">Track Orders</p>
 
-                            <div className="space-y-4">
-                                <div className='font-medium'>
-                                    <div className="flex items-center gap-1.5">
-                                        <LiaTruckMovingSolid />
-                                        <p>Delivered</p>
-                                    </div>
-
-                                    <p className="pl-6 text-sm text-[#848484]">
-                                        On Aug 31, 2025
-                                    </p>
-                                </div>
-
-                                <div className="py-2.5 space-y-3">
-                                    {/* Sample Products */}
-                                    {Array.from({ length: 2 }).map((_, idx) => (
-                                        <div key={idx}>
-                                            {/* Border */}
-                                            <div className="border border-[#e3e3e3] mx-3" />
-
-                                            {/* Cart Products */}
-                                            <div className="grid grid-cols-3 items-start py-2.5">
-                                                <div className="flex gap-3">
-                                                    {/* Serial N0. */}
-                                                    <p>{idx + 1}.</p>
-
-                                                    {/* Product Image*/}
-                                                    <div className="relative w-[96px] h-[93px]">
-                                                        <Image
-                                                            src="/aboutUs/1.jpg"
-                                                            alt="Diavinco"
-                                                            fill
-                                                            className='rounded-[10px] border-2 border-[#71BF45] object-cover'
-                                                        />
-                                                    </div>
-
-                                                    {/* Product details */}
-                                                    <div className="flex flex-col justify-between font-medium">
-                                                        <div>
-                                                            <p className='text-sm'>Diavinco</p>
-                                                            <p className='text-xs font-medium text-[#848484]'>Blood sugar tablet</p>
-                                                        </div>
-
-                                                        <div className="flex items-center gap-[5px] text-xs text-[#093C16]">
-                                                            <p>Read More</p>
-                                                            <SlArrowDown />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Product quantity */}
-                                                <div className="flex justify-center">
-                                                    <select
-                                                        id="quantity"
-                                                        className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
-                                                    >
-                                                        <option value="1">1</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-                                                    </select>
-                                                </div>
-
-                                                {/* Product Price */}
-                                                <div className="flex justify-between items-center px-5">
-                                                    <p className="text-base font-medium text-[#093C16]">₹1300.00</p>
-                                                    <MdKeyboardArrowRight className="cursor-pointer text-xl" />
-                                                </div>
+                            {trackOrders.length === 0 ? (
+                                <p className="text-[#848484] text-center">No orders available.</p>
+                            ) : (
+                                trackOrders.map((order) => (
+                                    <div className="space-y-4" key={order._id}>
+                                        <div className='font-medium'>
+                                            <div className="flex items-center gap-1.5">
+                                                <BsBoxSeam />
+                                                <p>{order.orderStatus}</p>
                                             </div>
+
+                                            <p className="pl-6 text-sm text-[#848484]">
+                                                On {formatDate(order.orderDate)}
+                                            </p>
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
+
+                                        <div className="py-2.5 space-y-3">
+                                            {/* Sample Products */}
+                                            {order.products.map((product, idx) => (
+                                                <div key={product._id}>
+                                                    {/* Border */}
+                                                    <div className="border border-[#e3e3e3] mx-3" />
+
+                                                    {/* Cart Products */}
+                                                    <div className="grid grid-cols-3 items-start py-2.5">
+                                                        <div className="flex gap-3">
+                                                            {/* Serial N0. */}
+                                                            <p>{idx + 1}.</p>
+
+                                                            {/* Product Image*/}
+                                                            <div className="relative w-[96px] h-[93px]">
+                                                                <Image
+                                                                    src={product.imgUrl}
+                                                                    alt={product.name}
+                                                                    fill
+                                                                    className='rounded-[10px] border-2 border-[#71BF45] object-cover'
+                                                                />
+                                                            </div>
+
+                                                            {/* Product details */}
+                                                            <div className="flex flex-col justify-between font-medium">
+                                                                <div>
+                                                                    <p className='text-sm'>{product.name}</p>
+                                                                    <p className='text-xs font-medium text-[#848484]'>{product.about}</p>
+                                                                </div>
+
+                                                                <div className="flex items-center gap-[5px] text-xs text-[#093C16]">
+                                                                    <p>Read More</p>
+                                                                    <SlArrowDown />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Product quantity */}
+                                                        <div className="flex justify-center">
+                                                            <select
+                                                                id="quantity"
+                                                                value={product.quantity}
+                                                                className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
+                                                            >
+                                                                <option value="1">1</option>
+                                                                <option value="2">2</option>
+                                                                <option value="3">3</option>
+                                                            </select>
+                                                        </div>
+
+                                                        {/* Product Price */}
+                                                        <div className="flex justify-between items-center px-5">
+                                                            <p className="text-base font-medium text-[#093C16]">₹{product.totalAmount}</p>
+                                                            <MdKeyboardArrowRight className="cursor-pointer text-xl" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </section>
                 )}

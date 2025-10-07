@@ -147,8 +147,8 @@ function Navbar() {
     // Sync user info, address, cart and wishlist with backend
     useEffect(() => {
         const syncCart = async () => {
-            await dispatch(getMyInfo())
             if (isUser) {
+                await dispatch(getMyInfo())
                 // await dispatch(mergeGuestCart());
                 await dispatch(getMyAddress())
                 await dispatch(getCart());

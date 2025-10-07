@@ -66,7 +66,6 @@ function Page() {
             // Reset form fields
             setEmail("")
             setPassword("")
-            console.log(redirectUrl)
             // Redirect user to the specified URL
             router.push(redirectUrl)
         } catch { }
@@ -77,7 +76,7 @@ function Page() {
 
     // Handles Google login button click
     const handleGoogleLogin = async () => {
-        googleLogIn("google")
+        googleLogIn("google", redirectUrl)
     }
 
     return (

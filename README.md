@@ -73,6 +73,13 @@ AUTH_SECRET=your_google_auth_secret
 
 SHIPROCKET_EMAIL=your_shiprocket_email
 SHIPROCKET_PASSWORD=your_shiprocket_password
+SHIPROCKET_CHANNEL_ID=your_shiprocket_channel_id
+
+# For Frontend
+NEXT_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_test_or_live_key_id
+# For Backend
+RAZORAPAY_KEY_ID=your_razorpay_test_or_live_key_id
+RAZORPAY_KEY_SECRET=your_razorapy_key_secret
 
 # 4. Run the development server:
 

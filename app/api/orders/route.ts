@@ -61,10 +61,9 @@ export async function POST(req: NextRequest) {
     const token = await getShiprocketToken();
 
     // Calculate subtotal
-    const sub_total = productDetails.reduce(
-      (acc, item) => acc + item.totalAmount,
-      0
-    );
+    const sub_total = productDetails
+      .reduce((acc, item) => acc + item.totalAmount, 0)
+      .toFixed(2);
 
     // Get default address
     const defaultAddress = user.addresses.find(
@@ -72,55 +71,71 @@ export async function POST(req: NextRequest) {
     );
 
     // Create order in Shiprocket
-    const shippingResponse = await axios.post(
-      "https://apiv2.shiprocket.in/v1/external/orders/create/adhoc",
-      {
-        order_id: `ORD-alskdjf`,
-        order_date: new Date().toISOString().slice(0, 16).replace("T", " "),
-        pickup_location: "Home",
-        company_name: "Zealous",
-        billing_customer_name: defaultAddress.fullName || user.fullName,
-        billing_last_name: "",
-        billing_address: `${formatAddress(defaultAddress)}`,
-        billing_city: defaultAddress.cityTown,
-        billing_pincode: Number(defaultAddress.pinCode),
-        billing_state: defaultAddress.state,
-        billing_country: "India",
-        billing_email: defaultAddress.email || user.email,
-        billing_phone: Number(defaultAddress.phone || user.phone),
-        billing_alternate_phone: Number(user.phone),
-        shipping_is_billing: 1,
-        order_items: productDetails.map((product) => ({
-          name: product.name,
-          sku: "SKU123",
-          units: product.quantity,
-          selling_price: product.totalAmount / product.quantity,
-        })),
-        payment_method: "COD",
-        sub_total,
-        length: 10,
-        breadth: 15,
-        height: 20,
-        weight: 2.5,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+    let shippingResponse;
+    try {
+      shippingResponse = await axios.post(
+        "https://apiv2.shiprocket.in/v1/external/orders/create/adhoc",
+        {
+          order_id: `ORD-${Date.now()}`,
+          order_date: new Date().toISOString().slice(0, 16).replace("T", " "),
+          channel_id: process.env.SHIPROCKET_CHANNEL_ID,
+          billing_customer_name: defaultAddress.fullName || user.fullName,
+          billing_last_name: "",
+          billing_address: `${formatAddress(defaultAddress)}`,
+          billing_city: defaultAddress.cityTown,
+          billing_pincode: Number(defaultAddress.pinCode),
+          billing_state: defaultAddress.state,
+          billing_country: "India",
+          billing_email: defaultAddress.email || user.email,
+          billing_phone: Number(defaultAddress.phone || user.phone),
+          billing_alternate_phone: Number(user.phone),
+          shipping_is_billing: 1,
+          order_items: productDetails.map((product) => ({
+            name: product.name,
+            sku: `SKU${Math.floor(100 + Math.random() * 900)}`,
+            units: product.quantity,
+            selling_price: (product.totalAmount / product.quantity).toFixed(2),
+          })),
+          payment_method: "COD",
+          sub_total: sub_total,
+          length: 10,
+          breadth: 15,
+          height: 20,
+          weight: 2.5,
         },
-      }
-    );
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } catch {
+      // console.error(
+      //   "Shiprocket Error Response:",
+      //   e.response?.data || e.message
+      // );
+      return error(500, "Something went wrong while making order");
+    }
 
     // Save order in DB
-    await Order.create({
+    const order = await Order.create({
       customerId: _id,
       orderId: shippingResponse.data.order_id,
       products: productDetails,
     });
 
-    return success(201, "Ordered successfully.");
+    const responseWrapper = {
+      orderId: order.orderId,
+      date: order.createdAt,
+      paymentMethod: order.paymentMethod,
+      totalItems: order.products.length,
+      totalAmount: sub_total,
+    };
+
+    return success(201, responseWrapper);
   } catch (e) {
     console.error(e);
-    return error(500, "Something went wrong while making order");
+    return error(500, "Something went wrong");
   }
 }
 
@@ -136,7 +151,8 @@ interface ProductDoc {
   _id: Types.ObjectId;
   name: string;
   price: number;
-  imageUrl: { url: string };
+  productImg: { url: string };
+  about: string;
 }
 
 interface OrderProduct {
@@ -156,7 +172,7 @@ export async function GET(req: NextRequest) {
     const orders = await Order.find({ customerId: _id })
       .populate({
         path: "products.productId",
-        select: "name price imageUrl",
+        select: "name price productImg about",
       })
       .sort({ createdAt: -1 });
 
@@ -167,11 +183,13 @@ export async function GET(req: NextRequest) {
       orderStatus: data.orderStatus,
       paymentStatus: data.paymentStatus,
       paymentMethod: data.paymentMethod,
+      orderDate: data.createdAt,
       products: data.products.map((pro: OrderProduct) => ({
-        _id: pro._id,
-        imgUrl: pro.productId.imageUrl.url,
+        _id: pro.productId._id,
+        imgUrl: pro.productId.productImg.url,
         name: pro.productId.name,
         price: pro.productId.price,
+        about: pro.productId.about,
         quantity: pro.quantity,
         totalAmount: pro.totalAmount,
       })),

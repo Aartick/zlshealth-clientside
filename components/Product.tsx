@@ -36,7 +36,7 @@ function Product({ product }: ProductProps) {
     // const rating = 3.7
 
     // Calculate discounted price
-    const discountedPrice = product.price - (product.price * product.discount / 100)
+    const discountedPrice = (product.price - (product.price * product.discount / 100)).toFixed(2);
 
     // Render star rating (full, half, empty)
     // const renderStars = () => {
@@ -73,7 +73,7 @@ function Product({ product }: ProductProps) {
                 <Image
                     src={product.productImg.url}
                     fill
-                    alt="productImg"
+                    alt={product.name}
                     className="border-[3px] border-[#e3e3e3] rounded-[10px] sm:rounded-[20px]"
                 />
                 {/* Best Seller badge */}

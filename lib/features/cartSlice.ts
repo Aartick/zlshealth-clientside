@@ -22,11 +22,12 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { addToCart, getCart, removeFromCart } from "../thunks/cartThunks";
+import {
+  addToCart,
+  getCart,
+  removeFromCart,
+} from "../thunks/cartThunks";
 import { productType } from "@/interfaces/cartWish";
-
-// Cart item type definition
-
 
 // Cart state definition
 interface GroceryCartState {
@@ -70,6 +71,9 @@ const groceryCartSlice = createSlice({
         state.cart[index].quantity -= 1;
       }
     },
+    deleteFromCartGuest: (state, action: PayloadAction<string>) => {
+      state.cart = state.cart.filter((item) => item._id !== action.payload);
+    },
     // Reset/clear the cart
     resetCart: (state) => {
       state.cart = [];
@@ -107,5 +111,9 @@ const groceryCartSlice = createSlice({
 export default groceryCartSlice.reducer;
 
 // Export actions for dispatch
-export const { addToCartGuest, removeFromCartGuest, resetCart } =
-  groceryCartSlice.actions;
+export const {
+  addToCartGuest,
+  removeFromCartGuest,
+  deleteFromCartGuest,
+  resetCart,
+} = groceryCartSlice.actions;

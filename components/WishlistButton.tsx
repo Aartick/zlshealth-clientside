@@ -16,8 +16,10 @@
  */
 
 import { product } from '@/interfaces/products';
+import { addToWishlistGuest, removeFromWishlistGuest } from '@/lib/features/wishlistSlice';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks'
 import { addToWishlist, removeFromWishlist } from '@/lib/thunks/wishlistThunks';
+import { getItem, KEY_ACCESS_TOKEN } from '@/utils/localStorageManager';
 import React from 'react'
 import { BsSuitHeart, BsSuitHeartFill } from 'react-icons/bs';
 
@@ -26,6 +28,10 @@ interface ProductProps {
 }
 
 function WishlistButton({ product }: ProductProps) {
+
+    // Check if user is logged in 
+    const isUser = getItem(KEY_ACCESS_TOKEN)
+
     // Get Redux dispatch function
     const dispatch = useAppDispatch()
     // Get wishlist products from Redux store
@@ -37,10 +43,31 @@ function WishlistButton({ product }: ProductProps) {
     const toggleFavorite = () => {
         if (isInWishlist) {
             // Remove from wishlist
-            dispatch(removeFromWishlist({ productId: product._id }))
+            if (isUser) {
+                dispatch(removeFromWishlist({ productId: product._id }))
+            } else {
+                dispatch(removeFromWishlistGuest(product._id))
+            }
+
         } else {
             // Add to wishlist
-            dispatch(addToWishlist({ productId: product._id }))
+            if (isUser) {
+                dispatch(addToWishlist({ productId: product._id }))
+            } else {
+                dispatch(addToWishlistGuest({
+                    _id: product._id,
+                    category: product.category.name,
+                    productTypes: product.productTypes,
+                    benefits: product.benefits,
+                    name: product.name,
+                    img: product.productImg.url,
+                    price: product.price,
+                    quantity: 1,
+                    about: product.about,
+                    discount: product.discount
+                }))
+            }
+
         }
     }
 

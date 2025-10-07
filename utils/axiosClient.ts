@@ -77,7 +77,7 @@ axiosClient.interceptors.response.use(
       }
       // Refresh failed -> clear tokens and redirect to login
       else {
-        toast.error("Session expired. Please log in again.");
+        toast.error("Session expired. Please log in.");
         removeItem(KEY_ACCESS_TOKEN);
         const currentPath = window.location.pathname + window.location.search;
 

@@ -17,7 +17,6 @@ export const getMyAddress = createAsyncThunk(
   async () => {
     try {
       const response = await axiosClient.get("/api/users/addresses");
-      console.log(response.data.result, "address thunk");
       return response.data.result;
     } catch {
       return null;

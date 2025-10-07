@@ -110,7 +110,7 @@ export async function GET(req: NextRequest) {
     );
 
     if (!cart) {
-      return error(404, "Cart not found.");
+      return success(200, []); // Return empty array if no cart found
     }
 
     // Map cart products to response format
@@ -153,7 +153,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     return success(200, "Cart cleared successfuly.");
-  } catch (e) {
+  } catch {
     return error(500, "Something went wrong.");
   }
 }

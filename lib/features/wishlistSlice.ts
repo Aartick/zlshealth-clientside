@@ -31,7 +31,7 @@ import { productType } from "@/interfaces/cartWish";
 
 // Wishlist state definition
 interface WishlistState {
-  products:productType[];
+  products: productType[];
 }
 
 // Initial wishlist state
@@ -56,6 +56,11 @@ const wishlistSlice = createSlice({
     },
     // Remove product from wishlist for guest users
     removeFromWishlistGuest: (state, action: PayloadAction<string>) => {
+      state.products = state.products.filter(
+        (item) => item._id !== action.payload
+      );
+    },
+    deleteFromWishlistGuest: (state, action: PayloadAction<string>) => {
       state.products = state.products.filter(
         (item) => item._id !== action.payload
       );
@@ -94,7 +99,7 @@ const wishlistSlice = createSlice({
 });
 
 // Export actions for dispatch
-export const { addToWishlistGuest, removeFromWishlistGuest, resetWishlist } =
+export const { addToWishlistGuest, removeFromWishlistGuest, deleteFromWishlistGuest, resetWishlist } =
   wishlistSlice.actions;
 
 // Export reducer for store

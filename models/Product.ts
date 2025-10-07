@@ -41,6 +41,7 @@ export interface IProduct extends Document {
   category: mongoose.Types.ObjectId; // Reference to Category
   productTypes: mongoose.Types.ObjectId[]; // Array of ProductType references
   benefits: mongoose.Types.ObjectId[]; // Array of Benefit references
+  healthConditions: String[]; // Array of health conditions
   // Different image fields with public_id and url for each unique images
   descriptionImg: {
     public_id: string;
@@ -95,6 +96,11 @@ const productSchema: Schema<IProduct> = new Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "Benefit",
         required: true, // Product must have at least one benefit
+      },
+    ],
+    healthConditions: [
+      {
+        type: String,
       },
     ],
     descriptionImg: {

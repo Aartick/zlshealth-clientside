@@ -44,7 +44,7 @@ function Page() {
     const params = useParams()
 
     // Calculate discounted price
-    const discountedPrice = product.price - (product.price * product.discount / 100)
+    const discountedPrice = (product.price - (product.price * product.discount / 100)).toFixed(2);
 
     // Fetch similar products
     const getSimilarProducts = async () => {
