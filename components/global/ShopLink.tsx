@@ -84,42 +84,43 @@ function ShopLink() {
 
     return (
         <div className='flex flex-wrap lg:flex-nowrap p-10 gap-[35px] bg-white'>
-            {/* FIRST COLUMN: Shop by Category */}
+
+            {/* ====== FIRST COLUMN: Shop by Category ====== */}
             <div className="space-y-5">
-                <p className="font-normal text-[32px] whitespace-nowrap">
+                <p className="font-normal text-3xl whitespace-nowrap">
                     <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
                         SHOP BY C
                     </span>
                     ATEGORY
                 </p>
                 <div className="space-y-1">
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         {/* Render each category item */}
                         {firstCol.map((item, idx) => (
-                            <div key={idx} className='p-[10px] space-y-[10px] rounded-xl cursor-pointer transition-shadow duration-300 hover:shadow-xs hover:shadow-[#71BF45] group'>
-                                <div className='relative flex items-center gap-[12px]'>
+                            <div key={idx} className='p-2.5 space-y-2 rounded-xl cursor-pointer transition-shadow duration-300 hover:shadow-xs hover:shadow-[#71BF45] group'>
+                                <div className='relative flex items-center gap-3'>
                                     {/* Category icon/image */}
                                     {item.img}
                                     {/* Category title */}
-                                    <p className='font-semibold text-lg whitespace-nowrap transition-colors duration-300 group-hover:text-[#71BF45]'>
+                                    <p className='font-semibold whitespace-nowrap transition-colors duration-300 group-hover:text-[#71BF45]'>
                                         {item.title}
                                     </p>
                                 </div>
                                 {/* Category description */}
-                                <p className='font-normal text-base text-[#848484] pl-[37px] whitespace-nowrap'>
+                                <p className='font-normal text-sm text-[#848484] pl-[37px] whitespace-nowrap'>
                                     {item.desc}
                                 </p>
                             </div>
                         ))}
                     </div>
                     {/* Link to all products */}
-                    <Link href="/products" className='text-[#36810B] text-base font-normal underline decoration-solid'>See All Products</Link>
+                    <Link href="/products" className='text-[#36810B] font-normal underline decoration-solid'>See All Products</Link>
                 </div>
             </div>
 
-            {/* SECOND COLUMN: Shop by Need */}
+            {/* ====== SECOND COLUMN: Shop by Need ====== */}
             <div className="space-y-5">
-                <p className="font-normal text-[32px] whitespace-nowrap">
+                <p className="font-normal text-3xl whitespace-nowrap">
                     <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
                         SHOP BY N
                     </span>
@@ -128,45 +129,45 @@ function ShopLink() {
                 <div className="flex gap-4">
                     {/* FIRST PART: Immunity, Diabetes, Stress, Hormonal */}
                     <div className="space-y-1">
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             {/* Render each need item */}
                             {secondCol.map((item, idx) => (
-                                <div key={idx} className='p-[10px] space-y-[10px] rounded-xl cursor-pointer transition-shadow duration-300 hover:shadow-xs hover:shadow-[#71BF45] group'>
-                                    <div className='relative flex items-center gap-[12px]'>
+                                <div key={idx} className='p-2.5 space-y-2.5 rounded-xl cursor-pointer transition-shadow duration-300 hover:shadow-xs hover:shadow-[#71BF45] group'>
+                                    <div className='relative flex items-center gap-3'>
                                         {/* Need icon/image */}
                                         {item.img}
                                         {/* Need title */}
-                                        <p className='font-semibold text-lg whitespace-nowrap transition-colors duration-300 group-hover:text-[#71BF45]'>
+                                        <p className='font-semibold whitespace-nowrap transition-colors duration-300 group-hover:text-[#71BF45]'>
                                             {item.title}
                                         </p>
                                     </div>
                                     {/* Need description */}
-                                    <p className='font-normal text-base text-[#848484] pl-[37px] whitespace-nowrap'>
+                                    <p className='font-normal text-sm text-[#848484] pl-[37px] whitespace-nowrap'>
                                         {item.desc}
                                     </p>
                                 </div>
                             ))}
                         </div>
                         {/* Link to all products */}
-                        <Link href="/products" className='text-[#36810B] text-base font-normal underline decoration-solid'>See All Products</Link>
+                        <Link href="/products" className='text-[#36810B] font-normal underline decoration-solid'>See All Products</Link>
                     </div>
 
                     {/* SECOND PART: Mental, PCOS, Respiratory */}
-                    <div className="space-y-4">
-                        <div className="space-y-4">
+                    <div className="space-y-3">
+                        <div className="space-y-3">
                             {/* Render each additional need item */}
                             {thirdCol.map((item, idx) => (
-                                <div key={idx} className='p-[10px] space-y-[10px] rounded-xl cursor-pointer transition-shadow duration-300 hover:shadow-xs hover:shadow-[#71BF45] group'>
-                                    <div className='relative flex items-center gap-[12px]'>
+                                <div key={idx} className='p-2.5 space-y-2.5 rounded-xl cursor-pointer transition-shadow duration-300 hover:shadow-xs hover:shadow-[#71BF45] group'>
+                                    <div className='relative flex items-center gap-3'>
                                         {/* Need icon/image */}
                                         {item.img}
                                         {/* Need title */}
-                                        <p className='font-semibold text-lg whitespace-nowrap transition-colors duration-300 group-hover:text-[#71BF45]'>
+                                        <p className='font-semibold whitespace-nowrap transition-colors duration-300 group-hover:text-[#71BF45]'>
                                             {item.title}
                                         </p>
                                     </div>
                                     {/* Need description */}
-                                    <p className='font-normal text-base text-[#848484] pl-[37px] whitespace-nowrap'>
+                                    <p className='font-normal text-sm text-[#848484] pl-[37px] whitespace-nowrap'>
                                         {item.desc}
                                     </p>
                                 </div>
@@ -176,8 +177,8 @@ function ShopLink() {
                 </div>
             </div>
 
-            {/* THIRD COLUMN: Featured shop image */}
-            <div className='relative w-[351px] h-[492px]'>
+            {/* ====== THIRD COLUMN: Featured shop image ====== */}
+            <div className='relative w-[350px] h-[490px]'>
                 <Image
                     src="/shopLink.jpg"
                     alt='img'

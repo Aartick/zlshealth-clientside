@@ -5,9 +5,7 @@ import {
   removeItem,
   setItem,
 } from "./localStorageManager";
-import { TOAST_FAILURE } from "@/components/global/ToastHandler";
-import { showToast } from "@/lib/features/appConfigSlice";
-import { store } from "@/lib/store";
+import toast from "react-hot-toast";
 
 /**
  * @constant axiosClient
@@ -52,12 +50,7 @@ axiosClient.interceptors.response.use(
 
     // If error is not 401 (unauthorized), show a toast
     if (statusCode !== 401) {
-      store.dispatch(
-        showToast({
-          type: TOAST_FAILURE,
-          message: error,
-        })
-      );
+      toast.error(error);
     }
 
     // Handle expired access token (401 error)
@@ -84,14 +77,13 @@ axiosClient.interceptors.response.use(
       }
       // Refresh failed -> clear tokens and redirect to login
       else {
-        store.dispatch(
-          showToast({
-            type: TOAST_FAILURE,
-            message: "Token expired",
-          })
-        );
+        toast.error("Session expired. Please log in.");
         removeItem(KEY_ACCESS_TOKEN);
-        window.location.replace(`/login`);
+        const currentPath = window.location.pathname + window.location.search;
+
+        window.location.replace(
+          `/login?redirect=${encodeURIComponent(currentPath)}`
+        );
         return Promise.reject(error);
       }
     }
@@ -99,13 +91,7 @@ axiosClient.interceptors.response.use(
     return Promise.reject(error);
   },
   async (error) => {
-    console.log("error last", error);
-
-    // Show toast for unexpected network errors
-    store.dispatch({
-      type: TOAST_FAILURE,
-      message: error.message,
-    });
+    toast.error(error?.message || "Network error. Please try again.");
 
     return Promise.reject(error);
   }

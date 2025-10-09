@@ -148,8 +148,8 @@ function Navbar() {
     useEffect(() => {
         const syncCart = async () => {
             if (isUser) {
-                // await dispatch(mergeGuestCart());
                 await dispatch(getMyInfo())
+                // await dispatch(mergeGuestCart());
                 await dispatch(getMyAddress())
                 await dispatch(getCart());
                 await dispatch(getWishlist())
@@ -174,6 +174,10 @@ function Navbar() {
             }
         } catch { }
     }
+
+    const currentPath = window.location.pathname + window.location.search;
+    const path = `/login?redirect=${encodeURIComponent(currentPath)}`
+
 
     return (
         <nav className="z-40 fixed w-full">
@@ -323,17 +327,17 @@ function Navbar() {
                                 }
                                  text-[#ffffff]
                                  `}
-                            href={isUser ? "" : "/login"}
+                            href={isUser ? "" : path}
                             onClick={handleLogout}
                         >
                             {/* Login based text */}
                             <p className="font-semibold">{isUser ? "Logout" : "Login"}</p>
 
                             {/* Login based user profile */}
-                            {myProfile ?
+                            {myProfile?.img ?
                                 <div className="relative size-6">
                                     <Image
-                                        src={myProfile.img!}
+                                        src={myProfile?.img}
                                         alt={myProfile?.fullName}
                                         fill
                                         className="rounded-full"

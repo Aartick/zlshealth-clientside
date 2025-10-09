@@ -94,7 +94,7 @@ function Page() {
     // Handles Google signup button click
     const handleGoogleLogin = async () => {
         toast.success("By continuing you'll be agree to Zealous's Terms of Condition and Privacy Policy.")
-        googleLogIn("google")
+        googleLogIn("google", "/")
     }
 
     return (

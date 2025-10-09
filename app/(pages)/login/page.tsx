@@ -18,7 +18,7 @@ import { axiosClient } from '@/utils/axiosClient';
 import { KEY_ACCESS_TOKEN, setItem } from '@/utils/localStorageManager';
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
 import { FiEye, FiEyeOff } from "react-icons/fi";
@@ -30,6 +30,8 @@ function Page() {
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectUrl = searchParams.get("redirect") || "/";
 
     // Handles login form submission
     const handleLogIn = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -64,8 +66,8 @@ function Page() {
             // Reset form fields
             setEmail("")
             setPassword("")
-            // Redirect to home page
-            router.push("/")
+            // Redirect user to the specified URL
+            router.push(redirectUrl)
         } catch { }
         finally {
             setLoading(false)
@@ -74,7 +76,7 @@ function Page() {
 
     // Handles Google login button click
     const handleGoogleLogin = async () => {
-        googleLogIn("google")
+        googleLogIn("google", redirectUrl)
     }
 
     return (

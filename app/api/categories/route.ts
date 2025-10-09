@@ -1,5 +1,6 @@
 import { error, success } from "@/utils/responseWrapper";
 import Category from "@/models/Category";
+import dbConnect from "@/dbConnect/dbConnect";
 
 /**
  * @route GET /api/categories
@@ -7,6 +8,7 @@ import Category from "@/models/Category";
  */
 export async function GET() {
   try {
+    await dbConnect();
     // Find all the categories in db
     const categories = await Category.find();
     return success(200, categories);

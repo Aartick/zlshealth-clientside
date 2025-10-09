@@ -110,7 +110,7 @@ export async function GET(req: NextRequest) {
     );
 
     if (!cart) {
-      return error(404, "Cart not found.");
+      return success(200, []); // Return empty array if no cart found
     }
 
     // Map cart products to response format
@@ -134,6 +134,26 @@ export async function GET(req: NextRequest) {
     return success(201, responseWrapper);
   } catch (e) {
     console.error(e);
+    return error(500, "Something went wrong.");
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    // Verify JWT token and extract customer ID
+    const { valid, response, _id } = await verifyAccessToken(req);
+    if (!valid) return response!;
+
+    // Delete the user's cart from the database
+    const cart = await Cart.deleteOne({ customerId: _id });
+
+    // Check if any cart was actually deleted
+    if (cart.deletedCount === 0) {
+      return error(404, "Cart not found.");
+    }
+
+    return success(200, "Cart cleared successfuly.");
+  } catch {
     return error(500, "Something went wrong.");
   }
 }

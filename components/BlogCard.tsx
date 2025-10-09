@@ -1,3 +1,16 @@
+/**
+ * BlogCard Component
+ * 
+ * This component renders a single blog preview card.
+ * It includes:
+ *  - Blog image with a "Most Read" badge renders conditionally.
+ *  - Blog title. 
+ *  - Category tags (horizontally scrollable if too many).
+ *  - A short blog description/summary. 
+ *  - A "Read More" link button that navigates to the blog details page.
+ * 
+ */
+
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
@@ -5,7 +18,7 @@ import React from 'react'
 function BlogCard() {
     return (
         <div className="border border-[#CDCDCD] rounded-[30px] p-4 space-y-4">
-            {/* Image */}
+            {/* ================ Blog Image Section ================ */}
             <div className="relative w-full h-[200px] md:h-[232px]">
                 <Image
                     src="/aboutUs/1.jpg"
@@ -14,7 +27,7 @@ function BlogCard() {
                     className='rounded-2xl'
                 />
 
-                {/* Best Seller badge */}
+                {/* "Most Read" Badge -> shown at the top of the image */}
                 <div className="absolute top-5 inline-block">
                     <div
                         className="bg-[#71BF45] text-white text-xs md:text-base font-semibold px-3 py-2"
@@ -28,25 +41,26 @@ function BlogCard() {
                 </div>
             </div>
 
-            {/* Title */}
+            {/* ================ Blog Title ================ */}
             <p className="font-semibold md:text-xl">
                 Debunking Common Myths About Food Supplements
             </p>
 
-            {/* Tags */}
+            {/* ================ Blog Tags (scrollable row) ================ */}
             <div className="flex items-center gap-2.5 overflow-x-scroll scrollbar-hide text-xs md:text-base">
                 <p className="py-[5px] px-2.5 border border-[#D6D6D6] rounded-[30px]">Supplements</p>
                 <p className="py-[5px] px-2.5 border border-[#D6D6D6] rounded-[30px]">Wellness</p>
                 <p className="py-[5px] px-2.5 border border-[#D6D6D6] rounded-[30px]">Myths</p>
             </div>
 
-
+            {/* ================ Blog Summary ================ */}
             <p className="text-xs md:text-sm font-medium text-[#848484]">
                 Food supplements have gained immense popularity
                 over the years, but with this rise in interest
                 comes a plethora of misconceptions and myths.
             </p>
 
+            {/* ================ "Read More" Button ================ */}
             <Link
                 href={`/blogDescription`}
                 className="
@@ -56,7 +70,6 @@ function BlogCard() {
                 text-[#36810B] font-semibold
                 text-xs md:text-base
               "
-
             >
                 Read More
             </Link>
