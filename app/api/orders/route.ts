@@ -25,10 +25,19 @@ export async function POST(req: NextRequest) {
     if (!valid) return response!;
 
     // Extract cart from request body
-    const { cart } = await req.json();
+    const { cart, address } = await req.json();
 
     if (!cart || !Array.isArray(cart) || cart.length === 0) {
       return error(400, "At least one product is required.");
+    }
+
+    if (
+      !address.fullName ||
+      !address.cityTown ||
+      !address.pinCode ||
+      !address.state
+    ) {
+      return error(400, "Provide address required fields");
     }
 
     const productDetails = [];
@@ -65,11 +74,6 @@ export async function POST(req: NextRequest) {
       .reduce((acc, item) => acc + item.totalAmount, 0)
       .toFixed(2);
 
-    // Get default address
-    const defaultAddress = user.addresses.find(
-      (addr: Address) => addr.isDefault
-    );
-
     // Create order in Shiprocket
     let shippingResponse;
     try {
@@ -79,15 +83,15 @@ export async function POST(req: NextRequest) {
           order_id: `ORD-${Date.now()}`,
           order_date: new Date().toISOString().slice(0, 16).replace("T", " "),
           channel_id: process.env.SHIPROCKET_CHANNEL_ID,
-          billing_customer_name: defaultAddress.fullName || user.fullName,
+          billing_customer_name: address.fullName || user.fullName,
           billing_last_name: "",
-          billing_address: `${formatAddress(defaultAddress)}`,
-          billing_city: defaultAddress.cityTown,
-          billing_pincode: Number(defaultAddress.pinCode),
-          billing_state: defaultAddress.state,
+          billing_address: `${formatAddress(address)}`,
+          billing_city: address.cityTown,
+          billing_pincode: Number(address.pinCode),
+          billing_state: address.state,
           billing_country: "India",
-          billing_email: defaultAddress.email || user.email,
-          billing_phone: Number(defaultAddress.phone || user.phone),
+          billing_email: address.email || user.email,
+          billing_phone: Number(address.phone || user.phone),
           billing_alternate_phone: Number(user.phone),
           shipping_is_billing: 1,
           order_items: productDetails.map((product) => ({
@@ -120,6 +124,16 @@ export async function POST(req: NextRequest) {
     // Save order in DB
     const order = await Order.create({
       customerId: _id,
+      fullName: address.fullName,
+      phone: address.phone || user.phone,
+      email: address.email || user.email,
+      landmark: address.landmark,
+      streetAddressHouseNo: address.streetAddressHouseNo,
+      streetAddress2: address.streetAddress2,
+      addressType: address.addressType,
+      cityTown: address.cityTown,
+      state: address.state,
+      pinCode: address.pinCode,
       orderId: shippingResponse.data.order_id,
       products: productDetails,
     });

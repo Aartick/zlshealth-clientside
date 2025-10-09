@@ -166,7 +166,7 @@ function Page() {
                                 <span className="font-normal text-xs line-through text-[#848484]">
                                     ₹ {product?.price ?? 0}
                                 </span>{" "}
-                                <span className="font-medium text-xs text-[#71BF45]">({product?.discount ?? 0}% off)</span>
+                                <span className="font-medium text-sm text-[#71BF45]">({product?.discount ?? 0}% off)</span>
                             </p>
                             <p className='text-[#71BF45] text-xs'>inclusive of all taxes</p>
                         </div>

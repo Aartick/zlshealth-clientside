@@ -65,6 +65,7 @@ function Page() {
     const [futureAddress, setFutureAddress] = useState(false);
     const [billingAddress, setBillingAddress] = useState(false)
     const [orderSuccessful, setOrderSuccessful] = useState(false)
+    const [makingOrder, setMakingOrder] = useState(false)
     const [orderSummary, setOrderSummary] = useState<OrderSummary>({
         orderId: "",
         date: "",
@@ -164,6 +165,7 @@ function Page() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            setMakingOrder(true)
             // Get the user's default address (latest from state)
             const defaultAddress = address.find((adrs: Address) => adrs.isDefault)
 
@@ -181,7 +183,7 @@ function Page() {
                 const res = await axiosClient.put(`/api/users/addresses`, payload);
                 await dispatch(getMyAddress());
                 toast.success(res.data.result);
-                placeOrder();
+                placeOrder(payload);
                 return;
             }
 
@@ -193,7 +195,7 @@ function Page() {
 
             // If address fields are same -> skip backend update and place order
             if (!isChanged) {
-                placeOrder()
+                placeOrder(defaultAddress)
                 return;
             }
 
@@ -214,17 +216,17 @@ function Page() {
             toast.success(res.data.result)
 
             // Call place order function on address updation
-            placeOrder()
-        } catch { }
+            placeOrder(payload)
+        } catch { setMakingOrder(false) }
     }
 
-    const placeOrder = async () => {
+    const placeOrder = async (address: Address) => {
         try {
             if (cart.length === 0) {
                 return toast.error("Cart is empty")
             }
 
-            const response = await axiosClient.post('/api/orders', { cart })
+            const response = await axiosClient.post('/api/orders', { cart, address })
             const order = response.data.result
             const paymentSuccess = await handlePayment(Number(paymentAmount), order.orderId)
             if (paymentSuccess) {
@@ -249,6 +251,7 @@ function Page() {
                 })
             }
             await dispatch(deleteCart())
+            setMakingOrder(false)
             setOrderSuccessful(true)
         } catch { }
     }
@@ -303,7 +306,7 @@ function Page() {
         <div className='flex flex-col items-center m-10'>
 
             {orderSuccessful ? (
-                <div className='w-full flex items-center justify-between '>
+                <div className='w-full flex items-center justify-between mb-3.5'>
                     {/* ============ Thankyou Message / Billing Address ============ */}
                     <div className="space-y-6 py-10 text-wrap max-w-lg">
 
@@ -395,7 +398,7 @@ function Page() {
                             </div>
                             <div className="flex items-center justify-between px-2.5">
                                 <p className="text-sm">Discount on MRP</p>
-                                <p className="font-medium text-sm">-₹{orderSummary.discountPrice}</p>
+                                <p className="font-medium text-sm">-₹{orderSummary.discountPrice.toFixed(2)}</p>
                             </div>
                             <div className="flex items-center justify-between px-2.5">
                                 <p className="text-sm">Coupon Discount</p>
@@ -429,9 +432,9 @@ function Page() {
                     </div>
                 </div>
             ) : (
-                <div>
+                <>
                     {/* ================ CHECKOUT PROGRESS BAR ================ */}
-                    <div className="flex items-center mb-3.5">
+                    <div className="flex justify-center items-center mb-3.5">
                         {/* CART BUTTON */}
                         <button
                             onClick={() => setActiveButton("cart")}
@@ -1132,7 +1135,9 @@ function Page() {
 
                                     <button
                                         onClick={handleSubmit}
-                                        className="rounded-[10px] py-3 px-2.5 text-white bg-[#093C16] w-full cursor-pointer"
+                                        disabled={makingOrder}
+                                        className={`rounded-[10px] py-3 px-2.5 text-white bg-[#093C16] w-full
+                                             ${makingOrder ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}
                                     >
                                         Place Order
                                     </button>
@@ -1219,7 +1224,7 @@ function Page() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </>
             )}
 
 
