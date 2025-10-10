@@ -169,7 +169,7 @@ function Navbar() {
             if (isUser) {
                 const response = await axiosClient.get("/api/auth?type=logout")
                 removeItem(KEY_ACCESS_TOKEN)
-                signOut()
+                signOut({redirect: false})
                 toast.success(response.data.result)
             }
         } catch { }
