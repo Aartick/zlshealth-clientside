@@ -25,7 +25,7 @@
 
 import Image from "next/image";
 import { MdKeyboardArrowRight } from "react-icons/md";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
 import { VscSettings } from "react-icons/vsc";
@@ -35,6 +35,9 @@ import { GoArrowRight } from "react-icons/go";
 import { BiMouse } from "react-icons/bi";
 import { axiosClient } from "@/utils/axiosClient";
 import { product } from "@/interfaces/products";
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+import ProductSkeleton from "@/components/ProductSkeleton";
 
 // Animated placeholder texts for search bar
 const placeholderTexts = [
@@ -76,6 +79,110 @@ export default function Home() {
     }
     getProducts()
   }, [activeBtn])
+
+
+  // ============== STATS ANIMATION LOGICS ================
+
+  gsap.registerPlugin(ScrollTrigger)
+
+  const paragraphs = [
+    "50+ Herbal Products",
+    "1000+ Orders / Day",
+    "50,000+ Customers",
+  ];
+
+  // Refs for section (for scroll trigger) and container (for animations)
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    // GSAP context ensures scoped animations (cleanup on unmount)
+    const ctx = gsap.context(() => {
+      // Get all <p> tags with class "para"
+      const paras = gsap.utils.toArray(".para") as HTMLElement[];
+
+      // Step 1: Place all paragraphs on top of each other, hidden initially
+      gsap.set(paras, {
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        xPercent: -50, // centers horizontally
+        yPercent: -50, // centers vertically
+        whiteSpace: "nowrap", // ensures text stays in one line
+        opacity: 1 // hidden initially
+      })
+
+      // Step 2: Create the main GSAP timeline that runs as user scrolls
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current, // element to watch
+          start: "top top", // start when section hits top of viewport
+          end: () => `+=${paras.length * 1000}`, // total scroll distance
+          scrub: true, // link animation to scroll progress
+          pin: true, // pin this section while animating
+        }
+      });
+
+      // Step 3: Loop over each paragraph for sequential animation
+      paras.forEach((para, i) => {
+        // Split paragraph text into spans (each letter)
+        const letters = para.textContent!.split("").map((char) => {
+          const span = document.createElement("span");
+
+          if (char === " ") {
+            span.innerHTML = "&nbsp;";
+          } else {
+            span.textContent = char
+          }
+          span.style.display = "inline-block";
+          // span.style.opacity = "1"; // hidden initially
+          span.style.transform = "translateY(100px)" // move down for entrance effect
+          return span;
+        }
+        );
+
+        // Replace original text with these span letters
+        para.textContent = ""; // clear old text
+        letters.forEach((l) => para.appendChild(l)) // append new spans
+
+        if (i === 0) {
+          gsap.set(letters, { y: 0 })
+        } else {
+          // Fade in letter by letter quickly
+          tl.to(
+            letters,
+            {
+              y: 0, // move to normal position
+              stagger: 0.03, //small delay between each letter
+              duration: 0.4, // fast fade
+              ease: "power3.out"
+            },
+            `step${i}` // label for syncing animations
+          )
+        }
+
+        // Step 5: Hold paragraph for a short time while scrolling
+        tl.to({}, { duration: 0.5 }); // just a delay (empty tween)
+
+        if (i !== paras.length - 1) {
+          // Step 6: Fade out letter by letter (move upward & vanish)
+          tl.to(
+            letters,
+            {
+              y: -120, // move upward
+              stagger: 0.02,
+              duration: 0.3,
+              ease: "power3.in"
+            },
+            `step${i}+=0.8`
+          )
+        }
+      })
+    }, containerRef)
+
+    // Cleanup GSAP animations when component unmounts
+    return () => ctx.revert();
+  }, [])
 
   return (
     <div className="-mt-24 sm:-mt-28 lg:-mt-36 bg-[#FBFFF9] space-y-10 pb-8">
@@ -316,13 +423,19 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-          {products.map((product) => (
+          {products.length !== 0 ? products.map((product) => (
             <ProductCard product={product} key={product._id} />
-          ))}
+          )) : (
+            Array.from({ length: 4 }).map((_, key) => (
+              <ProductSkeleton key={key} />
+            ))
+          )}
         </div>
       </section>
 
-      <section className="relative w-full overflow-hidden">
+      <section
+        ref={sectionRef}
+        className=" w-full overflow-hidden">
         {/* LEFT SHADOW */}
         <svg
           className="absolute left-0 top-1/2 -translate-y-1/2"
@@ -470,8 +583,21 @@ export default function Home() {
             </svg>
           </div>
         </div>
+
         {/* STATS */}
-        <p className="relative font-semibold text-8xl text-center">50 + Herbal Products</p>
+        <div
+          ref={containerRef}
+          className="relative z-20 w-full h-[100px] overflow-hidden"
+        >
+          {paragraphs.map((text, i) => {
+            return (
+              <p key={i} className="para font-semibold text-8xl text-center">
+                {text}
+              </p>
+            )
+          })}
+        </div>
+        {/* <p className="relative font-semibold text-8xl text-center">50 + Herbal Products</p> */}
       </section>
 
       {/* SCIENCE AT WORK SECTION*/}
