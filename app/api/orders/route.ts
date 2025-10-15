@@ -1,4 +1,3 @@
-import { Address } from "@/interfaces/user";
 import Order from "@/models/Order";
 import Product from "@/models/Product";
 import User from "@/models/User";
