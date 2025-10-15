@@ -37,7 +37,7 @@ const appConfigSlice = createSlice({
       const updatedAddress = Array.isArray(action.payload)
         ? action.payload
         : [];
-        console.log(updatedAddress, "address in slice");
+        
       state.myAddress = updatedAddress;
     });
   },

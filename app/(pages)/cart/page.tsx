@@ -89,17 +89,17 @@ function Page() {
     const cart = useAppSelector((state) => state.cartSlice.cart)
 
     // Calculate total items in cart
-    const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0)
+    const totalItems = cart?.reduce((acc, item) => acc + item?.quantity, 0)
 
     // Calculate total price of cart items
-    const totalPrice = parseFloat(cart.reduce(
-        (acc, item) => acc + item.price * item.quantity, 0
+    const totalPrice = parseFloat(cart?.reduce(
+        (acc, item) => acc + item?.price * item?.quantity, 0
     ).toFixed(2))
 
     // Calculate total price after discount
-    const discountedTotalPrice = parseFloat(cart.reduce(
+    const discountedTotalPrice = parseFloat(cart?.reduce(
         (acc, item) =>
-            acc + (item.price - (item.price * item.discount) / 100) * item.quantity,
+            acc + (item?.price - (item?.price * item?.discount) / 100) * item?.quantity,
         0
     ).toFixed(2))
 
@@ -110,7 +110,7 @@ function Page() {
     const paymentAmount = (discountedTotalPrice + packagingPrice).toFixed(2)
 
     // Check if cart is empty
-    const isCartEmpty = cart.length === 0
+    const isCartEmpty = cart?.length === 0
 
     // Get wishlist products from Redux store
     const wishlist = useAppSelector((state) => state.wishlistSlice.products)
@@ -222,7 +222,7 @@ function Page() {
 
     const placeOrder = async (address: Address) => {
         try {
-            if (cart.length === 0) {
+            if (cart?.length === 0) {
                 return toast.error("Cart is empty")
             }
 
@@ -236,7 +236,7 @@ function Page() {
                     paymentMethod: paymentSuccess.paymentMethod,
                     totalAmount: totalPrice,
                     discountPrice: totalPrice - discountedTotalPrice,
-                    totalItems: cart.length,
+                    totalItems: cart?.length,
                     payableAmount: Number(paymentAmount),
                 })
             } else {
@@ -246,7 +246,7 @@ function Page() {
                     paymentMethod: order.paymentMethod,
                     totalAmount: totalPrice,
                     discountPrice: totalPrice - discountedTotalPrice,
-                    totalItems: cart.length,
+                    totalItems: cart?.length,
                     payableAmount: Number(paymentAmount),
                 })
             }
@@ -281,10 +281,10 @@ function Page() {
     }
 
     useEffect(() => {
-        const categories = [...new Set(cart.map(item => item.category))]
-        const productTypes = [...new Set(cart.flatMap(item => item.productTypes))]
-        const benefits = [...new Set(cart.flatMap(item => item.benefits))]
-        const exclude = [...new Set(cart.map(item => item._id))]
+        const categories = [...new Set(cart?.map(item => item.category))]
+        const productTypes = [...new Set(cart?.flatMap(item => item.productTypes))]
+        const benefits = [...new Set(cart?.flatMap(item => item.benefits))]
+        const exclude = [...new Set(cart?.map(item => item._id))]
 
         const params = new URLSearchParams();
 
@@ -583,8 +583,8 @@ function Page() {
                                                     </Link>
                                                 </div>
                                                 :
-                                                cart.map((product, idx) => (
-                                                    <div key={product._id}>
+                                                cart?.map((product, idx) => (
+                                                    <div key={product?._id}>
                                                         {/* Border */}
                                                         <div className="border border-[#e3e3e3] mx-3" />
 
@@ -597,8 +597,8 @@ function Page() {
                                                                 {/* Product Image*/}
                                                                 <div className="relative w-[96px] h-[93px]">
                                                                     <Image
-                                                                        src={product.img!}
-                                                                        alt={product.name}
+                                                                        src={product?.img}
+                                                                        alt={product?.name}
                                                                         fill
                                                                         className='rounded-[10px] border-2 border-[#71BF45] object-cover'
                                                                     />
@@ -607,12 +607,12 @@ function Page() {
                                                                 {/* Product details */}
                                                                 <div className="flex flex-col justify-between font-medium">
                                                                     <div>
-                                                                        <Link href={`/productDescription/${product._id}`}
+                                                                        <Link href={`/productDescription/${product?._id}`}
                                                                             className='text-sm'
                                                                         >
-                                                                            {product.name}
+                                                                            {product?.name}
                                                                         </Link>
-                                                                        <p className='text-xs'>{product.about}</p>
+                                                                        <p className='text-xs'>{product?.about}</p>
                                                                     </div>
 
                                                                     <div className="flex items-center gap-[5px] text-xs">
@@ -626,7 +626,7 @@ function Page() {
                                                             <div className="flex justify-center">
                                                                 <select
                                                                     id="quantity"
-                                                                    value={product.quantity}
+                                                                    value={product?.quantity}
                                                                     className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
                                                                 >
                                                                     <option value="1">1</option>
@@ -638,17 +638,17 @@ function Page() {
                                                             {/* Product Price */}
                                                             <div className="flex justify-center items-center gap-4">
                                                                 <p className="font-medium text-base text-[#093C16]">
-                                                                    ₹{(product.price - (product.price * product.discount) / 100)}{" "}
+                                                                    ₹{(product?.price - (product?.price * product?.discount) / 100)}{" "}
                                                                     <span className="font-normal text-[10px] line-through text-[#848484]">
-                                                                        ₹{product.price}
+                                                                        ₹{product?.price}
                                                                     </span>{" "}
-                                                                    <span className="font-medium text-[10px] text-[#71BF45]">({product.discount}% off)</span>
+                                                                    <span className="font-medium text-[10px] text-[#71BF45]">({product?.discount}% off)</span>
                                                                 </p>
                                                                 <RxCross1
                                                                     className="text-[#848484] cursor-pointer"
                                                                     onClick={() => isUser
-                                                                        ? dispatch(deleteFromCart({ productId: product._id }))
-                                                                        : dispatch(deleteFromCartGuest(product._id))}
+                                                                        ? dispatch(deleteFromCart({ productId: product?._id }))
+                                                                        : dispatch(deleteFromCartGuest(product?._id))}
                                                                 />
                                                             </div>
                                                         </div>
@@ -688,7 +688,7 @@ function Page() {
                                                     </Link>
                                                 </div>
                                                 : wishlist.map((product, idx) => (
-                                                    <div key={product._id}>
+                                                    <div key={product?._id}>
                                                         {/* BORDER */}
                                                         <div className="border border-[#e3e3e3] mx-3" />
 
@@ -701,8 +701,8 @@ function Page() {
                                                                 {/* PRODUCT IMAGE */}
                                                                 <div className="relative w-[96px] h-[93px]">
                                                                     <Image
-                                                                        src={product.img}
-                                                                        alt={product.name}
+                                                                        src={product?.img}
+                                                                        alt={product?.name}
                                                                         fill
                                                                         className='rounded-[10px] border-2 border-[#71BF45] object-cover'
                                                                     />
@@ -711,8 +711,8 @@ function Page() {
                                                                 {/* PRODUCT DETAILS */}
                                                                 <div className="flex flex-col justify-between font-medium">
                                                                     <div>
-                                                                        <p className='text-sm'>{product.name}</p>
-                                                                        <p className='text-xs'>{product.about}</p>
+                                                                        <p className='text-sm'>{product?.name}</p>
+                                                                        <p className='text-xs'>{product?.about}</p>
                                                                     </div>
 
                                                                     <div className="flex items-center gap-[5px] text-xs">
@@ -724,7 +724,7 @@ function Page() {
                                                             <div className="flex justify-center">
                                                                 <select
                                                                     id="quantity"
-                                                                    value={product.quantity}
+                                                                    value={product?.quantity}
                                                                     className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
                                                                 >
                                                                     <option value="1">1</option>
@@ -735,17 +735,17 @@ function Page() {
 
                                                             <div className="flex justify-center items-center gap-4">
                                                                 <p className="font-medium text-base text-[#093C16]">
-                                                                    ₹{(product.price - (product.price * product.discount) / 100).toFixed(2)}{" "}
+                                                                    ₹{(product?.price - (product?.price * product?.discount) / 100).toFixed(2)}{" "}
                                                                     <span className="font-normal text-[10px] line-through text-[#848484]">
-                                                                        ₹{(product.price).toFixed(2)}
+                                                                        ₹{(product?.price).toFixed(2)}
                                                                     </span>{" "}
-                                                                    <span className="font-medium text-[10px] text-[#71BF45]">({product.discount}% off)</span>
+                                                                    <span className="font-medium text-[10px] text-[#71BF45]">({product?.discount}% off)</span>
                                                                 </p>
                                                                 <RxCross1
                                                                     className="text-[#848484] cursor-pointer"
                                                                     onClick={() => isUser
-                                                                        ? dispatch(removeFromWishlist({ productId: product._id }))
-                                                                        : dispatch(removeFromWishlistGuest(product._id))
+                                                                        ? dispatch(removeFromWishlist({ productId: product?._id }))
+                                                                        : dispatch(removeFromWishlistGuest(product?._id))
                                                                     }
                                                                 />
                                                             </div>
@@ -1261,7 +1261,7 @@ function Page() {
                     {similarProducts.map((product) => (
                         <div
                             className='w-[300px] shrink-0'
-                            key={product._id}
+                            key={product?._id}
                         >
                             <Product product={product} />
                         </div>
