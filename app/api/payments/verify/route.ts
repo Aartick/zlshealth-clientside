@@ -2,12 +2,7 @@ import { error, success } from "@/utils/responseWrapper";
 import { NextRequest } from "next/server";
 import crypto from "crypto";
 import Order from "@/models/Order";
-import Razorpay from "razorpay";
-
-const instance = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
-});
+import { instance } from "@/utils/razorpayInstance";
 
 export async function POST(req: NextRequest) {
   try {
