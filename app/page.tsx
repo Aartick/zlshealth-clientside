@@ -433,6 +433,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* STATS SECTION */}
       <section
         ref={sectionRef}
         className=" w-full overflow-hidden">

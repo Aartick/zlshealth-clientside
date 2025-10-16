@@ -19,7 +19,7 @@ import { CgProfile } from "react-icons/cg";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { RxHamburgerMenu } from "react-icons/rx";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -121,11 +121,32 @@ function Navbar() {
     const [openSidebar, setOpenSidebar] = useState<boolean>(false)
     const [navLinks,] = useState(initialLinks)
     const [open, setOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null)
 
     const pathname = usePathname();
     const dispatch = useAppDispatch()
     const isUser = getItem(KEY_ACCESS_TOKEN) // Check if user is logged in
 
+    // Close dropdown when clicking outside and Escape(Esc) key
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setOpen(false)
+            }
+        }
+
+        const handleEscape = (event: KeyboardEvent) => {
+            if (event.key === "Escape") setOpen(false)
+        }
+
+        document.addEventListener("mousedown", handleClickOutside)
+        document.addEventListener("keydown", handleEscape)
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside)
+            document.removeEventListener("keydown", handleEscape)
+        }
+    }, [])
 
 
     // ================ User Related Info. logics ================
@@ -169,7 +190,7 @@ function Navbar() {
             if (isUser) {
                 const response = await axiosClient.get("/api/auth?type=logout")
                 removeItem(KEY_ACCESS_TOKEN)
-                signOut({redirect: false})
+                signOut({ redirect: false })
                 toast.success(response.data.result)
             }
         } catch { }
@@ -377,7 +398,7 @@ function Navbar() {
                         </Link>
 
                         {/* SHOP DROPDOWN */}
-                        <div className="relative">
+                        <div className="relative" ref={dropdownRef}>
                             <button
                                 onClick={() => setOpen(!open)}
                                 className={`

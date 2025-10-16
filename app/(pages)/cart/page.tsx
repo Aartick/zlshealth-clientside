@@ -554,7 +554,7 @@ function Page() {
 
                         <div className="flex gap-3">
                             {/* LEFT SECTION (Dynamic Step Content) */}
-                            <div className="flex-2 space-y-[30px]">
+                            <div className="flex-2 space-y-[30px] h-screen overflow-y-scroll scrollbar-hide">
 
                                 {/* Cart/Wishlist Section */}
                                 {activeButton === "cart" && (
@@ -1093,7 +1093,7 @@ function Page() {
                             </div>
 
                             {/* RIGHT SECTION */}
-                            <div className="flex-1 space-y-[30px]">
+                            <div className="flex-1 space-y-[30px] h-screen overflow-y-scroll scrollbar-hide">
                                 {/* PRICE DETAILS */}
                                 <div className="p-2.5 border border-[#e3e3e3] rounded-[20px]">
                                     <div className="flex items-center justify-between border-b-2 border-[#e3e3e3] p-2.5">
