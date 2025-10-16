@@ -107,8 +107,9 @@ function Page() {
 
     return (
         <div className='space-y-5 pb-10'>
+            {/* ================ Product Images And Details ================ */}
             <div className="flex flex-col md:flex-row">
-                {/* LEFT COLUMN: Product images */}
+                {/* ====== LEFT COLUMN: Product images ====== */}
                 {loading
                     ? <ProductDescriptionSkeleton />
                     : (
@@ -147,7 +148,7 @@ function Page() {
                         </div>
                     )}
 
-                {/* RIGHT COLUMN: Product details and actions */}
+                {/* ====== RIGHT COLUMN: Product details and actions ====== */}
                 <div className="flex-1 p-3 md:p-6">
                     <div className="space-y-4 border-b-[3px] border-[#e3e3e3] px-2.5 pb-5">
                         {/* Product name and about */}
@@ -266,8 +267,20 @@ function Page() {
                         </ul>
                     </div>
 
-                    {/* Ratings and customer photos section */}
-                    <div className="px-2.5 py-5 space-y-5">
+
+                </div>
+            </div>
+
+            {/* ================ FAQ's, Customer Reviews And Similar Products ================ */}
+
+            <FAQ />
+
+            {/* ====== Ratings And Customer Photos Section ====== */}
+            <div className="p-6 flex items-center">
+                {/* Ratings Section */}
+                <section className='space-y-5 pr-[270px] border-r-4 border-[#E3E3E3]'>
+                    {/* Reviews */}
+                    <div className='space-y-3'>
                         <p className="font-medium text-sm text-[#093C16]">Ratings</p>
 
                         <div className="px-2.5 flex items-center gap-2.5">
@@ -277,7 +290,7 @@ function Page() {
                                     <p className='font-semibold text-[32px]'>4.8</p>
                                     <IoStarSharp className='text-xl text-[#71BF45]' />
                                 </div>
-                                <p className="text-[#848484]">(120+ Reviews)</p>
+                                <p className="text-[#848484] text-nowrap">(120+ Reviews)</p>
                             </div>
                             {/* Ratings breakdown by stars */}
                             <div className="py-2.5 space-y-2.5">
@@ -302,10 +315,12 @@ function Page() {
                                 ))}
                             </div>
                         </div>
+                    </div>
 
-                        {/* Customer photos */}
+                    {/* Customer photos */}
+                    <div className='space-y-3'>
                         <p className="font-medium text-sm text-[#093C16]">Customer Photos (8)</p>
-                        <div className="flex items-center gap-5">
+                        <div className="flex items-center gap-3">
                             <Image
                                 src="/DiavincoHand.png"
                                 width={60}
@@ -334,38 +349,34 @@ function Page() {
                                 className='rounded-[10px]'
                                 alt='reviewPhotos'
                             />
-                        </div>
-
-                        {/* Review preview */}
-                        <div className="space-y-5">
-                            <div className="flex justify-between items-center">
-                                <p className='font-medium text-sm text-[#093C16]'>Review (8)</p>
-                                <Link href="/productDescription" className='flex items-center gap-[5px] text-xs'>
-                                    <p className='underline decoration-solid text-[#093C16]'>View all reviews</p>
-                                    <MdKeyboardArrowRight />
-                                </Link>
-                            </div>
-                            <div className="space-y-1.5 text-xs">
-                                <p className='font-medium'>Natural relief that works so well!</p>
-                                <p>I&apos;ve been using Diavinco for almost three months now, and the difference has been remarkable. My fasting sugar levels have dropped, my energy feels steadier throughout the day, and even my evening fatigue has reduced a lot. What, I really like is that it&apos;s herbal, so I&apos;m not worried about long-term side effects...
-                                    <span className='text-[#017BD2]'>see more.</span>
-                                </p>
-                                <div className="flex items-center pr-2.5 ">
-                                    <p className="border-r-2 pr-2.5 font-medium text-xs text-[#71BF45]">Bhanu Priya</p>
-                                    <p className="pl-2.5 font-medium text-xs text-[#848484]">Yoga Instructor, Hyderabad</p>
-                                </div>
-                            </div>
                         </div>
                     </div>
-                </div>
+                </section>
+
+                {/* Review preview */}
+                <section className="space-y-5 pl-40">
+                    <div className="flex justify-between items-center">
+                        <p className='font-medium text-sm text-[#093C16]'>Review (8)</p>
+                        <Link href="/productDescription" className='flex items-center gap-[5px] text-xs'>
+                            <p className='underline decoration-solid text-[#093C16]'>View all reviews</p>
+                            <MdKeyboardArrowRight />
+                        </Link>
+                    </div>
+                    <div className="space-y-1.5 text-xs">
+                        <p className='font-medium'>Natural relief that works so well!</p>
+                        <p>I&apos;ve been using Diavinco for almost three months now, and the difference has been remarkable. My fasting sugar levels have dropped, my energy feels steadier throughout the day, and even my evening fatigue has reduced a lot. What, I really like is that it&apos;s herbal, so I&apos;m not worried about long-term side effects...
+                            <span className='text-[#017BD2]'>see more.</span>
+                        </p>
+                        <div className="flex items-center pr-2.5 ">
+                            <p className="border-r-2 pr-2.5 font-medium text-xs text-[#71BF45]">Bhanu Priya</p>
+                            <p className="pl-2.5 font-medium text-xs text-[#848484]">Yoga Instructor, Hyderabad</p>
+                        </div>
+                    </div>
+                </section>
             </div>
 
-            {/* ================================================================================================================================ */}
-
-            {/* FAQ and similar products section */}
-            <div className="space-y-[30px] mx-3 md:mx-10">
-                <FAQ />
-
+            {/* ======== Similar Products Section ======== */}
+            <div className="space-y-[30px] px-3 md:px-6">
                 {/* Similar products heading and scrolling buttons */}
                 <div className="flex items-center justify-between">
                     <h2 className="text-2xl font-semibold">Others Also Buy</h2>
