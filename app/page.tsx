@@ -38,6 +38,7 @@ import { product } from "@/interfaces/products";
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import ProductSkeleton from "@/components/ProductSkeleton";
+import OurProcess from "@/components/OurProcess";
 
 // Animated placeholder texts for search bar
 const placeholderTexts = [
@@ -120,6 +121,7 @@ export default function Home() {
           end: () => `+=${paras.length * 1000}`, // total scroll distance
           scrub: true, // link animation to scroll progress
           pin: true, // pin this section while animating
+          anticipatePin: 1
         }
       });
 
@@ -436,7 +438,7 @@ export default function Home() {
       {/* STATS SECTION */}
       <section
         ref={sectionRef}
-        className=" w-full overflow-hidden">
+        className="w-full overflow-hidden">
         {/* LEFT SHADOW */}
         <svg
           className="absolute left-0 top-1/2 -translate-y-1/2"
@@ -598,8 +600,10 @@ export default function Home() {
             )
           })}
         </div>
-        {/* <p className="relative font-semibold text-8xl text-center">50 + Herbal Products</p> */}
       </section>
+
+      {/* OUR PROCESS COMPONENT*/}
+      <OurProcess />
 
       {/* SCIENCE AT WORK SECTION*/}
       <section className="py-[30px] px-[30px] md:px-[60px] space-y-6">
