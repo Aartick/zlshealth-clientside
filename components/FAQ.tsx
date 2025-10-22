@@ -45,7 +45,7 @@ export default function FAQ() {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 px-6">
       {/* Render each FAQ item */}
       {faqs.map((faq, index) => (
         <div key={index}>
