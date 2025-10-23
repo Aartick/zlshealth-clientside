@@ -34,6 +34,17 @@ body {
   scrollbar-width: none;
 }
 
+.vertical-scrollbar-hide::-webkit-scrollbar {
+  width: 0px; /* hides vertical scrollbar in WebKit browsers */
+}
+
+.vertical-scrollbar-hide {
+  overflow-y: scroll; /* or auto */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+
 @layer utilities {
   .animate-slide-in-right {
     animation: slide-in-right 0.7s ease-in-out forwards;
