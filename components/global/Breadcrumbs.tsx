@@ -25,13 +25,14 @@ export default function Breadcrumbs() {
     pathArray = [parent, base];
   }
 
+  const hideBreadcrumbs = ["/", "/science"]
+
   return (
     <>
-      {pathname === "/" ? null : (
+      {hideBreadcrumbs.includes(pathname) ? null : (
         <nav
-          className={`${
-            isHiddenPath(pathname) ? "-mt-11" : ""
-          } text-sm text-gray-600`}
+          className={`${isHiddenPath(pathname) ? "-mt-11" : ""
+            } text-sm text-gray-600`}
         >
           <ol className="flex space-x-2">
             {/* Home */}
