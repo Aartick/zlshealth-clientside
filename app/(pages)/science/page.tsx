@@ -1,12 +1,56 @@
 "use client";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react"
+import { IoIosCheckmark } from "react-icons/io";
 
 gsap.registerPlugin(ScrollTrigger);
+
+const tableData = [
+  {
+    col1: "Absorption Rate",
+    col2: "",
+    col3: "-30% (low cellular uptake)"
+  },
+  {
+    col1: "Effective Timeline",
+    col2: "-30% (low cellular uptake)",
+    col3: "2-4 weeks for visible, lasting results"
+  },
+  {
+    col1: "Approach",
+    col2: "3-6 months before noticeable results",
+    col3: "Targets root causes via multi-pathway healing"
+  },
+  {
+    col1: "Science + Tradition",
+    col2: "",
+    col3: "5,000 years of herbal wisdom + cutting-edge nanoscience"
+  },
+  {
+    col1: "Immune System Expertise",
+    col2: "Generalized support only",
+    col3: "Specialized formulas for chronic & complex conditions"
+  },
+  {
+    col1: "Nutrient Synergy",
+    col2: "Ingredients work in isolation",
+    col3: "Holistic synergy - minerals, vitamins, enzymes & hormones optimized together"
+  },
+  {
+    col1: "Side Effects",
+    col2: "Possible digestive discomfort, fatigue",
+    col3: "Zero - gentle, safe, and effective"
+  },
+  {
+    col1: "User Experience",
+    col2: "Slow, inconsistent results",
+    col3: "Fast, consistent, and transformative healing"
+  }
+]
 
 export default function Page() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -444,18 +488,150 @@ export default function Page() {
         </section>
 
         {/* ---------- PANEL 4 ---------- */}
-        <section className="panel flex-shrink-0 w-screen h-screen mx-8 py-5">
+        <section className="panel flex-shrink-0 flex flex-col justify-around h-screen mx-8 py-5">
           <p className="font-medium text-4xl w-[490px]">
             Ancient Wisdom + Modern Science = {" "}
             <span className="font-light italic">Magic</span>
           </p>
+
+          <table className="w-full border-collapse">
+            <thead>
+              <tr>
+                <th></th>
+                <th
+                  style={{
+                    border: "1px solid transparent",
+                    borderRadius: "30px 30px 0 0",
+                    background:
+                      "linear-gradient(#171717, #171717) padding-box, linear-gradient(90deg, #71BF45 0%, #355920 100%) border-box",
+                    backgroundClip: "padding-box, border-box",
+                    padding: "8px",
+                    fontWeight: "500",
+                    fontSize: "20px",
+                    color: "#71BF45",
+                  }}
+                >
+                  Regular Supplements
+                </th>
+                <th
+                  className="p-2 font-semibold text-xl text-[#093C16] bg-[#71BF45] rounded-tl-[30px] rounded-tr-[30px]"
+                >
+                  Zealous Health
+                </th>
+              </tr>
+            </thead>
+
+            <tbody className="bg-[#093c16]">
+              {tableData.map((data, idx) => {
+                const isFirstRow = idx === 0;
+                const isLastRow = idx === tableData.length - 1;
+
+                return (
+                  <tr key={idx}>
+                    {/* Column 1 */}
+                    <td
+                      className="text-white text-xl py-2 pl-5 pr-10"
+                      style={{
+                        border: "0.5px solid transparent",
+                        borderRadius: `${isFirstRow ? "30px 0 0 0" : isLastRow ? "0 0 0 30px" : "0"}`,
+                        background:
+                          "linear-gradient(#171717, #171717) padding-box, linear-gradient(90deg, #71BF45 0%, #FFFFFF 23%) border-box",
+                        backgroundOrigin: "border-box",
+                        backgroundClip: "padding-box, border-box",
+                      }}
+                    >
+                      {data.col1}
+                    </td>
+
+                    {/* Column 2 */}
+                    <td
+                      className="text-[#C6C4C4] py-2 pl-5 pr-24"
+                      style={{
+                        border: "0.5px solid transparent",
+                        background:
+                          "linear-gradient(#171717, #171717) padding-box, linear-gradient(90deg, #71BF45 0%, #FFFFFF 23%) border-box",
+                        backgroundOrigin: "border-box",
+                        backgroundClip: "padding-box, border-box",
+                      }}
+                    >
+                      {data.col2}
+                    </td>
+
+                    {/* Column 3 */}
+                    <td
+                      className="py-2 pl-5 pr-10"
+                      style={{
+                        border: "0.5px solid transparent",
+                        borderRadius: isLastRow ? "0 0 30px 0" : "0",
+                        background:
+                          "linear-gradient(#171717, #171717) padding-box, linear-gradient(90deg, #71BF45 0%, #FFFFFF 23%) border-box",
+                        backgroundOrigin: "border-box",
+                        backgroundClip: "padding-box, border-box",
+                      }}
+                    >
+                      <div className="flex items-center gap-2 text-[#C6C4C4]">
+                        <IoIosCheckmark className="bg-gradient-to-b from-[#71BF45] to-[#093C16] rounded-full size-5" />
+                        {data.col3}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </section>
 
         {/* ---------- PANEL 5 ---------- */}
-        <section className="panel flex-shrink-0 w-screen h-screen mx-8 py-5">
-          <p className="font-semibold text-4xl">
-            The Science Made Simple
-          </p>
+        <section className="panel flex-shrink-0 w-screen h-screen space-y-8 px-8 py-5">
+          <div className="flex justify-around">
+            <p className="font-semibold text-4xl text-white">
+              The Science Made Simple
+            </p>
+            <div />
+          </div>
+
+          <div className="flex justify-around items-center w-full">
+            {/* === Timeline Section === */}
+            <div className="flex flex-col items-center relative">
+              {/* --- MAP THROUGH STEPS --- */}
+              {["Step-1", "Step-2", "Step-3"].map((step, index) => (
+                <React.Fragment key={index}>
+                  {/* Line above the dot */}
+
+                  <div className="h-40 w-[2px] bg-gradient-to-b from-white to-[#71BF45]" />
+
+                  {/* Dot + Step label */}
+                  <div className="relative flex items-center gap-3 my-8">
+                    <div className="w-4 h-4 rounded-full bg-gray-400 z-10" />
+                    <p className="text-gray-200 text-lg">{step}</p>
+                  </div>
+
+                  {/* Line below the dot (skip after last step if you want bottom gap) */}
+                  {index !== 2 && (
+                    <div className="h-40 w-[2px] bg-gradient-to-b from-white to-[#71BF45]" />
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+
+            {/* === Right Content Section === */}
+            <div className="space-y-10">
+              <div>
+                <p className="font-extrabold text-3xl text-white">Protection</p>
+                <p className="font-light text-2xl text-white max-w-xl">
+                  Our nano-cage wraps around nutrients like a protective bubble.
+                </p>
+              </div>
+
+              <Image
+                src="/science/protection.jpg"
+                width={722}
+                height={420}
+                alt="protection-img"
+                className="rounded-[32px]"
+              />
+            </div>
+          </div>
         </section>
 
         {/* ---------- PANEL 5 ---------- */}
@@ -516,23 +692,28 @@ function Card({ text }: { text: string }) {
       className="text-white rounded-full py-3 text-center text-sm md:text-base lg:text-2xl w-full"
       style={{
         border: "1px solid transparent",
-        borderImage: "linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0%, #71BF45 100%) 1",
+        background:
+          "linear-gradient(#000, #000) padding-box, linear-gradient(90deg, rgba(255,255,255,0.4) 0%, #71BF45 100%) border-box",
+        backgroundClip: "padding-box, border-box",
       }}
     >
       {text}
     </motion.div>
-  )
+  );
 }
+
 
 function CircleCard({ text }: { text: string }) {
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
       transition={{ duration: 0.3 }}
-      className="text-white rounded-full flex items-center justify-center text-center text-sm md:text-base w-56 h-56"
+      className="text-white flex items-center justify-center text-center text-sm md:text-2xl w-56 h-56"
       style={{
         border: "1px solid transparent",
-        borderImage: "linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0%, #71BF45 100%) 1",
+        borderRadius: "50%",
+        background: "linear-grardient(#000, #000) padding-box, linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0%, #71BF45 100%) border-box",
+        backgroundClip: "padding-box border-box"
       }}
     >
       {text}
@@ -545,10 +726,14 @@ function MainCard({ text }: { text: string }) {
     <motion.div
       whileHover={{ scale: 1.05 }}
       transition={{ duration: 0.3 }}
-      className="relative border border-[#2C2C2C] hover:border-[#71BF45]/80 rounded-full px-8 py-4 text-sm md:text-base flex flex-col items-center justify-between gap-4 w-fit backdrop-blur-md bg-black/40"
+      className="relative rounded-[40px] px-8 py-4 text-sm md:text-2xl flex flex-col items-center justify-between gap-4 w-fit"
+      style={{
+        border: "1px solid transparent",
+        background: "linear-gradient(#000, #000) padding-box, linear-gradient(90deg, #ffffff 40%, #71BF45 0%) border-box"
+      }}
     >
       <span>{text}</span>
-      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 border border-white/30 hover:bg-white/20 transition">
+      <div className="flex items-center justify-center w-8 h-8 rounded-full text-black bg-white transition">
         <ArrowRight size={16} />
       </div>
     </motion.div>
