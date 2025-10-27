@@ -199,12 +199,13 @@ function Navbar() {
     const currentPath = window.location.pathname + window.location.search;
     const path = `/login?redirect=${encodeURIComponent(currentPath)}`
 
+    const bgTransparentPath = ["/", "/science"]
 
     return (
         <nav className="z-40 fixed w-full">
 
             {/* ================ Navbar Section ================ */}
-            <section className={`py-[10px] sm:py-2 px-4 sm:px-10 drop-shadow-[0px_4px_15.8px_rgba(0,0,0,0.06)] ${pathname === "/" ? "bg-transparent backdrop-blur-md" : "bg-white"} text-black`}>
+            <section className={`py-[10px] sm:py-2 px-4 sm:px-10 drop-shadow-[0px_4px_15.8px_rgba(0,0,0,0.06)] ${bgTransparentPath.includes(pathname) ? "bg-transparent backdrop-blur-md" : "bg-white"} text-black`}>
                 <div className="container mx-auto w-full flex justify-between items-center sm:gap-[40px]">
                     {/* ====== Company Logo and location section ====== */}
                     <div className="flex flex-col lg:flex-row gap-[21px]">
@@ -227,16 +228,16 @@ function Navbar() {
                             href="/profile"
                             className="flex items-center gap-[10px]"
                         >
-                            <div className={`${pathname === "/" ? "bg-white"
+                            <div className={`${bgTransparentPath.includes(pathname) ? "bg-white"
                                 : "bg-[#71BF451A]"} text-[#36810B] p-1 rounded-full`}
                             >
                                 <IoLocationOutline size={24} />
                             </div>
                             <div>
-                                <p className={`text-xs ${pathname === "/" ? "text-[#e4e4e4]" : ""}`}>
+                                <p className={`text-xs ${bgTransparentPath.includes(pathname) ? "text-[#e4e4e4]" : ""}`}>
                                     Delivered to
                                 </p>
-                                <div className={`flex items-center ${pathname === "/"
+                                <div className={`flex items-center ${bgTransparentPath.includes(pathname)
                                     ? "text-[#f9f9f9]" : "text-[#36810B]"}`}
                                 >
                                     <p>{address?.cityTown || "Suryapet"} {address?.pinCode || "508206"}</p>
@@ -383,7 +384,7 @@ function Navbar() {
             {/* ================ Navigation and Shop Dropdown Section ================ */}
             <section className={isHiddenPath(pathname) ? "hidden" : "relative w-full"}>
                 <div className="hidden lg:flex justify-center">
-                    <div className={`flex items-center gap-5 rounded-br-xl rounded-bl-xl ${pathname === "/" ? "bg-transpare backdrop-blur-md" : "bg-[#71BF45]/10"} py-5 px-2.5`}>
+                    <div className={`flex items-center gap-5 rounded-br-xl rounded-bl-xl ${pathname === "/" ? "bg-transparent backdrop-blur-md" : "bg-[#71BF45]/10"} py-5 px-2.5`}>
                         <Link
                             href="/"
                             className={
