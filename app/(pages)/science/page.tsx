@@ -58,6 +58,7 @@ export default function Page() {
   const cursorRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -110,6 +111,32 @@ export default function Page() {
       ScrollTrigger.killAll();
     };
   }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.muted = false;
+            video.play().catch(() => {
+              console.warn("Autoplay with sound blocked by browser.")
+            })
+          } else {
+            video.pause();
+            video.muted = true;
+          }
+        })
+      },
+      { threshold: 0.5 }
+    )
+
+    observer.observe(video)
+
+    return () => observer.unobserve(video)
+  }, [])
 
   return (
     <div
@@ -267,10 +294,9 @@ export default function Page() {
           </div>
 
           <video
+            ref={videoRef}
             className="h-full"
-            controls
-            autoPlay
-            muted
+            playsInline
             loop
           >
             <source

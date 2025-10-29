@@ -85,13 +85,13 @@ const initialLinks: NavLink[] = [
     },
     {
         name: "Wellness Needs",
-        href: "/",
+        href: "/wellnessNeeds",
     },
     {
         name: "Science",
-        href: "/"
+        href: "/science"
     },
-    { name: "Blog", href: "/" },
+    { name: "Blog", href: "/blogs" },
 ];
 
 function Navbar() {
@@ -208,24 +208,18 @@ function Navbar() {
             <section className={`py-[10px] sm:py-2 px-4 sm:px-10 drop-shadow-[0px_4px_15.8px_rgba(0,0,0,0.06)] ${bgTransparentPath.includes(pathname) ? "bg-transparent backdrop-blur-md" : "bg-white"} text-black`}>
                 <div className="container mx-auto w-full flex justify-between items-center sm:gap-[40px]">
                     {/* ====== Company Logo and location section ====== */}
-                    <div className="flex flex-col lg:flex-row gap-[21px]">
+                    <div className="flex flex-row gap-[21px]">
                         <Link
-                            className="relative flex items-center gap-3"
+                            className="relative"
                             href="/"
                         >
-                            {/* Hamburger menu for sidebar (mobile) */}
-                            <RxHamburgerMenu
-                                size={24}
-                                className="text-[#71BF45] lg:hidden cursor-pointer"
-                                onClick={() => setOpenSidebar(!openSidebar)}
-                            />
                             {/* Company logo */}
                             <Image src="/logo.png" alt="logo" className="w-[68px] h-[37px] sm:w-[85px] sm:h-[47px]" width={85} height={47} />
                         </Link>
 
                         {/* Location info */}
                         <Link
-                            href="/profile"
+                            href={isUser ? "/profile" : "/login"}
                             className="flex items-center gap-[10px]"
                         >
                             <div className={`${bgTransparentPath.includes(pathname) ? "bg-white"
@@ -245,6 +239,15 @@ function Navbar() {
                                 </div>
                             </div>
                         </Link>
+                    </div>
+
+                    {/* Hamburger menu for sidebar (mobile) */}
+                    <div className="lg:hidden">
+                        <RxHamburgerMenu
+                            size={24}
+                            className="text-[#71BF45] lg:hidden cursor-pointer"
+                            onClick={() => setOpenSidebar(!openSidebar)}
+                        />
                     </div>
 
                     {/* ====== Search bar section (desktop only) ====== */}
@@ -290,7 +293,7 @@ function Navbar() {
                     </div>
 
                     {/* ====== Cart, wishlist, and login/logout section ====== */}
-                    <div className="flex items-center gap-3 sm:gap-5">
+                    <div className="hidden lg:flex items-center gap-3 sm:gap-5">
                         <div className="flex items-center gap-3 text-lg sm:text-2xl">
                             {/* Cart icon with product count */}
                             <Link
@@ -316,7 +319,7 @@ function Navbar() {
 
                             {/* Wishlist icon with product count */}
                             <Link
-                                href="/"
+                                href="/wishlist"
                                 className={`
                                     relative p-2 sm:p-5 rounded-full
                                      ${pathname === "/"
@@ -367,6 +370,46 @@ function Navbar() {
                                 </div>
                                 : <CgProfile size={20} />}
                         </Link>
+                    </div>
+                </div>
+
+                {/* SEARCH BAR (Mobile Only) */}
+                <div className="mt-2 lg:hidden w-full flex justify-between items-center border-[0.5px] border-[#71BF45] rounded-[50px] py-2 px-2.5">
+                    <div className="flex items-center gap-2.5 relative w-full">
+                        <label htmlFor='search' className="p-1 rounded-[27px] bg-[#71bf45] text-[#ffffff]">
+                            <IoSearchOutline size={15} />
+                        </label>
+
+                        <div className="relative w-full">
+                            {/* Search input */}
+                            <input
+                                id='search'
+                                type="text"
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                                className="text-white text-xs w-full focus:outline-none"
+                            />
+                            {/* Animated Placeholder */}
+                            {inputValue === "" && (
+                                <div className="absolute left-0 top-0 w-full h-full pointer-events-none flex items-center text-[#a3a3a3] text-xs overflow-hidden">
+                                    <p>Search for&nbsp; </p>
+                                    <div
+                                        className={`transition-transform duration-500 ${isAnimating
+                                            ? "-translate-y-full"
+                                            : "translate-y-0 opacity-100"
+                                            }`}
+                                        key={currentIndex}
+                                    >
+                                        &quot;{placeholderTexts[currentIndex]}&quot;
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Filter Logo */}
+                    <div className="text-[#848484] border-l border-[#848484] pl-1">
+                        <VscSettings size={24} />
                     </div>
                 </div>
 
@@ -438,9 +481,6 @@ function Navbar() {
                             `}
                         >
                             Wellness Needs
-                            <span>
-                                <MdKeyboardArrowDown size={24} />
-                            </span>
                         </Link>
                         <Link
                             href="/science"
