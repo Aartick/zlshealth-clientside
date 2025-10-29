@@ -71,17 +71,17 @@ const initialLinks: NavLink[] = [
     { name: "Home", href: "/" },
     {
         name: "Shop",
-        href: "/",
-        subPaths: [
-            {
-                name: "Shop By Category",
-                href: "/"
-            },
-            {
-                name: "Shop By Need",
-                href: "/"
-            }
-        ]
+        href: "/products",
+        // subPaths: [
+        //     {
+        //         name: "Shop By Category",
+        //         href: "/"
+        //     },
+        //     {
+        //         name: "Shop By Need",
+        //         href: "/"
+        //     }
+        // ]
     },
     {
         name: "Wellness Needs",
@@ -242,31 +242,29 @@ function Navbar() {
                     </div>
 
                     {/* Hamburger menu for sidebar (mobile) */}
-                    <div className="lg:hidden">
+                    <div className="lg:hidden p-2 rounded-full text-[#71BF45] bg-[#ffffff] shadow-[0px_4px_15.8px_0px_#0000000F_inset,4px_0px_15.8px_0px_#DADADA08_inset]">
                         <RxHamburgerMenu
-                            size={24}
+                            size={18}
                             className="text-[#71BF45] lg:hidden cursor-pointer"
                             onClick={() => setOpenSidebar(!openSidebar)}
                         />
                     </div>
 
                     {/* ====== Search bar section (desktop only) ====== */}
-                    <div className="hidden relative flex-1 lg:flex justify-between bg-[#f3f3f3] border-[0.5px] border-[#71BF45] rounded-[10px] py-5 px-2.5 drop-shadow-[0px_4px_15.8px_rgba(132, 132, 132, 0.2)]">
-                        <label htmlFor="search" className="flex items-center gap-[10px] relative">
-                            {/* Search Icon */}
-                            <div className="p-[2px] rounded-full bg-[#71bf45] text-[#ffffff]">
+                    <div className="hidden lg:flex-1 lg:flex justify-between items-center border-[0.5px] border-[#71BF45] rounded-[50px] py-2 px-2.5">
+                        <div className="flex items-center gap-2.5 relative w-full">
+                            <label htmlFor='search' className="p-1 rounded-[27px] bg-[#71bf45] text-[#ffffff]">
                                 <IoSearchOutline size={15} />
-                            </div>
+                            </label>
 
-                            {/* Input Logic */}
-                            <div className="relative">
+                            <div className="relative w-full">
                                 {/* Search input */}
                                 <input
-                                    id="search"
+                                    id='search'
                                     type="text"
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
-                                    className="bg-[#f3f3f3] text-[#2e2e2e] text-xs w-[244px] focus:outline-none"
+                                    className="text-white text-xs w-full focus:outline-none"
                                 />
                                 {/* Animated Placeholder */}
                                 {inputValue === "" && (
@@ -284,7 +282,7 @@ function Navbar() {
                                     </div>
                                 )}
                             </div>
-                        </label>
+                        </div>
 
                         {/* Filter Logo */}
                         <div className="text-[#848484] border-l border-[#848484] pl-1">
@@ -462,7 +460,7 @@ function Navbar() {
 
                             {/* ShopLink dropdown menu */}
                             <div
-                                className={`absolute top-[140%] -left-[430px] transition-all duration-300 ease-in-out ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
+                                className={`absolute top-[140%] -left-[490px] transition-all duration-300 ease-in-out ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
                                     } z-50`}
                             >
                                 <ShopLink />
