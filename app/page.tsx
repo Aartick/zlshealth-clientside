@@ -39,7 +39,6 @@ import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import MotionPathPlugin from "gsap/MotionPathPlugin";
 import ProductSkeleton from "@/components/ProductSkeleton";
-import OurProcess from "@/components/OurProcess";
 import { FaLeaf, FaSeedling, FaSpa } from 'react-icons/fa'
 
 // Animated placeholder texts for search bar

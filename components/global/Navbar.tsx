@@ -454,9 +454,6 @@ function Navbar() {
                             `}
                         >
                             Science
-                            <span>
-                                <MdKeyboardArrowDown size={24} />
-                            </span>
                         </Link>
                         <Link
                             href="/blogs"
