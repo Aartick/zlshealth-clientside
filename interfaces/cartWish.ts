@@ -1,3 +1,5 @@
+import { initialProduct, product } from "./products";
+
 export interface productType {
   _id: string;
   category: string;
@@ -10,3 +12,16 @@ export interface productType {
   about: string;
   discount: number;
 }
+
+export const convertWishlistToProduct = (item: productType): product => ({
+  ...initialProduct,
+  _id: item._id,
+  name: item.name,
+  about: item.about,
+  price: item.price,
+  discount: item.discount,
+  benefits: item.benefits,
+  productTypes: item.productTypes,
+  category: { _id: "", name: item.category, products: [] },
+  productImg: { url: item.img, public_id: "" },
+});

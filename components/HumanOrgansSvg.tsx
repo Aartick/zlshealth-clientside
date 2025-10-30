@@ -178,7 +178,7 @@ function HumanOrgansSvg() {
     }
 
     return (
-        <div className='relative flex items-center justify-center w-full'>
+        <div className='relative flex items-center justify-center px-80'>
             {/* HUMAN ORGANS SVG */}
             <svg width="190" height="627" viewBox="0 0 190 627" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g opacity="0.5">

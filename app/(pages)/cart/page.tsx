@@ -669,10 +669,10 @@ function Page() {
                                                     <p className="font-medium text-sm">Add items from wishlist</p>
                                                 </div>
 
-                                                <div className="flex items-center gap-2.5">
+                                                <Link href="/wishlist" className="flex items-center gap-2.5">
                                                     <p className="text-sm underline decoration-solid text-[#093C16]">View All</p>
                                                     <MdKeyboardArrowRight className='text-xs' />
-                                                </div>
+                                                </Link>
                                             </div>
 
                                             {isWishlistEmpty ?

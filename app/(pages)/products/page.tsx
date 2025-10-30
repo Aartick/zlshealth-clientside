@@ -186,10 +186,10 @@ function Page() {
 
                     {/* Top filters */}
                     <div className="space-y-4 p-4 border-b border-[#E3E3E3]">
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col gap-4 lg:flex-row items-center justify-between">
 
                             {/* SEARCH BAR  */}
-                            <div className="flex-1 flex items-center gap-2.5 relative border-[0.5px] border-[#71BF45] rounded-[50px] py-2 px-2.5">
+                            <div className="w-full lg:flex-1 flex items-center gap-2.5 relative border-[0.5px] border-[#71BF45] rounded-[50px] py-2 px-2.5">
                                 <label htmlFor='search' className="p-1 rounded-[27px] bg-[#71bf45] text-[#ffffff]">
                                     <IoSearchOutline size={15} />
                                 </label>
@@ -221,7 +221,7 @@ function Page() {
                                 </div>
                             </div>
 
-                            <div className="flex-1 justify-end flex items-center gap-4">
+                            <div className="w-full lg:flex-1 flex justify-between lg:justify-end items-center gap-4">
                                 {/* FILTERS */}
                                 <label
                                     htmlFor="select"
@@ -249,10 +249,22 @@ function Page() {
                             </div>
                         </div>
 
-                        <div className="space-y-4 p-4">
+                        <div className="space-y-4 lg:p-4 w-full">
                             <p className="font-medium">Category</p>
 
-                            <div className="grid grid-cols-3 gap-4">
+                            <select
+                                className='lg:hidden w-full py-2 px-3 rounded-lg border border-[#e3e3e3]'
+                                value={selectedCategory}
+                                onChange={(e) => setSelectedCategory(e.target.value)}
+                            >
+                                {categories.map((category) => (
+                                    <option key={category._id} value={category._id}>
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <div className="hidden lg:grid grid-cols-3 gap-4">
                                 {categories.map((category) => (
                                     <div key={category._id} className="flex items-center gap-2.5">
                                         <input
@@ -271,7 +283,7 @@ function Page() {
                     </div>
 
                     {/* Products grid */}
-                    <div className={`grid grid-cols-2 ${filterBarOpen ? "lg:grid-cols-3" : "lg:grid-cols-4"} gap-2.5 md:gap-5 p-4 h-screen overflow-y-scroll scrollbar-hide`}>
+                    <div className={`grid ${filterBarOpen ? "grid-cols-1 lg:grid-cols-3" : "grid-cols-2 lg:grid-cols-4"} gap-2.5 md:gap-5 p-4 overflow-y-scroll scrollbar-hide`}>
                         {loadingProducts
                             ? Array.from({ length: 9 }).map((_, i) => (
                                 <ProductSkeleton key={i} />

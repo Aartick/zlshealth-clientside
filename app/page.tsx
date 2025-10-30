@@ -28,8 +28,6 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
-import { VscSettings } from "react-icons/vsc";
-import { IoSearchOutline } from "react-icons/io5";
 import BlogCard from "@/components/BlogCard";
 import { GoArrowRight } from "react-icons/go";
 import { BiMouse } from "react-icons/bi";
@@ -41,36 +39,7 @@ import MotionPathPlugin from "gsap/MotionPathPlugin";
 import ProductSkeleton from "@/components/ProductSkeleton";
 import { FaLeaf, FaSeedling, FaSpa } from 'react-icons/fa'
 
-// Animated placeholder texts for search bar
-const placeholderTexts = [
-  "Stress Relief Syrup",
-  "Immunity Booster Capsules",
-  "Ashwagandha Supplements",
-  "Diabetes Management",
-  "Anti-Acne Cream",
-];
-
 export default function Home() {
-  // State for search bar input value
-  const [inputValue, setInputValue] = useState("");
-  // State for animated search placeholder index
-  const [currentIndex, setCurrentIndex] = useState(0);
-  // State for search placeholder animation
-  const [isAnimating, setIsAnimating] = useState(false);
-
-  // Effect: Animate search placeholder text every 3 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsAnimating(true);
-      setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % placeholderTexts.length);
-        setIsAnimating(false);
-      }, 500);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   const [activeBtn, setActiveBtn] = useState("Digestive")
   const [products, setProducts] = useState<product[]>([])
 
@@ -187,21 +156,21 @@ export default function Home() {
     return () => ctx.revert();
   }, [])
 
-  // Second animation
+  // ================ SECOND ANIMATION ================
 
   const processSteps = [
     {
-      icon: <FaLeaf className="text-white text-6xl bg-[#71BF45] p-2 rounded-full" />,
+      icon: <FaLeaf className="text-white text-4xl md:text-6xl bg-[#71BF45] p-2 rounded-full" />,
       title: "Sourced",
       text: "Pure, natural herbs handpicked from trusted farms to ensure quality from the very start."
     },
     {
-      icon: <FaSeedling className="text-white text-6xl bg-[#71BF45] p-2 rounded-full" />,
+      icon: <FaSeedling className="text-white text-4xl md:text-6xl bg-[#71BF45] p-2 rounded-full" />,
       title: "Processed",
       text: "Cleaned, dried, and processed carefully to retain natural essence and potency.",
     },
     {
-      icon: <FaSpa className="text-white text-6xl bg-[#71BF45] p-2 rounded-full" />,
+      icon: <FaSpa className="text-white text-4xl md:text-6xl bg-[#71BF45] p-2 rounded-full" />,
       title: "Packaged",
       text: "Packed in eco-friendly containers ensuring freshness and long-lasting aroma."
     }
@@ -330,22 +299,28 @@ export default function Home() {
       });
 
       // Ensure last step is locked visible when container passes (both directions)
-      const lastIcon = iconRefs.current[totalSteps - 1];
-      const lastText = textRefs.current[totalSteps - 1];
-      if (lastIcon && lastText) {
-        ScrollTrigger.create({
-          trigger: container,
-          start: "bottom center",
-          onEnter: () => gsap.set([lastIcon, lastText], { opacity: 1 }),
-          onEnterBack: () => gsap.set([lastIcon, lastText], { opacity: 1 }),
-        });
-      }
+      // const lastIcon = iconRefs.current[totalSteps - 1];
+      // const lastText = textRefs.current[totalSteps - 1];
+      // if (lastIcon && lastText) {
+      //   ScrollTrigger.create({
+      //     trigger: container,
+      //     start: "bottom center",
+      //     onEnter: () => gsap.set([lastIcon, lastText], { opacity: 1 }),
+      //     onEnterBack: () => gsap.set([lastIcon, lastText], { opacity: 1 }),
+      //   });
+      // }
 
       // refresh to ensure sizes & pin spacer are calculated
       ScrollTrigger.refresh();
     }, containerRef);
 
-    return () => ctx.revert();
+    const handleResize = () => ScrollTrigger.refresh();
+    window.addEventListener("resize", handleResize)
+
+    return () => {
+      window.removeEventListener("resize", handleResize)
+      ctx.revert();
+    }
   }, []);
 
   return (
@@ -381,46 +356,6 @@ export default function Home() {
 
         <div className="absolute left-1/2 bottom-24 text-white text-3xl rotate-180">
           <BiMouse />
-        </div>
-      </section>
-
-      {/* SEARCH BAR FOR MOBILE VIEW */}
-      <section className="relative lg:hidden flex justify-between 
-                  bg-[#f3f3f3] border-[0.5px] border-[#71BF45]
-                  rounded-[10px] mx-6 py-5 px-[10px]
-                  drop-shadow-[0px_4px_15.8px_rgba(132, 132, 132, 0.2)]
-                "
-      >
-        <div className="flex items-center gap-[10px] relative">
-          <div className="p-[2px] rounded-full bg-[#71bf45] text-[#ffffff]">
-            <IoSearchOutline size={15} />
-          </div>
-          <div className="relative">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              className="bg-[#f3f3f3] text-[#2e2e2e] text-xs w-[244px] focus:outline-none"
-            />
-            {/* Animated Placeholder for search input */}
-            {inputValue === "" && (
-              <div className="absolute left-0 top-0 w-full h-full pointer-events-none flex items-center text-[#a3a3a3] text-xs overflow-hidden">
-                <p>Search for&nbsp; </p>
-                <div
-                  className={`transition-transform duration-500 ${isAnimating
-                    ? "-translate-y-full"
-                    : "translate-y-0 opacity-100"
-                    }`}
-                  key={currentIndex}
-                >
-                  &quot;{placeholderTexts[currentIndex]}&quot;
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="text-[#848484]">
-          <VscSettings size={24} />
         </div>
       </section>
 
@@ -600,7 +535,7 @@ export default function Home() {
       {/* STATS SECTION */}
       <section
         ref={sectionRef}
-        className="w-full overflow-hidden">
+        className="w-full md:overflow-hidden">
         {/* LEFT SHADOW */}
         <svg
           className="absolute left-0 top-1/2 -translate-y-1/2"
@@ -681,17 +616,17 @@ export default function Home() {
           </defs>
         </svg>
 
-        <div className="relative z-10 container mx-auto px-6 pt-20 flex items-center justify-around">
+        <div className="relative z-10 container mx-auto px-6 pt-32 md:pt-32 lg:pt-20 flex flex-col-reverse h-full md:h-auto justify-between md:flex-row items-center md:justify-around">
           {/* LEFT TEXT */}
-          <p className="font-medium text-6xl max-w-xl">
+          <p className="font-medium text-3xl sm:text-4xl md:text-5xl lg:text-6xl max-w-xl">
             A brand rooted in <span className="font-extralight">nature.</span>
           </p>
 
           {/* RIGHT LEAF + STEM */}
-          <div className="relative w-[300px] h-[300px]">
+          <div className="relative w-[150px] h-[150px] md:w-[300px] md:h-[300px]">
             {/* STEM */}
             <svg
-              className="absolute bottom-12 left-28 -translate-x-1/2 w-[160px] h-[130px]"
+              className="absolute -bottom-24 left-8 md:bottom-12 md:left-28 -translate-x-1/2 w-[160px] h-[130px]"
               viewBox="0 0 163 127"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -756,7 +691,7 @@ export default function Home() {
         >
           {paragraphs.map((text, i) => {
             return (
-              <p key={i} className="para font-semibold text-8xl text-center">
+              <p key={i} className="para font-semibold text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-center">
                 {text}
               </p>
             )
@@ -764,19 +699,20 @@ export default function Home() {
         </div>
       </section>
 
-      {/* OUR PROCESS SECTION */}
-      <section ref={divRef} className="relative w-full overflow-hidden pt-32">
-        <h3 className="text-center text-3xl font-semibold text-[#093C16] pt-10 mb-6">Our Process</h3>
+      {/* OUR PROCESS */}
+      <section ref={divRef} className="relative w-full overflow-hidden pt-28 md:pt-36">
+        <h3 className="text-center text-2xl sm:text-3xl md:text-4xl font-semibold text-[#093C16] mb-8">
+          Our Process
+        </h3>
 
-        {/* VISIBLE CURVE */}
-        <div className="relative w-full h-[632px]">
+        {/* Responsive Curve Wrapper */}
+        <div className="relative w-full max-w-[1600px] mx-auto aspect-[1440/632]">
           <svg
-            width="100%"
-            height="632"
-            viewBox="0 0 1440 632"
+            viewBox="-100 -80 1640 792"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[48%] pointer-events-none"
+            className="absolute inset-0 w-full h-full pointer-events-none"
+            preserveAspectRatio="xMidYMid meet"
           >
             <path
               ref={pathRef}
@@ -787,14 +723,21 @@ export default function Home() {
               strokeLinejoin="round"
             />
             <defs>
-              <linearGradient id="paint0_linear" x1="-644" y1="423" x2="1489.73" y2="268.492" gradientUnits="userSpaceOnUse">
+              <linearGradient
+                id="paint0_linear"
+                x1="-644"
+                y1="423"
+                x2="1489.73"
+                y2="268.492"
+                gradientUnits="userSpaceOnUse"
+              >
                 <stop stopColor="white" />
                 <stop offset="1" stopColor="#71BF45" />
               </linearGradient>
             </defs>
           </svg>
 
-          {/* ICONS (absolute; motionPath will move them) */}
+          {/* ICONS FOLLOWING PATH */}
           {processSteps.map((step, i) => (
             <div
               key={i}
@@ -802,30 +745,32 @@ export default function Home() {
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
               style={{ willChange: "transform, opacity" }}
             >
-              {step.icon}
+              <div className="text-2xl sm:text-3xl md:text-4xl text-[#71BF45]">{step.icon}</div>
             </div>
           ))}
         </div>
 
-        {/* TEXTS (stacked, centered below curve) */}
-        <div className="absolute top-1/2 w-full h-[120px] flex items-start justify-center pointer-events-none">
+        {/* TEXTS (below curve, responsive widths) */}
+        <div className="absolute mt-24 sm:mt-0 top-1/2 w-full flex items-start justify-center">
           {processSteps.map((step, i) => (
             <div
               key={i}
-              ref={(el) => {
-                if (el) textRefs.current[i] = el
-              }}
-              className="absolute left-1/2 -translate-x-1/2 w-[640px] text-center"
+              ref={(el) => { if (el) textRefs.current[i] = el }}
+              className="absolute left-1/2 -translate-x-1/2 text-center w-[85%] sm:w-[70%] md:w-[55%] max-w-[640px] opacity-0 pointer-events-none"
             >
-              <h4 className="font-bold text-xl text-[#093C16]">{step.title}</h4>
-              <p className="text-lg text-[#093C16]">{step.text}</p>
+              <h4 className="font-bold text-lg sm:text-xl md:text-2xl text-[#093C16]">
+                {step.title}
+              </h4>
+              <p className="text-base sm:text-lg text-[#093C16]">
+                {step.text}
+              </p>
             </div>
           ))}
         </div>
       </section>
 
       {/* SCIENCE AT WORK SECTION*/}
-      <section className="-mt-72 py-[30px] px-[30px] md:px-[60px] space-y-6">
+      <section className="-mt-12 lg:-mt-64 py-[30px] px-[30px] md:px-[60px] space-y-6">
         <div className="space-y-3 text-center">
           <p className="font-semibold text-2xl md:text-[32px] text-[#093C16]">
             Our Science at Work
