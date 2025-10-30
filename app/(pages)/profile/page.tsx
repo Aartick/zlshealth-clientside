@@ -43,9 +43,11 @@ import { GoPlus } from 'react-icons/go'
 import { HiOutlineUserCircle } from 'react-icons/hi2'
 import { LiaTruckMovingSolid } from 'react-icons/lia'
 import { LuLogOut } from 'react-icons/lu'
-import { MdKeyboardArrowRight } from 'react-icons/md'
+import { MdChevronRight, MdKeyboardArrowRight } from 'react-icons/md'
 import { RxCross2 } from 'react-icons/rx'
 import { SlArrowDown } from 'react-icons/sl'
+import { signOut } from "next-auth/react";
+import { KEY_ACCESS_TOKEN, removeItem } from '@/utils/localStorageManager'
 
 function Page() {
     // ================ Scroll Events ================
@@ -177,10 +179,32 @@ function Page() {
         if (myProfile.email) getOrders();
     }, [myProfile])
 
+    // ================= Handle logout action ================
+    const handleLogout = async () => {
+        try {
+            if (myProfile.email) {
+                const response = await axiosClient.get("/api/auth?type=logout")
+                removeItem(KEY_ACCESS_TOKEN)
+                signOut({ redirect: false })
+                toast.success(response.data.result)
+            }
+        } catch { }
+    }
+
+
+    // ================ Sidebar Logics ================
+    const [sidebarOpen, setSidebarOpen] = useState(false)
+
     return (
-        <div className='flex gap-8 p-8 h-screen'>
+        <div className='relative flex gap-8 px-2 py-4 md:p-8 h-screen'>
             {/* ================ Sidebar Container ================ */}
-            <div className="flex-1 space-y-[60px] border border-[#f4f4f4] rounded-[36px] p-[30px] overflow-y-scroll scrollbar-hide">
+            <div className={`
+            bg-white lg:border lg:border-[#f4f4f4] lg:rounded-[36px] p-[30px] overflow-y-scroll scrollbar-hide
+                    transition-all duration-500 ease-in-out
+                    lg:static lg:w-[300px] lg:opacity-100 lg:translate-x-0
+                    absolute left-0 h-full z-30 lg:z-0
+                    ${sidebarOpen ? "translate-x-0 w-[300px] opacity-100 shadow-2xl" : "-translate-x-full w-[300px] opacity-0"}`}
+            >
                 {/* Sidebar Content Wrapper */}
                 <div className="space-y-4">
                     {/* Overview Section */}
@@ -291,18 +315,36 @@ function Page() {
                 </div>
 
                 {/* Sign Out Button */}
-                <div className="flex items-center gap-3 text-[#093C16]">
+                <div
+                    className="flex items-center gap-3 mt-4 text-[#093C16] cursor-pointer"
+                    onClick={handleLogout}
+                >
                     <LuLogOut />
                     <p className="font-medium text-sm">Sign out</p>
                 </div>
             </div>
+
+            {/* ================= Toggle Arrow (Always Visible on Mobile) ================= */}
+            <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className={`
+                    lg:hidden absolute z-30 lg:z-0
+                    bg-white text-2xl text-[#71BF45] shadow-lg rounded-tr-full rounded-br-full p-[0.5px]
+                    transition-all duration-500 ease-in-out
+                    ${sidebarOpen ? "left-[298px]" : "left-0"}
+                `}
+            >
+                <MdChevronRight
+                    className={sidebarOpen ? "rotate-180" : "rotate-0"}
+                />
+            </button>
 
             {/* ================ MAIN CONTENT ================ */}
             <div className="flex-4 space-y-4 border border-[#f4f4f4] rounded-[36px] p-[30px] overflow-y-scroll scrollbar-hide">
 
 
                 {/* CARDS SECTION (Profile, Orders & Returns, Legal) */}
-                <div className="flex items-center gap-3">
+                <div className="flex w-full overflow-x-scroll scrollbar-hide items-center gap-3">
                     {/* PROFILE CARD */}
                     <div
                         onClick={() => changeCard("profile", "editDetails")}
@@ -327,7 +369,7 @@ function Page() {
                         <p className="text-sm font-medium">
                             Profile
                         </p>
-                        <p className="text-xs text-[#848484]">
+                        <p className="text-xs text-[#848484] w-[150px] md:w-[200px] lg:w-fit">
                             Manage your personal details, addresses,
                             and saved payment options in one place.
                         </p>
@@ -383,7 +425,7 @@ function Page() {
                         <p className="text-sm font-medium">
                             Orders & Return
                         </p>
-                        <div className="text-xs text-[#848484]">
+                        <div className="text-xs text-[#848484] w-[150px] md:w-[200px] lg:w-fit">
                             Track your purchases, check delivery status,
                             and manage returns or exchanges easily.
                         </div>
@@ -451,7 +493,7 @@ function Page() {
                         <p className="text-sm font-medium">
                             Legal
                         </p>
-                        <div className="text-xs text-[#848484]">
+                        <div className="text-xs text-[#848484] w-[150px] md:w-[200px] lg:w-fit">
                             Review our terms, policies, and privacy guidelines
                             to understand your rights and security.
                         </div>
@@ -474,7 +516,10 @@ function Page() {
                                 Edit Details
                             </p>
 
-                            <form onSubmit={handleSubmit} className="flex justify-between">
+                            <form
+                                onSubmit={handleSubmit}
+                                className="flex flex-col-reverse items-center md:items-start gap-4 md:flex-row justify-between"
+                            >
                                 {/* FORM FIELDS*/}
                                 <div className="space-y-4">
                                     <div className="flex gap-6">
@@ -876,26 +921,28 @@ function Page() {
                                                             {/* Serial N0. */}
                                                             <p>{idx + 1}.</p>
 
-                                                            {/* Product Image*/}
-                                                            <div className="relative w-[96px] h-[93px]">
-                                                                <Image
-                                                                    src={product.imgUrl}
-                                                                    alt={product.name}
-                                                                    fill
-                                                                    className='rounded-[10px] border-2 border-[#71BF45] object-cover'
-                                                                />
-                                                            </div>
-
-                                                            {/* Product details */}
-                                                            <div className="flex flex-col justify-between font-medium">
-                                                                <div>
-                                                                    <p className='text-sm'>{product.name}</p>
-                                                                    <p className='text-xs font-medium text-[#848484]'>{product.about}</p>
+                                                            <div className="flex flex-col md:flex-row gap-3">
+                                                                {/* Product Image*/}
+                                                                <div className="relative w-[40px] h-[40px] md:w-[96px] md:h-[93px]">
+                                                                    <Image
+                                                                        src={product.imgUrl}
+                                                                        alt={product.name}
+                                                                        fill
+                                                                        className='rounded-[10px] border-2 border-[#71BF45] object-cover'
+                                                                    />
                                                                 </div>
 
-                                                                <div className="flex items-center gap-[5px] text-xs text-[#093C16]">
-                                                                    <p>Read More</p>
-                                                                    <SlArrowDown />
+                                                                {/* Product details */}
+                                                                <div className="flex flex-col justify-between font-medium">
+                                                                    <div>
+                                                                        <p className='text-sm'>{product.name}</p>
+                                                                        <p className='text-xs font-medium text-[#848484]'>{product.about}</p>
+                                                                    </div>
+
+                                                                    <div className="flex items-center gap-[5px] text-xs text-[#093C16]">
+                                                                        <p>Read More</p>
+                                                                        <SlArrowDown />
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -905,7 +952,7 @@ function Page() {
                                                             <select
                                                                 id="quantity"
                                                                 value={product.quantity}
-                                                                className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
+                                                                className="w-[49px] md:w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
                                                             >
                                                                 <option value="1">1</option>
                                                                 <option value="2">2</option>

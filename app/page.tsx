@@ -344,14 +344,16 @@ export default function Home() {
           <p className="font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white text-center px-1 sm:px-0">
             Science Backed Herbal Care
           </p>
-          <div className="flex items-center gap-1">
+          <Link
+            href="/products"
+            className="flex items-center gap-1">
             <p className="rounded-full border border-white text-white font-bold py-3 px-8">
               Explore
             </p>
             <p className="p-3 rounded-full border border-white text-white text-2xl">
               <GoArrowRight />
             </p>
-          </div>
+          </Link>
         </div>
 
         <div className="absolute left-1/2 bottom-24 text-white text-3xl rotate-180">
@@ -874,6 +876,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-    </div>
+    </div >
   );
 }

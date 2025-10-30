@@ -107,13 +107,14 @@ function Page() {
 
     return (
         <div className='space-y-5 pb-10'>
+
             {/* ================ Product Images And Details ================ */}
             <div className="flex flex-col md:flex-row">
                 {/* ====== LEFT COLUMN: Product images ====== */}
                 {loading
                     ? <ProductDescriptionSkeleton />
                     : (
-                        <div className="flex-1 p-3 md:p-6 flex space-x-4">
+                        <div className="flex-1 px-6 py-12 sm:py-10 lg:py-6 flex gap-4">
                             {/* Thumbnail images */}
                             <div className="flex flex-col space-y-3">
                                 {thumbnails.map((img, i) => (
@@ -132,7 +133,7 @@ function Page() {
                             </div>
 
                             {/* Selected product image */}
-                            <div className="flex-2 relative w-[525px] md:h-[492px]">
+                            <div className="md:flex-2 relative w-screen md:w-[400px] lg:w-[525px] h-[492px]">
                                 {/* Wishlist Heart Button */}
                                 <div className="absolute top-3 right-3 z-10">
                                     <WishlistButton product={product} />
@@ -149,7 +150,7 @@ function Page() {
                     )}
 
                 {/* ====== RIGHT COLUMN: Product details and actions ====== */}
-                <div className="flex-1 p-3 md:p-6">
+                <div className="flex-1 px-3 py-3 md:py-10 lg:py-6">
                     <div className="space-y-4 border-b-[3px] border-[#e3e3e3] px-2.5 pb-5">
                         {/* Product name and about */}
                         <div>
@@ -200,9 +201,9 @@ function Page() {
                         </p>
 
                         {/* Cart and Buy Now buttons */}
-                        <div className="flex items-center gap-3">
+                        <div className="flex md:flex-col lg:flex-row items-center gap-3">
                             <div className="w-full"><CartButton product={product} /></div>
-                            <button className='rounded-[10px] py-3 px-2.5 bg-[#71BF45]/10 border-2 border-[#71BF45] text-[#093C16] font-semibold w-full'>
+                            <button className='rounded-md sm:rounded-[10px] py-[5px] sm:py-3 px-2.5 bg-[#71BF45]/10 border-2 border-[#71BF45] text-[#093C16] text-sm font-semibold w-full'>
                                 Buy Now
                             </button>
                         </div>
@@ -276,9 +277,9 @@ function Page() {
             <FAQ />
 
             {/* ====== Ratings And Customer Photos Section ====== */}
-            <div className="p-6 flex items-center">
+            <div className="p-6 flex flex-col gap-4 lg:gap-0 lg:flex-row lg:items-center">
                 {/* Ratings Section */}
-                <section className='space-y-5 pr-[270px] border-r-4 border-[#E3E3E3]'>
+                <section className='space-y-5 lg:pr-[270px] lg:border-r-4 border-[#E3E3E3]'>
                     {/* Reviews */}
                     <div className='space-y-3'>
                         <p className="font-medium text-sm text-[#093C16]">Ratings</p>
@@ -354,7 +355,7 @@ function Page() {
                 </section>
 
                 {/* Review preview */}
-                <section className="space-y-5 pl-40">
+                <section className="space-y-5 lg:pl-40">
                     <div className="flex justify-between items-center">
                         <p className='font-medium text-sm text-[#093C16]'>Review (8)</p>
                         <Link href="/productDescription" className='flex items-center gap-[5px] text-xs'>
@@ -407,7 +408,7 @@ function Page() {
                 >
                     {similarProducts.map((product) => (
                         <div
-                            className='w-[300px] shrink-0'
+                            className='sm:w-[250px] md:w-[300px] shrink-0'
                             key={product._id}
                         >
                             <Product product={product} />

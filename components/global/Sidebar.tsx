@@ -9,12 +9,16 @@
 
 'use client'
 
+import { axiosClient } from '@/utils/axiosClient';
+import { getItem, KEY_ACCESS_TOKEN, removeItem } from '@/utils/localStorageManager';
 // Import required modules and components
 import { ChevronRight, CircleX } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
+import { signOut } from "next-auth/react";
 
 // Category interface for third-level navigation
 interface Category {
@@ -74,6 +78,24 @@ function Sidebar({ links, onClose }: Props) {
         }));
     };
 
+    const currentPath = window.location.pathname + window.location.search;
+    const path = `/login?redirect=${encodeURIComponent(currentPath)}`
+
+    const isUser = getItem(KEY_ACCESS_TOKEN) // Check if user is logged in
+
+    // ================= Handle logout action ================
+    const handleLogout = async () => {
+        try {
+            if (isUser) {
+                const response = await axiosClient.get("/api/auth?type=logout")
+                removeItem(KEY_ACCESS_TOKEN)
+                signOut({ redirect: false })
+                toast.success(response.data.result)
+            }
+        } catch { }
+    }
+
+
     return (
         <div className="fixed inset-0 z-50 flex justify-start">
             {/* Overlay: closes sidebar when clicked */}
@@ -84,7 +106,7 @@ function Sidebar({ links, onClose }: Props) {
 
             {/* Sidebar panel */}
             <div
-                className={`relative h-screen w-80 bg-[#093C16] text-white transition-transform duration-300 
+                className={`relative h-screen w-80 bg-gradient-to-b from-[#FBFFF9] to-[#79D347] text-[#355920] transition-transform duration-300 
           ${isClosing ? "sidebar-slide-out" : "sidebar-slide-in"}`}
             >
                 {/* Header: logo and close button */}
@@ -118,8 +140,8 @@ function Sidebar({ links, onClose }: Props) {
                                     <div
                                         className={`flex items-center justify-between py-1 px-2 rounded border cursor-pointer
                                           ${isOpen
-                                                ? "text-white border-white"
-                                                : "text-white border-white"
+                                                ? "text-[#71BF45] border-[#71BF45]"
+                                                : "text-[#71BF45] border-[#71BF45]"
                                             }`}
                                         onClick={() => toggleDropdown(link.name)}
                                     >
@@ -140,7 +162,7 @@ function Sidebar({ links, onClose }: Props) {
                                                     <div key={subPath.name}>
                                                         {/* Second-level Dropdown Trigger */}
                                                         <div
-                                                            className="flex items-center justify-between py-1 px-2 rounded cursor-pointer hover:bg-gray-200 text-white"
+                                                            className="flex items-center justify-between py-1 px-2 rounded cursor-pointer hover:bg-gray-200 text-[#71BF45]"
                                                             onClick={() => toggleSubDropdown(subPath.name)}
                                                         >
                                                             <span>{subPath.name}</span>
@@ -156,7 +178,7 @@ function Sidebar({ links, onClose }: Props) {
                                                                     key={cat.name}
                                                                     href={cat.href}
                                                                     onClick={handleCloseClick}
-                                                                    className="block py-1 px-3 rounded hover:bg-gray-400 text-white text-sm"
+                                                                    className="block py-1 px-3 rounded hover:bg-gray-400 text-[#71BF45] text-sm"
                                                                 >
                                                                     {cat.name}
                                                                 </Link>
@@ -172,7 +194,7 @@ function Sidebar({ links, onClose }: Props) {
                                                     key={subPath.name}
                                                     href={subPath.href}
                                                     onClick={handleCloseClick}
-                                                    className="block py-1 px-2 rounded hover:bg-gray-200 text-white"
+                                                    className="block py-1 px-2 rounded hover:bg-gray-200 text-[#71BF45]"
                                                 >
                                                     {subPath.name}
                                                 </Link>
@@ -190,8 +212,8 @@ function Sidebar({ links, onClose }: Props) {
                                 href={link.href}
                                 className={`flex items-center justify-between m-2 py-1 px-2 rounded border
                                   ${pathname === link.href
-                                        ? "text-white text-base border-white"
-                                        : "text-white border-white"
+                                        ? "text-[#355920] text-base border-[#355920]"
+                                        : "text-[#355920] border-[#355920]"
                                     }`}
                                 onClick={handleCloseClick}
                             >
@@ -200,6 +222,46 @@ function Sidebar({ links, onClose }: Props) {
                             </Link>
                         );
                     })}
+
+                    <Link
+                        className={`flex items-center justify-between py-1 px-2 m-2 rounded border cursor-pointer text-[#355920] border-[#355920]
+                            }`}
+                        href="/cart"
+                        onClick={handleCloseClick}
+                    >
+                        <span>Cart</span>
+                        <ChevronRight
+                            className={`transform transition-transform duration-300`}
+                        />
+                    </Link>
+
+                    <Link
+                        className={`flex items-center justify-between py-1 px-2 m-2 rounded border cursor-pointer text-[#355920] border-[#355920]
+                            }`}
+                        href="/wishlist"
+                        onClick={handleCloseClick}
+                    >
+                        <span>Wishlist</span>
+                        <ChevronRight
+                            className={`transform transition-transform duration-300`}
+                        />
+                    </Link>
+
+                    <Link
+                        className={`flex items-center gap-2 py-1 px-2 m-2 rounded cursor-pointer
+                            ${isUser ? "text-red-500" : "text-[#355920]"}
+                            }`}
+                        href={isUser ? "" : path}
+                        onClick={() => {
+                            handleCloseClick()
+                            handleLogout()
+                        }}
+                    >
+                        <span>{isUser ? "Logout" : "Login"}</span>
+                        <ChevronRight
+                            className={`transform transition-transform duration-300`}
+                        />
+                    </Link>
                 </div>
             </div>
         </div>

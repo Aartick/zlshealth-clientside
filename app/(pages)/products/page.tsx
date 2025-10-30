@@ -21,6 +21,7 @@ import { CiFilter } from "react-icons/ci";
 import { MdKeyboardArrowDown } from 'react-icons/md'
 import { IoSearchOutline } from 'react-icons/io5'
 import { product } from '@/interfaces/products'
+import { RxCross1 } from 'react-icons/rx'
 
 // Filters interface for categories, product types, and benefits
 interface filters {
@@ -42,7 +43,7 @@ function Page() {
     const MIN = 300;
     const MAX = 1500;
 
-    const [filterBarOpen, setFilterBarOpen] = useState(true)
+    const [filterBarOpen, setFilterBarOpen] = useState(false)
     // State for search input value
     const [inputValue, setInputValue] = useState("");
     // State for animated placeholder index
@@ -178,10 +179,13 @@ function Page() {
                     priority
                 />
             </div>
-            <div className="container mx-auto flex transition-all duration-500 ease-in-out">
 
+            <div className="container mx-auto flex transition-all duration-500 ease-in-out">
                 {/* Main section */}
-                <div className={`transition-all duration-500 ease-in-out ${filterBarOpen ? "flex-3" : "flex-4"
+                <div className={`transition-all duration-500 ease-in-out 
+                ${filterBarOpen
+                        ? "flex-1 md:flex-3"
+                        : "flex-1 md:flex-4"
                     }`}>
 
                     {/* Top filters */}
@@ -253,7 +257,7 @@ function Page() {
                             <p className="font-medium">Category</p>
 
                             <select
-                                className='lg:hidden w-full py-2 px-3 rounded-lg border border-[#e3e3e3]'
+                                className='lg:hidden w-full py-2 px-3 rounded-lg border border-[#e3e3e3] focus:outline-none'
                                 value={selectedCategory}
                                 onChange={(e) => setSelectedCategory(e.target.value)}
                             >
@@ -283,7 +287,10 @@ function Page() {
                     </div>
 
                     {/* Products grid */}
-                    <div className={`grid ${filterBarOpen ? "grid-cols-1 lg:grid-cols-3" : "grid-cols-2 lg:grid-cols-4"} gap-2.5 md:gap-5 p-4 overflow-y-scroll scrollbar-hide`}>
+                    <div
+                        className={`grid ${filterBarOpen ? "grid-cols-2 lg:grid-cols-3" : "grid-cols-2 lg:grid-cols-4"}
+                     gap-2.5 md:gap-5 p-4 overflow-y-scroll scrollbar-hide`}
+                    >
                         {loadingProducts
                             ? Array.from({ length: 9 }).map((_, i) => (
                                 <ProductSkeleton key={i} />
@@ -295,10 +302,28 @@ function Page() {
                 </div>
 
                 {/* Sidebar: Filters section */}
-                <div className={`transition-all duration-500 ease-in-out h-screen overflow-y-scroll scrollbar-hide pt-4 px-[20.5px] ${filterBarOpen ? "w-[300px] opacity-100" : "w-0 opacity-0"
-                    }`}  >
+                <div className={`
+                transition-all duration-500 ease-in-out 
+                overflow-y-scroll scrollbar-hide pt-4 px-[20.5px] 
+                bg-white z-30 border border-[#f4f4f4] 
+
+                md:static md:h-auto md:block 
+                ${filterBarOpen
+                        ? "md:w-[300px] md:opacity-100"
+                        : "md:w-0 md:opacity-0"
+                    }
+                    
+                    absolute right-0 h-screen 
+                    ${filterBarOpen
+                        ? "translate-x-0 opacity-100 w-[300px]"
+                        : "translate-x-full opacity-0"
+                    }
+                    `}  >
                     <div className='space-y-5'>
-                        <h2 className='text-[#093C16] text-2xl font-medium px-2.5'>Filter by</h2>
+                        <div className="flex items-center justify-between">
+                            <h2 className='text-[#093C16] text-2xl font-medium px-2.5'>Filter by</h2>
+                            <RxCross1 className='md:hidden' onClick={() => setFilterBarOpen(false)} />
+                        </div>
 
                         {/* PRODUCT TYPE FILTER */}
                         <div className="border border-[#e3e3e3] rounded-xl p-5 space-y-5">

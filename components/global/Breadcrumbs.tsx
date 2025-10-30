@@ -31,7 +31,7 @@ export default function Breadcrumbs() {
     <>
       {hideBreadcrumbs.includes(pathname) ? null : (
         <nav
-          className={`${isHiddenPath(pathname) ? "-mt-11" : ""
+          className={`${isHiddenPath(pathname) ? "-mt-11" : "mt-11 lg:mt-0"
             } text-sm text-gray-600`}
         >
           <ol className="flex space-x-2">
