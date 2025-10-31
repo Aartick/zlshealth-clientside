@@ -164,13 +164,13 @@ export async function GET(req: NextRequest) {
     const { valid, response, _id } = await verifyAccessToken(req);
     if (!valid) return response!;
 
-    // Find users's wishlist 
+    // Find users's wishlist
     const wishlist = await Wishlist.findOne({ customerId: _id }).populate(
       "products.productId"
     );
 
     if (!wishlist) {
-      return error(404, "Wishlist not found.");
+      return
     }
 
     // Map wishlist products to response format
