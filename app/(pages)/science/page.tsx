@@ -1,12 +1,13 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react"
 import { IoIosCheckmark } from "react-icons/io";
 import HumanOrgansSvg from "@/components/HumanOrgansSvg";
+import toast from "react-hot-toast";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -137,6 +138,54 @@ export default function Page() {
 
     return () => observer.unobserve(video)
   }, [])
+
+  // =============== MODAL LOGICS ================
+  const [selectedCard, setSelectedCard] = useState<null | string>(null)
+
+  const cardDetails: Record<
+    string,
+    { title: string; description: string; image: string }
+  > = {
+    "Multi-Pathway Disease Targeting": {
+      title: "Multi-Pathway Disease Targeting",
+      description:
+        "Pioneered formulation design that targets multiple pathways of disease progression for long-term resolution.",
+      image: "/science/science.jpg",
+    },
+    "Immune-Mediated Disorder Focus": {
+      title: "Immune-Mediated Disorder Focus",
+      description:
+        "Specialized application of immunological knowledge for complex immune-mediated chronic disorders.",
+      image: "/science/science.jpg",
+    },
+    "Phospholipids & Charged Nanoemulsion": {
+      title: "Phospholipids & Charged Nanoemulsion",
+      description: "Integration of phospholipids and charged nanoemulsion technology alongside nanoparticles.",
+      image: "/science/science.jpg"
+    },
+    "Herbal Molecule Enhancement": {
+      title: "Herbal Molecule Enhancement",
+      description: "Specific focus on making \"tough herbal molecules\" reach cellular levels with higher efficacy",
+      image: "/science/science.jpg"
+    },
+    "Responsive Smart Release": {
+      title: "Responsive Smart Release",
+      description: "BioCage's intelligent dissociation at cells for optimal mineral release.",
+      image: "/science/science.jpg"
+    },
+    "Electrochemical Balance": {
+      title: "Electrochemical Balance",
+      description: "Unique ability to maintain cellular electrochemical balance during nutrient transport.",
+      image: "/science/science.jpg"
+    },
+    "Synergistic Nutrient Utilization": {
+      title: "Synergistic Nutrient Utilization",
+      description: "Enhancement of vitamins, coenzymes, and hormones alongside minerals.",
+      image: "/science/science.jpg"
+    }
+  }
+
+  const closeModal = () => setSelectedCard(null)
 
   return (
     <div className="bg-[#191717]">
@@ -526,7 +575,7 @@ export default function Page() {
           </section>
 
           {/* ---------- PANEL 6 ---------- */}
-          <section className="panel w-screen h-screen mx-8 py-5">
+          <section className="panel relative w-screen h-screen mx-8 py-5 overflow-hidden">
             {/* UPPER ROW */}
             <div className="flex items-center">
               <div className="flex-1 space-y-4">
@@ -545,29 +594,106 @@ export default function Page() {
               </div>
 
               <div className="flex-1 flex items-center justify-center">
-                <p className="flex items-center text-center rounded-full border border-[#71BF45] text-lg sm:text-2xl w-[180px] sm:w-[240px] h-[180px] sm:h-[240px]">
-                  Herbal Molecule Enhancement
-                </p>
+                <CircleCard
+                  text="Herbal Molecule Enhancement"
+                  onClick={() =>
+                    setSelectedCard("Herbal Molecule Enhancement")
+                  }
+                />
               </div>
+
             </div>
 
             {/* ====== FLOATING CARDS ====== */}
             <div className="flex items-center gap-10">
               <div className="flex-1 flex flex-col gap-5 items-end px-10">
-                <Card text="Multi-Pathway Disease Targeting" />
-                <CircleCard text="Immune-Mediated Disorder Focus" />
-                <Card text="Multi-Pathway Disease Targeting" />
+                <Card
+                  text="Multi-Pathway Disease Targeting"
+                  onClick={() =>
+                    setSelectedCard("Multi-Pathway Disease Targeting")
+                  }
+                />
+                <CircleCard
+                  text="Immune-Mediated Disorder Focus"
+                  onClick={() =>
+                    setSelectedCard("Immune-Mediated Disorder Focus")
+                  }
+                />
+                <Card
+                  text="Multi-Pathway Disease Targeting"
+                  onClick={() =>
+                    setSelectedCard("Multi-Pathway Disease Targeting")}
+                />
               </div>
 
               <div className="flex-1 flex flex-col gap-5">
-                <MainCard text="Phospholipids & Charged Nanoemulsion" />
-                <div className="flex items-center justify-between w-full">
-                  <Card text="Responsive Smart Release" />
-                  <Card text="Synergistic Nutrient Utilization" />
+                <MainCard
+                  text="Phospholipids & Charged Nanoemulsion"
+                  onClick={() =>
+                    setSelectedCard("Phospholipids & Charged Nanoemulsion")
+                  }
+                />
+                <div className="flex items-center gap-5 ">
+                  <Card
+                    text="Responsive Smart Release"
+                    onClick={() => setSelectedCard("Responsive Smart Release")}
+                  />
+                  <Card
+                    text="Synergistic Nutrient Utilization"
+                    onClick={() => setSelectedCard("Synergistic Nutrient Utilization")}
+                  />
                 </div>
               </div>
             </div>
 
+            <AnimatePresence>
+              {selectedCard && (
+                <>
+                  {/* Overlay */}
+                  <motion.div
+                    className="absolute inset-0 bg-black/60 backdrop-blur-sm z-40"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={closeModal}
+                  >
+                    <motion.div
+                      className="absolute inset-0 flex items-center justify-center z-50 p-6"
+                      initial={{ opacity: 0, scale: 0.85 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.85 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div
+                        className="bg-white max-w-5xl w-full h-[60vh] overflow-hidden flex flex-col sm:flex-row gap-8 shadow-2xl"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {/* TEXT ON LEFT */}
+                        <div className="flex-1 flex flex-col justify-center space-y-10 p-8">
+                          <h2 className="text-2xl text-[#093C16] font-semibold">
+                            {cardDetails[selectedCard].title}
+                          </h2>
+                          <p className="text-[#544848] leading-relaxed text-lg">
+                            {cardDetails[selectedCard].description}
+                          </p>
+                        </div>
+
+                        {/* IMAGE ON RIGHT */}
+                        <div className="flex-1 flex items-center justify-center">
+                          <div className="relative h-full w-full">
+                            <Image
+                              src={cardDetails[selectedCard].image}
+                              alt={cardDetails[selectedCard].title}
+                              fill
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
           </section>
         </div>
       </div>
@@ -575,53 +701,60 @@ export default function Page() {
   );
 }
 
-function Card({ text }: { text: string }) {
+
+// =============== CARD COMPONENETS ================
+
+function Card({
+  text,
+  onClick
+}: {
+  text: string;
+  onClick?: () => void;
+}) {
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
       transition={{ duration: 0.3 }}
-      className="text-white rounded-full py-3 text-center text-sm md:text-base lg:text-2xl w-full"
-      style={{
-        border: "1px solid transparent",
-        background:
-          "linear-gradient(#000, #000) padding-box, linear-gradient(90deg, rgba(255,255,255,0.4) 0%, #71BF45 100%) border-box",
-        backgroundClip: "padding-box, border-box",
-      }}
+      onClick={onClick}
+      className="text-white rounded-full py-3 text-center text-sm md:text-base lg:text-2xl w-full border border-[#71BF45]"
     >
       {text}
     </motion.div>
   );
 }
 
-
-function CircleCard({ text }: { text: string }) {
+function CircleCard({
+  text,
+  onClick
+}: {
+  text: string;
+  onClick: () => void;
+}) {
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
       transition={{ duration: 0.3 }}
-      className="text-white flex items-center justify-center text-center text-sm md:text-2xl w-56 h-56"
-      style={{
-        border: "1px solid transparent",
-        borderRadius: "50%",
-        background: "linear-grardient(#000, #000) padding-box, linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0%, #71BF45 100%) border-box",
-        backgroundClip: "padding-box border-box"
-      }}
+      onClick={onClick}
+      className="text-white flex items-center justify-center text-center text-sm md:text-2xl w-56 h-56 border border-[#71BF45F] rounded-full"
     >
       {text}
     </motion.div>
   );
 }
 
-function MainCard({ text }: { text: string }) {
+function MainCard({
+  text,
+  onClick,
+}: {
+  text: string;
+  onClick?: () => void;
+}) {
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
       transition={{ duration: 0.3 }}
-      className="relative rounded-[40px] px-8 py-4 text-sm md:text-2xl flex flex-col items-center justify-between gap-4 w-fit"
-      style={{
-        border: "1px solid transparent",
-        background: "linear-gradient(#000, #000) padding-box, linear-gradient(90deg, #ffffff 40%, #71BF45 0%) border-box"
-      }}
+      onClick={onClick}
+      className="relative rounded-[40px] px-8 py-4 text-sm md:text-2xl flex flex-col items-center justify-between gap-4 w-fit border border-[#71BF45]"
     >
       <span>{text}</span>
       <div className="flex items-center justify-center w-8 h-8 rounded-full text-black bg-white transition">
