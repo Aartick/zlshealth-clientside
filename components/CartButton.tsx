@@ -73,14 +73,14 @@ function CartButton({ product }: ProductProps) {
             {!added && (
                 <button
                     onClick={handleAddToCart}
-                    className="bg-[#093C16] rounded-md sm:rounded-[10px] py-[5px] sm:py-3 px-[10px] text-[#ffffff] font-semibold text-base w-full cursor-pointer">
+                    className="bg-[#093C16] rounded-md sm:rounded-[10px] py-[5px] sm:py-3 px-[10px] text-[#ffffff] font-semibold text-sm w-full cursor-pointer">
                     Add To Cart
                 </button>
             )}
 
             {/* Show quantity controls if product is in cart */}
             {added && (
-                <div className="flex items-center justify-around gap-2 bg-[#093C16] py-[5px] sm:py-3 px-[10px] text-[#ffffff] font-semibold text-base rounded-md sm:rounded-[10px]">
+                <div className="flex items-center justify-around gap-2 bg-[#093C16] py-[5px] sm:py-3 px-[10px] text-[#ffffff] font-semibold text-sm rounded-md sm:rounded-[10px]">
                     {/* Remove one from cart */}
                     <button
                         className='cursor-pointer'

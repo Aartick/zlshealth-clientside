@@ -40,6 +40,8 @@ import { removeFromWishlistGuest } from '@/lib/features/wishlistSlice'
 import { handlePayment } from '@/utils/handlePayment'
 import { formatAddress } from '@/utils/formatAddress'
 import { formatDate } from '@/utils/formatDate'
+import CartButton from '@/components/CartButton'
+import { convertWishlistToProduct } from '@/interfaces/cartWish'
 
 const paymentMehods = [
     "/cart/Visa.png",
@@ -442,7 +444,7 @@ function Page() {
                         >
                             {/* Step number */}
                             <p
-                                className={`font-extrabold text-sm py-[7px] px-3.5 rounded-[60px] transition-all duration-500 ease-out
+                                className={`font-extrabold text-xs md:text-sm py-[2.5px] px-2 md:py-[7px] md:px-3.5 rounded-full transition-all duration-500 ease-out
                         ${activeButton === "cart"
                                         ? "text-white bg-[#71BF45]"
                                         : "text-[#848484] bg-[#e3e3e3]"}
@@ -452,7 +454,7 @@ function Page() {
                             </p>
                             {/* Step label */}
                             <p
-                                className={`transition-all duration-300 ease-out
+                                className={`transition-all duration-300 ease-out text-sm md:text-base
                             ${activeButton === "cart"
                                         ? "text-bold text-[#71BF45]"
                                         : "text-medium text-[#848484]"}
@@ -463,7 +465,7 @@ function Page() {
                         </button>
 
                         {/* HORIZONTAL BAR */}
-                        <div className="w-40 h-0.5 mx-2.5 bg-[#e3e3e3] transition-all duration-300 ease-out" />
+                        <div className="w-8 sm:w-20 md:w-40 h-0.5 mx-2.5 bg-[#e3e3e3] transition-all duration-300 ease-out" />
 
                         {/* SHOPPING BUTTON */}
                         <button
@@ -472,7 +474,7 @@ function Page() {
                         >
                             {/* Step number */}
                             <p
-                                className={`font-extrabold text-sm py-[7px] px-3.5 rounded-[60px] transition-all duration-500 ease-out
+                                className={`font-extrabold text-xs md:text-sm py-[2.5px] px-2 md:py-[7px] md:px-3.5 rounded-[60px] transition-all duration-500 ease-out
                         ${activeButton === "shopping"
                                         ? "text-white bg-[#71BF45]"
                                         : "text-[#848484] bg-[#e3e3e3]"}`}
@@ -481,7 +483,7 @@ function Page() {
                             </p>
                             {/* Step label */}
                             <p
-                                className={`transition-all duration-500 ease-out
+                                className={`transition-all duration-500 ease-out text-sm md:text-base
                             ${activeButton === "shopping"
                                         ? "text-bold text-[#71BF45]"
                                         : "text-medium text-[#848484]"}
@@ -492,7 +494,7 @@ function Page() {
                         </button>
 
                         {/* HORIZONTAL BAR */}
-                        <div className="w-40 h-0.5 mx-2.5 bg-[#e3e3e3] transition-all duration-500 ease-out" />
+                        <div className="w-8 sm:w-20 md:w-40 h-0.5 mx-2.5 bg-[#e3e3e3] transition-all duration-500 ease-out" />
 
                         {/* PAYMENT BUTTON */}
                         <button
@@ -501,7 +503,7 @@ function Page() {
                         >
                             {/* Step number */}
                             <p
-                                className={`font-extrabold text-sm py-[7px] px-3.5 rounded-[60px] transition-all duration-500 ease-out
+                                className={`font-extrabold text-xs md:text-sm py-[2.5px] px-2 md:py-[7px] md:px-3.5 rounded-[60px] transition-all duration-500 ease-out
                         ${activeButton === "payment"
                                         ? "text-white bg-[#71BF45]"
                                         : "text-[#848484] bg-[#e3e3e3]"}`}
@@ -510,7 +512,7 @@ function Page() {
                             </p>
                             {/* Step label */}
                             <p
-                                className={`transition-all duration-500 ease-out
+                                className={`transition-all duration-500 ease-out text-sm md:text-base
                             ${activeButton === "payment"
                                         ? "text-bold text-[#71BF45]"
                                         : "text-medium text-[#848484]"}
@@ -552,9 +554,9 @@ function Page() {
 
                         <p className="font-semibold text-xl text-center">Your Cart</p>
 
-                        <div className="flex gap-3">
+                        <div className="flex flex-col lg:flex-row gap-[30px] lg:gap-3">
                             {/* LEFT SECTION (Dynamic Step Content) */}
-                            <div className="flex-2 space-y-[30px] h-screen overflow-y-scroll scrollbar-hide">
+                            <div className="flex-2 space-y-[30px] lg:h-screen lg:overflow-y-scroll scrollbar-hide">
 
                                 {/* Cart/Wishlist Section */}
                                 {activeButton === "cart" && (
@@ -594,30 +596,32 @@ function Page() {
                                                                 {/* Serial N0. */}
                                                                 <p>{idx + 1}.</p>
 
-                                                                {/* Product Image*/}
-                                                                <div className="relative w-[96px] h-[93px]">
-                                                                    <Image
-                                                                        src={product?.img}
-                                                                        alt={product?.name}
-                                                                        fill
-                                                                        className='rounded-[10px] border-2 border-[#71BF45] object-cover'
-                                                                    />
-                                                                </div>
-
-                                                                {/* Product details */}
-                                                                <div className="flex flex-col justify-between font-medium">
-                                                                    <div>
-                                                                        <Link href={`/productDescription/${product?._id}`}
-                                                                            className='text-sm'
-                                                                        >
-                                                                            {product?.name}
-                                                                        </Link>
-                                                                        <p className='text-xs'>{product?.about}</p>
+                                                                <div className="flex flex-col md:flex-row gap-3">
+                                                                    {/* Product Image*/}
+                                                                    <div className="relative w-[40px] h-[40px] md:w-[96px] md:h-[93px]">
+                                                                        <Image
+                                                                            src={product?.img}
+                                                                            alt={product?.name}
+                                                                            fill
+                                                                            className='rounded-[10px] border md:border-2 border-[#71BF45] object-cover'
+                                                                        />
                                                                     </div>
 
-                                                                    <div className="flex items-center gap-[5px] text-xs">
-                                                                        <p>Read More</p>
-                                                                        <SlArrowDown />
+                                                                    {/* Product details */}
+                                                                    <div className="flex flex-col justify-between font-medium">
+                                                                        <div>
+                                                                            <Link href={`/productDescription/${product?._id}`}
+                                                                                className='text-sm'
+                                                                            >
+                                                                                {product?.name}
+                                                                            </Link>
+                                                                            <p className='text-xs'>{product?.about}</p>
+                                                                        </div>
+
+                                                                        <div className="flex items-center gap-[5px] text-xs text-[#093C16]">
+                                                                            <p>Read More</p>
+                                                                            <SlArrowDown />
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -627,7 +631,7 @@ function Page() {
                                                                 <select
                                                                     id="quantity"
                                                                     value={product?.quantity}
-                                                                    className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
+                                                                    className="w-[49px] md:w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
                                                                 >
                                                                     <option value="1">1</option>
                                                                     <option value="2">2</option>
@@ -642,7 +646,7 @@ function Page() {
                                                                     <span className="font-normal text-[10px] line-through text-[#848484]">
                                                                         ₹{product?.price}
                                                                     </span>{" "}
-                                                                    <span className="font-medium text-[10px] text-[#71BF45]">({product?.discount}% off)</span>
+                                                                    <span className="hidden md:block font-medium text-[10px] text-[#71BF45]">({product?.discount}% off)</span>
                                                                 </p>
                                                                 <RxCross1
                                                                     className="text-[#848484] cursor-pointer"
@@ -698,25 +702,28 @@ function Page() {
                                                                 {/* SERIAL NO. */}
                                                                 <p>{idx + 1}.</p>
 
-                                                                {/* PRODUCT IMAGE */}
-                                                                <div className="relative w-[96px] h-[93px]">
-                                                                    <Image
-                                                                        src={product?.img}
-                                                                        alt={product?.name}
-                                                                        fill
-                                                                        className='rounded-[10px] border-2 border-[#71BF45] object-cover'
-                                                                    />
-                                                                </div>
-
-                                                                {/* PRODUCT DETAILS */}
-                                                                <div className="flex flex-col justify-between font-medium">
-                                                                    <div>
-                                                                        <p className='text-sm'>{product?.name}</p>
-                                                                        <p className='text-xs'>{product?.about}</p>
+                                                                <div className="flex flex-col md:flex-row gap-3">
+                                                                    {/* PRODUCT IMAGE */}
+                                                                    <div className="relative w-[40px] h-[40px] md:w-[96px] md:h-[93px]">
+                                                                        <Image
+                                                                            src={product?.img}
+                                                                            alt={product?.name}
+                                                                            fill
+                                                                            className='rounded-[10px] border md:border-2 border-[#71BF45] object-cover'
+                                                                        />
                                                                     </div>
 
-                                                                    <div className="flex items-center gap-[5px] text-xs">
-                                                                        <p className='text-[#093C16]'>Read More</p>
+                                                                    {/* PRODUCT DETAILS */}
+                                                                    <div className="flex flex-col justify-between font-medium">
+                                                                        <div>
+                                                                            <p className='text-sm'>{product?.name}</p>
+                                                                            <p className='text-xs'>{product?.about}</p>
+                                                                        </div>
+
+                                                                        <div className="flex items-center gap-[5px] text-xs text-[#093C16]">
+                                                                            <p>Read More</p>
+                                                                            <SlArrowDown />
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -725,7 +732,7 @@ function Page() {
                                                                 <select
                                                                     id="quantity"
                                                                     value={product?.quantity}
-                                                                    className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
+                                                                    className="w-[49px] md:w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
                                                                 >
                                                                     <option value="1">1</option>
                                                                     <option value="2">2</option>
@@ -733,21 +740,24 @@ function Page() {
                                                                 </select>
                                                             </div>
 
-                                                            <div className="flex justify-center items-center gap-4">
-                                                                <p className="font-medium text-base text-[#093C16]">
-                                                                    ₹{(product?.price - (product?.price * product?.discount) / 100).toFixed(2)}{" "}
-                                                                    <span className="font-normal text-[10px] line-through text-[#848484]">
-                                                                        ₹{(product?.price).toFixed(2)}
-                                                                    </span>{" "}
-                                                                    <span className="font-medium text-[10px] text-[#71BF45]">({product?.discount}% off)</span>
-                                                                </p>
-                                                                <RxCross1
-                                                                    className="text-[#848484] cursor-pointer"
-                                                                    onClick={() => isUser
-                                                                        ? dispatch(removeFromWishlist({ productId: product?._id }))
-                                                                        : dispatch(removeFromWishlistGuest(product?._id))
-                                                                    }
-                                                                />
+                                                            <div className="flex flex-col h-full justify-between">
+                                                                <div className="flex justify-center items-center gap-4">
+                                                                    <p className="font-medium text-base text-[#093C16]">
+                                                                        ₹{(product?.price - (product?.price * product?.discount) / 100).toFixed(2)}{" "}
+                                                                        <span className="font-normal text-[10px] line-through text-[#848484]">
+                                                                            ₹{(product?.price).toFixed(2)}
+                                                                        </span>{" "}
+                                                                        <span className="hidden md:block font-medium text-[10px] text-[#71BF45]">({product?.discount}% off)</span>
+                                                                    </p>
+                                                                    <RxCross1
+                                                                        className="text-[#848484] cursor-pointer"
+                                                                        onClick={() => isUser
+                                                                            ? dispatch(removeFromWishlist({ productId: product?._id }))
+                                                                            : dispatch(removeFromWishlistGuest(product?._id))
+                                                                        }
+                                                                    />
+                                                                </div>
+                                                                <CartButton product={convertWishlistToProduct(product)} />
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1005,33 +1015,33 @@ function Page() {
                                             </div>
 
                                             {/* Delivery and Quick Options */}
-                                            <div className="flex items-center justify-between">
+                                            <div className="flex md:items-center gap-4 md:justify-between">
                                                 {/* Delivery Options */}
                                                 <div className="space-y-4">
-                                                    <p className="relative p-2.5 font-medium">
+                                                    <p className="relative p-2.5 text-sm md:text-base font-medium">
                                                         Delivery Options
                                                         <span className="absolute left-0 bottom-0 w-full h-[2px] bg-gradient-to-r from-[#E3E3E3] to-[#ffffff]" />
                                                     </p>
 
                                                     <div className="flex items-center gap-1.5">
                                                         <input type="checkbox" id="standardDelivery" className='text-[#848484] border-[1.5px]' />
-                                                        <label htmlFor="standardDelivery" className='text-sm'>Standard Delivery (3-5 Days, Free)</label>
+                                                        <label htmlFor="standardDelivery" className='text-xs md:text-sm'>Standard Delivery (3-5 Days, Free)</label>
                                                     </div>
 
                                                     <div className="flex items-center gap-1.5">
                                                         <input type="checkbox" id="expressDelivery" className='text-[#848484] border-[1.5px]' />
-                                                        <label htmlFor="expressDelivery" className='text-sm'>Express Delivery (1-2 Days, ₹99)</label>
+                                                        <label htmlFor="expressDelivery" className='text-xs md:text-sm'>Express Delivery (1-2 Days, ₹99)</label>
                                                     </div>
 
                                                     <div className="flex items-center gap-1.5">
                                                         <input type="checkbox" id="scheduleDelivery" className='text-[#848484] border-[1.5px]' />
-                                                        <label htmlFor="scheduleDelivery" className='text-sm'>Schedule Delivery (Choose Date & Time)</label>
+                                                        <label htmlFor="scheduleDelivery" className='text-xs md:text-sm'>Schedule Delivery (Choose Date & Time)</label>
                                                     </div>
                                                 </div>
 
                                                 {/* Quick Options */}
                                                 <div className="space-y-4">
-                                                    <p className="relative p-2.5 font-medium">
+                                                    <p className="relative p-2.5 text-sm md:text-base font-medium">
                                                         Quick Options
                                                         <span className="absolute left-0 bottom-0 w-full h-[2px] bg-gradient-to-r from-[#E3E3E3] to-[#ffffff]" />
                                                     </p>
@@ -1045,7 +1055,7 @@ function Page() {
                                                             onChange={() => setFutureAddress(!futureAddress)}
                                                             className='text-[#848484] border-[1.5px]'
                                                         />
-                                                        <label htmlFor="futureOrders" className='text-sm'>Save This Address For Future Orders</label>
+                                                        <label htmlFor="futureOrders" className='text-xs md:text-sm'>Save This Address For Future Orders</label>
                                                     </div>
 
                                                     <div className="flex items-center gap-1.5">
@@ -1057,7 +1067,7 @@ function Page() {
                                                             onChange={handleChange}
                                                             className='text-[#848484] border-[1.5px]'
                                                         />
-                                                        <label htmlFor="defaultAddress" className='text-sm'>Mark As Default Address</label>
+                                                        <label htmlFor="defaultAddress" className='text-xs md:text-sm'>Mark As Default Address</label>
                                                     </div>
 
                                                     <div className="flex items-center gap-1.5">
@@ -1069,7 +1079,7 @@ function Page() {
                                                             onChange={() => setBillingAddress(!billingAddress)}
                                                             className='text-[#848484] border-[1.5px]'
                                                         />
-                                                        <label htmlFor="billingAddress" className='text-sm'>Same As Billing Address</label>
+                                                        <label htmlFor="billingAddress" className='text-xs md:text-sm'>Same As Billing Address</label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1080,7 +1090,7 @@ function Page() {
                                 {/* Payment Section */}
                                 {activeButton === "payment" && (
                                     <>
-                                        <div className="p-2.5 border border-[#e3e3e3] rounded-[20px] transition-all duration-500 ease-out opacity-0 translate-y-2 animate-fadeInCart">
+                                        <div className="hidden p-2.5 border border-[#e3e3e3] rounded-[20px] transition-all duration-500 ease-out opacity-0 translate-y-2 animate-fadeInCart">
                                             <div className="space-y-3">
                                                 {/* HEADER */}
                                                 <div className="border-b-2 p-2.5 border-[#e3e3e3] font-medium">
@@ -1093,7 +1103,7 @@ function Page() {
                             </div>
 
                             {/* RIGHT SECTION */}
-                            <div className="flex-1 space-y-[30px] h-screen overflow-y-scroll scrollbar-hide">
+                            <div className="flex-1 space-y-[30px] lg:h-screen lg:overflow-y-scroll scrollbar-hide">
                                 {/* PRICE DETAILS */}
                                 <div className="p-2.5 border border-[#e3e3e3] rounded-[20px]">
                                     <div className="flex items-center justify-between border-b-2 border-[#e3e3e3] p-2.5">
@@ -1136,7 +1146,7 @@ function Page() {
                                     <button
                                         onClick={handleSubmit}
                                         disabled={makingOrder}
-                                        className={`rounded-[10px] py-3 px-2.5 text-white bg-[#093C16] w-full
+                                        className={`rounded-[10px] py-2 md:py-3 px-2.5 text-white bg-[#093C16] w-full
                                              ${makingOrder ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}
                                     >
                                         Place Order
@@ -1169,13 +1179,14 @@ function Page() {
                                             </div>
                                         </div>
 
-                                        <div className="flex justify-between items-center p-[5px] border-2 border-[#e3e3e3] rounded-[5px]">
+                                        <div className="flex justify-between items-center p-[2.5px] md:p-[5px] border-2 border-[#e3e3e3] rounded-[5px]">
                                             <input type="text" placeholder='Enter Code' required className='text-xs font-medium text-[#848484] focus:outline-none w-fit' />
-                                            <button className="py-2 px-6 bg-[#71BF45] text-[#093C16] border-2 border-[#71BF45] rounded-[5px]">Apply</button>
+                                            <button className="py-1 md:py-2 px-3 md:px-6 bg-[#71BF45] text-[#093C16] rounded-[5px]">Apply</button>
                                         </div>
 
                                         <div className="border border-[#e3e3e3]" />
 
+                                        {/* FIRST COUPON */}
                                         <div className="space-y-3">
                                             <div className="border border-[#e3e3e3] p-[5px] rounded-[5px] space-y-[5px]">
                                                 <div className="flex justify-between items-center">
@@ -1191,6 +1202,7 @@ function Page() {
                                                 <p className="text-xs text-[#848484]">Get ₹200 Off On Orders Above ₹1,500</p>
                                             </div>
 
+                                            {/* SECOND COUPON */}
                                             <div className="border border-[#e3e3e3] p-[5px] rounded-[5px] space-y-[5px]">
                                                 <div className="flex justify-between items-center">
                                                     <div className="flex items-center gap-[5px]">
@@ -1205,6 +1217,7 @@ function Page() {
                                                 <p className="text-xs text-[#848484]">Flat 10% Off On Your 1st Purchase</p>
                                             </div>
 
+                                            {/* THIRD COUPON */}
                                             <div className="border border-[#e3e3e3] p-[5px] rounded-[5px] space-y-[5px]">
                                                 <div className="flex justify-between items-center">
                                                     <div className="flex items-center gap-[5px]">
@@ -1237,7 +1250,7 @@ function Page() {
                         {/* Left Button */}
                         <div
                             onClick={scrollLeft}
-                            className='border-2 border-[#093C16] text-[#093C16] hover:text-white hover:bg-[#093C16] rounded-full p-2.5 cursor-pointer'
+                            className='border-2 border-[#093C16] text-[#093C16] hover:text-white hover:bg-[#093C16] rounded-full p-[5px] md:p-2.5 cursor-pointer'
                         >
                             <SlArrowLeft />
                         </div>
@@ -1245,7 +1258,7 @@ function Page() {
                         {/* Right Button */}
                         <div
                             onClick={scrollRight}
-                            className='border-2 border-[#093C16] text-[#093C16] hover:text-white hover:bg-[#093C16] rounded-full p-2.5 cursor-pointer'
+                            className='border-2 border-[#093C16] text-[#093C16] hover:text-white hover:bg-[#093C16] rounded-full p-[5px] md:p-2.5 cursor-pointer'
                         >
                             <SlArrowRight />
                         </div>
@@ -1260,7 +1273,7 @@ function Page() {
                 >
                     {similarProducts.map((product) => (
                         <div
-                            className='w-[300px] shrink-0'
+                            className='sm:w-[250px] md:w-[300px] shrink-0'
                             key={product?._id}
                         >
                             <Product product={product} />
