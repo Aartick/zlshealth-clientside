@@ -25,7 +25,7 @@ function Page() {
     const isWishlistEmpty = wishlist.length === 0
 
     return (
-        <div className="flex items-center justify-center py-10">
+        <div className="container mx-auto flex items-center justify-center py-10">
             <div className="p-2.5 border border-[#e3e3e3] rounded-[20px] transition-all duration-500 ease-out opacity-0 translate-y-2 animate-fadeInCart">
 
                 {/* HEADERS */}

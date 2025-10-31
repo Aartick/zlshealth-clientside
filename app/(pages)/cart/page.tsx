@@ -308,7 +308,7 @@ function Page() {
         <div className='flex flex-col items-center m-10'>
 
             {orderSuccessful ? (
-                <div className='w-full flex items-center justify-between mb-3.5'>
+                <div className='w-full flex items-center justify-between mb-3.5 container mx-auto'>
                     {/* ============ Thankyou Message / Billing Address ============ */}
                     <div className="space-y-6 py-10 text-wrap max-w-lg">
 
@@ -524,7 +524,7 @@ function Page() {
                     </div>
 
                     {/* ================ DISCOUNT BANNER ================= */}
-                    <div className="p-5 rounded-[20px] border-2 border-[#e3e3e3] space-y-3.5 w-full">
+                    <div className="p-5 rounded-[20px] border-2 border-[#e3e3e3] space-y-3.5 w-full container mx-auto">
                         <div className="flex items-center gap-[5px] text-[#71BF45]">
                             <BiSolidOffer />
                             <p className="font-semibold underline decoration-solid decoration-[12.5%]">

@@ -367,7 +367,7 @@ export default function Home() {
       </p>
 
       {/* PRODUCTS FILTERS */}
-      <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 px-10 text-xs md:text-base">
+      <section className="container mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 px-10 text-xs md:text-base">
         <button
           onClick={() => setActiveBtn("Digestive")}
           className={`
@@ -514,7 +514,7 @@ export default function Home() {
       </section>
 
       {/* PRODUCTS */}
-      <section className="space-y-4 px-3 md:px-10">
+      <section className="container mx-auto space-y-4 px-3 md:px-10">
         <div className="flex items-center justify-between text-sm md:text-base">
           <p className="font-semibold">Gut Improve Suplements</p>
           <Link href="/" className="flex items-center gap-1 hover:text-[#71BF45]">
@@ -772,7 +772,7 @@ export default function Home() {
       </section>
 
       {/* SCIENCE AT WORK SECTION*/}
-      <section className="-mt-12 lg:-mt-64 py-[30px] px-[30px] md:px-[60px] space-y-6">
+      <section className="container mx-auto -mt-12 lg:-mt-64 py-[30px] px-[30px] md:px-[60px] space-y-6">
         <div className="space-y-3 text-center">
           <p className="font-semibold text-2xl md:text-[32px] text-[#093C16]">
             Our Science at Work
@@ -864,7 +864,7 @@ export default function Home() {
       </section>
 
       {/* BLOGS SECTION */}
-      <section className="space-y-3 sm:space-y-4 px-6 sm:px-[60px]">
+      <section className="container mx-auto space-y-3 sm:space-y-4 px-6 sm:px-[60px]">
         <p className="font-semibold text-2xl sm:text-[32px] text-[#093C16] text-center">
           Our Blogs
         </p>
