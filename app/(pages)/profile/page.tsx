@@ -196,7 +196,7 @@ function Page() {
     const [sidebarOpen, setSidebarOpen] = useState(false)
 
     return (
-        <div className='relative flex gap-8 px-2 py-4 md:p-8 h-screen'>
+        <div className='container mx-auto relative flex gap-8 px-2 py-4 md:p-8 h-screen'>
             {/* ================ Sidebar Container ================ */}
             <div className={`
             bg-white lg:border lg:border-[#f4f4f4] lg:rounded-[36px] p-[30px] overflow-y-scroll scrollbar-hide

@@ -106,7 +106,7 @@ function Page() {
     }
 
     return (
-        <div className='space-y-5 pb-10'>
+        <div className='space-y-5 pb-10 container mx-auto'>
 
             {/* ================ Product Images And Details ================ */}
             <div className="flex flex-col md:flex-row">
