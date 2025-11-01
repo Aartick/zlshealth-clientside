@@ -404,7 +404,7 @@ function Navbar() {
                                 type="text"
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
-                                className="text-white text-xs w-full focus:outline-none"
+                                className={`${dark ? "text-black" : "text-white"} text-xs w-full focus:outline-none`}
                             />
                             {/* Animated Placeholder */}
                             {inputValue === "" && (
