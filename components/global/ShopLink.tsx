@@ -83,7 +83,7 @@ function ShopLink() {
     ]
 
     return (
-        <div className='h-96 mx-10 scrollbar-hide rounded-2xl overflow-y-scroll flex flex-wrap lg:flex-nowrap p-10 gap-[35px] bg-white text-black'>
+        <div className='h-full mx-10 scrollbar-hide rounded-2xl overflow-y-scroll flex flex-wrap lg:flex-nowrap p-10 gap-[35px] bg-white text-black'>
 
             {/* ====== FIRST COLUMN: Shop by Category ====== */}
             <div className="space-y-5">

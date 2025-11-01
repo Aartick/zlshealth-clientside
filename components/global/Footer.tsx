@@ -23,8 +23,8 @@ function Footer() {
     const pathname = usePathname()
     return (
         <footer className={`${pathname === "/"
-            ? "bg-gradient-to-b from-[#093C16] to-[#71BF45] text-white"
-            : "bg-white text-black"} border-t border-[#000000] p-5 
+            ? "bg-[#FBFFF9]"
+            : "bg-white"} text-black border-t border-[#000000] p-5 
             sm:p-10 lg:py-20 lg:px-16`
         }
         >
@@ -39,9 +39,7 @@ function Footer() {
                         <Image src="/logo.png" fill alt="logo" />
                     </div>
                     {/* Tagline text -> changes color based no route*/}
-                    <p className={`${pathname === "/"
-                        ? "text-[#71BF45]" : "text-[#36810B]"}
-                         text-sm sm:text-base md:text-lg lg:text-xl font-medium italic`}
+                    <p className="text-[#36810B] text-sm sm:text-base md:text-lg lg:text-xl font-medium italic"
                     >
                         Herbal Solutions For Your Health
                     </p>
@@ -57,9 +55,7 @@ function Footer() {
                         </div>
                         <a
                             href="tel:+919705868032"
-                            className={`font-medium text-sm sm:text-base md:text-lg: lg:text-xl 
-                         ${pathname === "/" ? "text-white"
-                                    : "text-[#333333]"}`}
+                            className="font-medium text-sm sm:text-base md:text-lg: lg:text-xl text-[#333333]"
                         >
                             +91 9705868032
                         </a>
@@ -102,10 +98,7 @@ function Footer() {
                         <Link
                             href="/"
                             className="flex items-center gap-3">
-                            <LuInstagram className={`${pathname === "/"
-                                ? "text-[#71BF45]" : "text-[#36810B]"}
-                                 sm:text-2xl`
-                            }
+                            <LuInstagram className="text-[#36810B] sm:text-2xl"
                             />
                             <p>Instagram</p>
                         </Link>
@@ -114,10 +107,7 @@ function Footer() {
                         <Link
                             href="/"
                             className="flex items-center gap-3">
-                            <GrFacebookOption className={`${pathname === "/"
-                                ? "text-[#71BF45]" : "text-[#36810B]"} 
-                                 sm:text-2xl`
-                            }
+                            <GrFacebookOption className="text-[#36810B] sm:text-2xl"
                             />
                             <p>Facebook</p>
                         </Link>
@@ -127,10 +117,7 @@ function Footer() {
                             href="/"
                             className="flex items-center gap-3"
                         >
-                            <BsLinkedin className={`${pathname === "/"
-                                ? "text-[#71BF45]" : "text-[#36810B]"} 
-                                sm:text-2xl`
-                            }
+                            <BsLinkedin className="text-[#36810B] sm:text-2xl"
                             />
                             <p>LinkedIn</p>
                         </Link>
@@ -139,11 +126,7 @@ function Footer() {
             </div>
 
             {/* Divider line (changes color by route) */}
-            <hr className={`${pathname === "/"
-                ? "border-[#CDC9C9]"
-                : "border-black"} 
-                my-4 sm:my-8`
-            }
+            <hr className="border-black my-4 sm:my-8"
             />
 
             {/* BOTTOM SECTION: Copyright and legal links */}
