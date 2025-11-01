@@ -170,7 +170,7 @@ export async function GET(req: NextRequest) {
     );
 
     if (!wishlist) {
-      return
+      return success(200, []);
     }
 
     // Map wishlist products to response format

@@ -171,6 +171,10 @@ function Page() {
             // Get the user's default address (latest from state)
             const defaultAddress = address.find((adrs: Address) => adrs.isDefault)
 
+            if (defaultAddress === undefined) {
+                setActiveButton("shopping")
+                return;
+            }
             // If no address present in backend (means first-time entry)
             const isNewAddress = !defaultAddress
 
@@ -186,7 +190,6 @@ function Page() {
                 await dispatch(getMyAddress());
                 toast.success(res.data.result);
                 placeOrder(payload);
-                return;
             }
 
             // Compare each field to check if something changed
@@ -253,9 +256,9 @@ function Page() {
                 })
             }
             await dispatch(deleteCart())
-            setMakingOrder(false)
             setOrderSuccessful(true)
         } catch { }
+        setMakingOrder(false)
     }
 
 
@@ -907,11 +910,12 @@ function Page() {
                                                     <select
                                                         id="addressType"
                                                         name='addressType'
-                                                        value={addresses?.addressType || "home"}
+                                                        value={addresses?.addressType}
                                                         onChange={handleChange}
                                                         className='rounded-[10px] border border-[#cdcdcd] p-3 focus:outline-none'
                                                         required
                                                     >
+                                                        <option value="">(Address Type)</option>
                                                         <option value="home">Home</option>
                                                         <option value="work">Work</option>
                                                         <option value="other">Other</option>

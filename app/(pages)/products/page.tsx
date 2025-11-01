@@ -22,6 +22,7 @@ import { MdKeyboardArrowDown } from 'react-icons/md'
 import { IoSearchOutline } from 'react-icons/io5'
 import { product } from '@/interfaces/products'
 import { RxCross1 } from 'react-icons/rx'
+import NoProductsComponent from '@/components/NoProductsComponent'
 
 // Filters interface for categories, product types, and benefits
 interface filters {
@@ -286,18 +287,25 @@ function Page() {
                         </div>
                     </div>
 
-                    {/* Products grid */}
-                    <div
-                        className={`grid ${filterBarOpen ? "grid-cols-2 lg:grid-cols-3" : "grid-cols-2 lg:grid-cols-4"}
-                     gap-2.5 md:gap-5 p-4 overflow-y-scroll scrollbar-hide`}
-                    >
-                        {loadingProducts
-                            ? Array.from({ length: 9 }).map((_, i) => (
-                                <ProductSkeleton key={i} />
-                            ))
-                            : filteredProducts.map((data) => (
-                                <Product product={data} key={data._id} />
-                            ))}
+                    {/* Products Section */}
+                    <div className="overflow-y-scroll scrollbar-hide">
+                        {loadingProducts ? (
+                            <div className={`p-4 grid ${filterBarOpen ? "grid-cols-2 lg:grid-cols-3" : "grid-cols-2 lg:grid-cols-4"} gap-2.5 md:gap-5`}>
+                                {Array.from({ length: 9 }).map((_, i) => (
+                                    <ProductSkeleton key={i} />
+                                ))}
+                            </div>
+                        ) : filteredProducts.length === 0 ? (
+                            <div className="w-full">
+                                <NoProductsComponent />
+                            </div>
+                        ) : (
+                            <div className={`p-4 grid ${filterBarOpen ? "grid-cols-2 lg:grid-cols-3" : "grid-cols-2 lg:grid-cols-4"} gap-2.5 md:gap-5`}>
+                                {filteredProducts.map((data) => (
+                                    <Product product={data} key={data._id} />
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
 
