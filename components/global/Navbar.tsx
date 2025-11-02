@@ -202,8 +202,6 @@ function Navbar() {
     const currentPath = window.location.pathname + window.location.search;
     const path = `/login?redirect=${encodeURIComponent(currentPath)}`
 
-    const bgTransparentPath = ["/", "/science"]
-
     return (
         <nav className="z-40 fixed w-full">
 

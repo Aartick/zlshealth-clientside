@@ -23,6 +23,7 @@ import { IoSearchOutline } from 'react-icons/io5'
 import { product } from '@/interfaces/products'
 import { RxCross1 } from 'react-icons/rx'
 import NoProductsComponent from '@/components/NoProductsComponent'
+import { useSearchParams } from 'next/navigation'
 
 // Filters interface for categories, product types, and benefits
 interface filters {
@@ -73,6 +74,14 @@ function Page() {
     // State for filtered products based on price range
     const [filteredProducts, setFilteredProducts] = useState<product[]>([])
 
+    const searchParams = useSearchParams();
+    const categoryQuery = searchParams.get("category");
+    const productTypeQuery = searchParams.get("productType")
+    const productTypeNames = productTypeQuery
+        ? productTypeQuery.split(",").map((t) => t.trim())
+        : [];
+    const benefitQuery = searchParams.get("benefits")
+
     // Fetch categories, product types, and benefits on mount
     useEffect(() => {
         const getCategories = async () => {
@@ -82,8 +91,14 @@ function Page() {
                 const fetchedCategories = response.data.result;
                 setCategories(fetchedCategories)
 
+                if (categoryQuery) {
+                    const matched = fetchedCategories.find(
+                        (c: filters) => c.name.toLowerCase() === categoryQuery.toLowerCase()
+                    )
+                    if (matched) setSelectedCategory(matched._id)
+                }
                 // Set default selected category if not set
-                if (fetchedCategories.length > 0 && !selectedCategory) {
+                else if (fetchedCategories.length > 0 && !selectedCategory) {
                     setSelectedCategory(fetchedCategories[0]._id)
                 }
             } catch { }
@@ -94,7 +109,19 @@ function Page() {
             try {
                 setLoadingProductTypes(true)
                 const response = await axiosClient.get("/api/productTypes")
-                setProductTypes(response.data.result)
+                const fetchedProductTypes = response.data.result;
+                setProductTypes(fetchedProductTypes)
+
+                if (productTypeNames.length > 0) {
+                    const matched = fetchedProductTypes
+                        .filter((p: filters) =>
+                            productTypeNames.some(
+                                (name) => p.name.toLowerCase() === name.toLowerCase()
+                            )
+                        ).map((p: filters) => p._id)
+                    if (matched) setSelectedProductTypes(matched)
+                    // toggleSelection(matched._id, setSelectedProductTypes)
+                }
             } catch { }
             setLoadingProductTypes(false)
         }
@@ -103,7 +130,15 @@ function Page() {
             try {
                 setLoadingBenefits(true)
                 const response = await axiosClient.get("/api/benefits")
-                setBenefits(response.data.result)
+                const fetchedBenefits = response.data.result;
+                setBenefits(fetchedBenefits)
+
+                if (benefitQuery) {
+                    const matched = fetchedBenefits.find(
+                        (b: filters) => b.name.toLowerCase() === benefitQuery.toLowerCase()
+                    )
+                    if (matched) setSelectedBenefits([matched._id])
+                }
             } catch { }
             setLoadingBenefits(false)
         }
@@ -111,7 +146,7 @@ function Page() {
         getCategories()
         getProductTypes()
         getBenefits()
-    }, [])
+    }, [categoryQuery, productTypeQuery, benefitQuery])
 
     // Fetch products whenever filters change
     useEffect(() => {
@@ -157,6 +192,21 @@ function Page() {
         );
         setFilteredProducts(filtered);
     }, [values, products]);
+
+    // Filter products when search changes
+    useEffect(() => {
+        if (inputValue.trim() === "") {
+            setFilteredProducts(products)
+        } else {
+            const lowerSearch = inputValue.toLowerCase();
+            const filtered = filteredProducts.filter(
+                (p) =>
+                    p.name.toLowerCase().includes(lowerSearch) ||
+                    p.category.name.toLowerCase().includes(lowerSearch)
+            );
+            setFilteredProducts(filtered)
+        }
+    }, [inputValue, filteredProducts])
 
     // Skeleton loader for filter checkboxes
     function SkeletonCheckboxRow() {

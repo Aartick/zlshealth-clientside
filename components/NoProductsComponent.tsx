@@ -46,7 +46,7 @@ export default function NoProductsComponent() {
                 transition={{ delay: 0.6, duration: 0.6 }}
                 className="mt-4 text-lg text-gray-500 text-center max-w-md z-10"
             >
-                Oops! Looks like we don't have any products available right now.
+                Oops! Looks like we don&apos;t have any products available right now.
             </motion.p>
 
             <motion.p

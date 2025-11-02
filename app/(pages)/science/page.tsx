@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react"
 import { IoIosCheckmark } from "react-icons/io";
 import HumanOrgansSvg from "@/components/HumanOrgansSvg";
-import toast from "react-hot-toast";
 
 gsap.registerPlugin(ScrollTrigger);
 
