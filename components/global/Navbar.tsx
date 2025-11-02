@@ -39,6 +39,7 @@ import { isHiddenPath } from "@/utils/hiddenPaths";
 import { getWishlist } from "@/lib/thunks/wishlistThunks";
 import { resetWishlist } from "@/lib/features/wishlistSlice";
 import { getMyAddress, getMyInfo } from "@/lib/thunks/userThunks";
+import { useNavbarColor } from "@/context/NavbarColorContext";
 
 const placeholderTexts = [
     "Stress Relief Syrup",
@@ -95,6 +96,8 @@ const initialLinks: NavLink[] = [
 ];
 
 function Navbar() {
+    const { dark } = useNavbarColor();
+
     // States for search bar
     const [inputValue, setInputValue] = useState("");
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -205,7 +208,15 @@ function Navbar() {
         <nav className="z-40 fixed w-full">
 
             {/* ================ Navbar Section ================ */}
-            <section className={`py-[10px] sm:py-2 px-4 sm:px-10 drop-shadow-[0px_4px_15.8px_rgba(0,0,0,0.06)] ${bgTransparentPath.includes(pathname) ? "bg-transparent backdrop-blur-md" : "bg-white"} text-black`}>
+            <section className={`py-[10px] sm:py-2 px-4 sm:px-10 drop-shadow-[0px_4px_15.8px_rgba(0,0,0,0.06)] 
+            transition-all duration-300 ease-in-out
+                 ${pathname === "/"
+                    ? (dark ? "bg-white text-black" : "bg-transparent backdrop-blur-md text-white")
+                    : (pathname === "/science"
+                        ? "bg-transparent backdrop-blur-md text-white"
+                        : "bg-white text-black")
+                }`}
+            >
                 <div className="container mx-auto w-full flex justify-between items-center sm:gap-[40px]">
                     {/* ====== Company Logo and location section ====== */}
                     <div className="flex flex-row gap-[21px]">
@@ -222,17 +233,21 @@ function Navbar() {
                             href={isUser ? "/profile" : "/login"}
                             className="flex items-center gap-[10px]"
                         >
-                            <div className={`${bgTransparentPath.includes(pathname) ? "bg-white"
-                                : "bg-[#71BF451A]"} text-[#36810B] p-1 rounded-full`}
+                            <div className={`${pathname === "/" ? (dark ? "bg-[#71BF451A]" : "bg-white")
+                                : (pathname === "/science" ? "bg-white" : "bg-[#71BF451A]")} text-[#36810B] p-1 rounded-full`}
                             >
                                 <IoLocationOutline size={24} />
                             </div>
                             <div>
-                                <p className={`text-xs ${bgTransparentPath.includes(pathname) ? "text-[#e4e4e4]" : ""}`}>
+                                <p className={`text-xs ${pathname === "/" ? (dark ? "" : "text-[#e4e4e4]")
+                                    : pathname === "/science" ? "text-[#e4e4e4]" : ""}`}>
                                     Delivered to
                                 </p>
-                                <div className={`flex items-center ${bgTransparentPath.includes(pathname)
-                                    ? "text-[#f9f9f9]" : "text-[#36810B]"}`}
+                                <div className={`flex items-center ${pathname === "/"
+                                    ? (!dark ? "text-[#f9f9f9]" : "text-[#36810B]")
+                                    : (pathname === "/science"
+                                        ? "text-[#f9f9f9]" : "text-[#36810B]")
+                                    }`}
                                 >
                                     <p>{address?.cityTown || "Suryapet"} {address?.pinCode || "508206"}</p>
                                     <IoIosArrowDown size={12} />
@@ -264,7 +279,7 @@ function Navbar() {
                                     type="text"
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
-                                    className="text-white text-xs w-full focus:outline-none"
+                                    className={`${dark ? "text-black" : "text-white"} text-xs w-full focus:outline-none`}
                                 />
                                 {/* Animated Placeholder */}
                                 {inputValue === "" && (
@@ -299,8 +314,10 @@ function Navbar() {
                                 className={`
                                     relative p-2 sm:p-5 rounded-full 
                                     ${pathname === "/"
-                                        ? "text-white bg-[#ffffff]/10"
-                                        : "text-[#71BF45] bg-[#ffffff] shadow-[0px_4px_15.8px_0px_#0000000F_inset,4px_0px_15.8px_0px_#DADADA08_inset]"
+                                        ? (dark ? "text-[#71BF45] bg-[#ffffff] shadow-[0px_4px_15.8px_0px_#0000000F_inset,4px_0px_15.8px_0px_#DADADA08_inset]"
+                                            : "text-white bg-[#ffffff]/10")
+                                        : (pathname === "/science"
+                                            ? "text-white bg-[#ffffff]/10" : "text-[#71BF45] bg-[#ffffff] shadow-[0px_4px_15.8px_0px_#0000000F_inset,4px_0px_15.8px_0px_#DADADA08_inset]")
                                     }
                                 `}
                             >
@@ -321,8 +338,10 @@ function Navbar() {
                                 className={`
                                     relative p-2 sm:p-5 rounded-full
                                      ${pathname === "/"
-                                        ? "text-white bg-[#ffffff]/10"
-                                        : "text-[#71BF45] bg-[#ffffff] shadow-[0px_4px_15.8px_0px_#0000000F_inset,4px_0px_15.8px_0px_#DADADA08_inset]"
+                                        ? (dark ? "text-[#71BF45] bg-[#ffffff] shadow-[0px_4px_15.8px_0px_#0000000F_inset,4px_0px_15.8px_0px_#DADADA08_inset]"
+                                            : "text-white bg-[#ffffff]/10")
+                                        : (pathname === "/science"
+                                            ? "text-white bg-[#ffffff]/10" : "text-[#71BF45] bg-[#ffffff] shadow-[0px_4px_15.8px_0px_#0000000F_inset,4px_0px_15.8px_0px_#DADADA08_inset]")
                                     }
                                 `}
                             >
@@ -385,7 +404,7 @@ function Navbar() {
                                 type="text"
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
-                                className="text-white text-xs w-full focus:outline-none"
+                                className={`${dark ? "text-black" : "text-white"} text-xs w-full focus:outline-none`}
                             />
                             {/* Animated Placeholder */}
                             {inputValue === "" && (
@@ -425,7 +444,10 @@ function Navbar() {
             {/* ================ Navigation and Shop Dropdown Section ================ */}
             <section className={isHiddenPath(pathname) ? "hidden" : "relative w-full"}>
                 <div className="hidden lg:flex justify-center">
-                    <div className={`flex items-center gap-5 rounded-br-xl rounded-bl-xl ${pathname === "/" ? "bg-transparent backdrop-blur-md" : "bg-[#71BF45]/10"} py-5 px-2.5`}>
+                    <div className={`flex items-center gap-5 rounded-br-xl rounded-bl-xl
+                         ${(pathname === "/" && !dark) ? "bg-transparent backdrop-blur-md" : "bg-[#71BF45]/10"} 
+                         py-5 px-2.5`
+                    }>
                         <Link
                             href="/"
                             className={
@@ -448,7 +470,9 @@ function Navbar() {
                                         ? "text-[#71BF45]"
                                         : pathname !== "/" && pathname
                                             ? "text-black"
-                                            : "text-[#d0d0d0]"}
+                                            : pathname === "/" && dark
+                                                ? "text-black"
+                                                : "text-[#d0d0d0]"}
                                         flex items-center gap-[5px]
                             `}
                             >
@@ -474,7 +498,9 @@ function Navbar() {
                                     ? "text-[#71BF45]"
                                     : pathname !== "/" && pathname
                                         ? "text-black"
-                                        : "text-[#d0d0d0]"}
+                                        : pathname === "/" && dark
+                                            ? "text-black"
+                                            : "text-[#d0d0d0]"}
                                         flex items-center gap-[5px]
                             `}
                         >
@@ -487,7 +513,9 @@ function Navbar() {
                                     ? "text-[#71BF45]"
                                     : pathname !== "/" && pathname
                                         ? "text-black"
-                                        : "text-[#d0d0d0]"}
+                                        : pathname === "/" && dark
+                                            ? "text-black"
+                                            : "text-[#d0d0d0]"}
                                         flex items-center gap-[5px]
                             `}
                         >
@@ -498,9 +526,11 @@ function Navbar() {
                             className={
                                 pathname === "/blogs"
                                     ? "text-[#71BF45]" // active
-                                    : pathname !== "/" && pathname // when not home page
+                                    : pathname !== "/" && pathname
                                         ? "text-black"
-                                        : "text-[#d0d0d0]" // on home but inactive
+                                        : pathname === "/" && dark
+                                            ? "text-black"
+                                            : "text-[#d0d0d0]"
                             }
                         >
                             Blogs
@@ -508,8 +538,7 @@ function Navbar() {
                     </div>
                 </div>
             </section>
-
-        </nav>
+        </nav >
     );
 }
 

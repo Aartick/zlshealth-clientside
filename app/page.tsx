@@ -38,6 +38,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import MotionPathPlugin from "gsap/MotionPathPlugin";
 import ProductSkeleton from "@/components/ProductSkeleton";
 import { FaLeaf, FaSeedling, FaSpa } from 'react-icons/fa'
+import { useNavbarColor } from "@/context/NavbarColorContext";
 
 export default function Home() {
   const [activeBtn, setActiveBtn] = useState("Digestive")
@@ -323,11 +324,30 @@ export default function Home() {
     }
   }, []);
 
+  // ================ NAVBAR TEXT COLOR LOGIC ================
+
+  const heroRef = useRef<HTMLDivElement>(null)
+  const { setDark } = useNavbarColor();
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setDark(!entry.isIntersecting)
+      },
+      { threshold: 0.2 }
+    )
+
+    if (heroRef.current) observer.observe(heroRef.current)
+
+    return () => observer.disconnect();
+  }, [setDark])
+
+
   return (
     <div className="-mt-24 sm:-mt-28 lg:-mt-36 bg-[#FBFFF9] space-y-10 pb-8">
 
       {/* HERO SECTION */}
-      <section className="relative w-full h-screen">
+      <section ref={heroRef} className="relative w-full h-screen">
         {/* Background Image */}
         <Image
           src="/hero.jpg"
@@ -813,12 +833,14 @@ export default function Home() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 text-[#919191] hover:text-[#71BF45] font-medium text-xs cursor-pointer">
+                <Link
+                  href="/science"
+                  className="flex items-center gap-2 text-[#919191] hover:text-[#71BF45] font-medium text-xs">
                   <p>
                     Learn More
                   </p>
                   <MdKeyboardArrowRight />
-                </div>
+                </Link>
               </div>
 
               <div className="border border-[#e3e3e3] bg-white rounded-[20px] p-5 space-y-5">
@@ -832,12 +854,14 @@ export default function Home() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 text-[#919191] hover:text-[#71BF45] font-medium text-xs cursor-pointer">
+                <Link
+                  href="/science"
+                  className="flex items-center gap-2 text-[#919191] hover:text-[#71BF45] font-medium text-xs">
                   <p>
                     Learn More
                   </p>
                   <MdKeyboardArrowRight />
-                </div>
+                </Link>
               </div>
 
               <div className="border border-[#e3e3e3] bg-white rounded-[20px] p-5 space-y-5">
@@ -851,12 +875,14 @@ export default function Home() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 text-[#919191] hover:text-[#71BF45] font-medium text-xs cursor-pointer">
+                <Link
+                  href="/science"
+                  className="flex items-center gap-2 text-[#919191] hover:text-[#71BF45] font-medium text-xs">
                   <p>
                     Learn More
                   </p>
                   <MdKeyboardArrowRight />
-                </div>
+                </Link>
               </div>
             </div>
           </div>
