@@ -96,9 +96,9 @@ function ShopLink() {
             type: "benefits",
             label: "Hormonal Balance",
             img: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 11.5L10.5 9M17.5 12.5C13.9468 11.2098 10.0532 11.2098 6.5 12.5L6 7C9.5 5.5 14.5 5.5 18 7L17.5 12.5Z" stroke="#71BF45" strokeWidth="2" stroke-miterlimit="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M21 19.5C21 19.8978 20.842 20.2794 20.5607 20.5607C20.2794 20.842 19.8978 21 19.5 21H4.5C4.10218 21 3.72064 20.842 3.43934 20.5607C3.15804 20.2794 3 19.8978 3 19.5V4.5C3 4.10218 3.15804 3.72064 3.43934 3.43934C3.72064 3.15804 4.10218 3 4.5 3H19.5C19.8978 3 20.2794 3.15804 20.5607 3.43934C20.842 3.72064 21 4.10218 21 4.5V19.5Z" stroke="#71BF45" strokeWidth="2" stroke-miterlimit="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M14.5 11.7265C12.8435 11.4662 11.1565 11.4662 9.5 11.7265" stroke="#71BF45" strokeWidth="2" stroke-miterlimit="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 11.5L10.5 9M17.5 12.5C13.9468 11.2098 10.0532 11.2098 6.5 12.5L6 7C9.5 5.5 14.5 5.5 18 7L17.5 12.5Z" stroke="#71BF45" strokeWidth="2" strokeMiterlimit="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M21 19.5C21 19.8978 20.842 20.2794 20.5607 20.5607C20.2794 20.842 19.8978 21 19.5 21H4.5C4.10218 21 3.72064 20.842 3.43934 20.5607C3.15804 20.2794 3 19.8978 3 19.5V4.5C3 4.10218 3.15804 3.72064 3.43934 3.43934C3.72064 3.15804 4.10218 3 4.5 3H19.5C19.8978 3 20.2794 3.15804 20.5607 3.43934C20.842 3.72064 21 4.10218 21 4.5V19.5Z" stroke="#71BF45" strokeWidth="2" strokeMiterlimit="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M14.5 11.7265C12.8435 11.4662 11.1565 11.4662 9.5 11.7265" stroke="#71BF45" strokeWidth="2" strokeMiterlimit="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>,
             title: "Hormonal Balance",
             desc: "Regulate cycles and energy"

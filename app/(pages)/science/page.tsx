@@ -53,6 +53,29 @@ const tableData = [
   }
 ]
 
+const steps = [
+  {
+    title: "Protection",
+    text: "Our nano-cage wraps around nutrients like a protective bubble.",
+    image: "/science/protection.jpg"
+  },
+  {
+    title: "Transport",
+    text: "Smart delivery system navigates your digestive system like GPS.",
+    image: "/science/protection.jpg"
+  },
+  {
+    title: "Release",
+    text: "Nutrients are released exactly where and when your cells need them.",
+    image: "/science/protection.jpg"
+  },
+  {
+    title: "Results",
+    text: "Experience real benefits because your body actually uses what you take!",
+    image: "/science/protection.jpg"
+  }
+]
+
 export default function Page() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null)
@@ -60,25 +83,91 @@ export default function Page() {
   const glowRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null)
 
+  const panel5Ref = useRef<HTMLDivElement>(null)
+  const stepsContainerRef = useRef<HTMLDivElement | null>(null)
+
   useEffect(() => {
     const container = scrollContainerRef.current;
-    const totalWidth = container?.scrollWidth || 0;
-    const viewportWidth = window.innerWidth;
+    const panel5 = panel5Ref.current;
+    const stepsContainer = stepsContainerRef.current;
 
-    // Horizontal scroll setup
-    gsap.to(container, {
-      x: () => -(totalWidth - viewportWidth),
-      ease: "none",
+    if (!container || !panel5 || !stepsContainer) return;
+
+    ScrollTrigger.getAll().forEach(t => t.kill())
+
+    // compute sizes (re-evaluated on refresh)
+    const getSizes = () => {
+      const totalWidth = container.scrollWidth;
+      const viewportWidth = window.innerWidth;
+      const panel5Width = panel5.offsetWidth;
+      return { totalWidth, viewportWidth, panel5Width };
+    };
+
+    // ---- HORIZONTAL TIMELINE (main scroller) ----
+    const { totalWidth } = getSizes();
+    const horizontalTL = gsap.timeline({
+      defaults: { ease: "none" },
       scrollTrigger: {
         trigger: sectionRef.current,
         start: "top top",
-        end: () => `+=${totalWidth}`,
+        end: () => `+=${totalWidth}`, // total horizontal distance maps to scroll length
         scrub: 1,
         pin: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
       },
     });
+
+    // Move the container left by the difference (this is the horizontal scroll)
+    horizontalTL.to(container, {
+      x: () => -(getSizes().totalWidth - getSizes().viewportWidth),
+    });
+
+    // ---- PANEL 5 VERTICAL TIMELINE (takes over while horizontal timeline is at panel 5) ----
+    const stepsCount = steps.length;
+    // make sure stepsContainer has the proper height equal to stepsCount * 100vh
+    // we animate by yPercent, so we set the container height accordingly by CSS below
+
+    const verticalTL = gsap.timeline({
+      scrollTrigger: {
+        trigger: panel5,
+        start: "left center", // when panel5's left hits the left of the viewport in the horizontal scroller
+        end: () => `+=${panel5.offsetWidth}`, // the horizontal width of panel5 is the span used to drive vertical timeline
+        scrub: 1,
+        horizontal: true, // important: this trigger lives inside a horizontal scroller
+        containerAnimation: horizontalTL, // tie it to the main horizontal timeline
+        pin: true, // pin panel5 while verticalTL plays
+        anticipatePin: 1,
+        onEnter: () => horizontalTL.pause(),
+        onLeave: () => horizontalTL.play(),
+        onEnterBack: () => horizontalTL.pause(),
+        onLeaveBack: () => horizontalTL.play()
+      },
+    });
+
+    // animate stepsContainer by yPercent: each step is 100vh tall so total translate = -(stepsCount-1)*100%
+    verticalTL.to(stepsContainer, {
+      yPercent: -100 * (stepsCount - 1),
+      ease: "none",
+    });
+
+    // Access the horizontal ScrollTrigger directly
+    const horizontalST = horizontalTL.scrollTrigger;
+    const verticalST = verticalTL.scrollTrigger;
+
+    if (horizontalST && verticalST) {
+      // Update its callbacks directly
+      verticalST.vars.onEnter = () => horizontalST.disable();
+      verticalST.vars.onLeave = () => horizontalST.enable();
+      verticalST.vars.onEnterBack = () => horizontalST.disable();
+      verticalST.vars.onLeaveBack = () => horizontalST.enable();
+
+      // Re-initialize the ScrollTrigger with new vars
+      verticalST.refresh();
+    }
+
+    // refresh to ensure all sizes are correct
+    ScrollTrigger.refresh();
 
     // Mouse-follow glowing gradient
     const glow = glowRef.current;
@@ -108,7 +197,9 @@ export default function Page() {
     return () => {
       window.removeEventListener("mousemove", moveGlow);
       window.removeEventListener("mousemove", moveCursor)
-      ScrollTrigger.killAll();
+      ScrollTrigger.getAll().forEach((t) => t.kill())
+      horizontalTL.kill()
+      verticalTL.kill();
     };
   }, []);
 
@@ -314,7 +405,7 @@ export default function Page() {
                         Water-loving minerals
                       </h3>
                       <p className="text-sm sm:text-base font-light text-white">
-                        That protect minerals on their journey through your body
+                        that dissolve easily (no more chalky tablets!)
                       </p>
                     </div>
                   </div>
@@ -521,55 +612,59 @@ export default function Page() {
           </section>
 
           {/* ---------- PANEL 5 ---------- */}
-          <section className="panel w-screen h-screen space-y-8 px-8 py-10 sm:py-5">
-            <div className="flex justify-around">
-              <p className="font-semibold text-2xl sm:text-4xl text-white">
+          <section
+            ref={panel5Ref}
+            className="panel overflow-hidden flex justify-center pl-40 w-screen"
+          >
+            <div
+              ref={stepsContainerRef}
+              className="space-y-20 w-full"
+            >
+              <p className="font-semibold text-2xl sm:text-4xl text-white text-nowrap">
                 The Science Made Simple
               </p>
-              <div />
-            </div>
+              {steps.map((step, index) => (
+                <div
+                  key={index}
+                  className="flex gap-20 items-center w-full"
+                >
+                  {/* === Timeline Section === */}
+                  <div className="flex flex-col items-center relative">
+                    {/* --- MAP THROUGH STEPS --- */}
+                    <React.Fragment key={index}>
+                      {/* Line above the dot */}
+                      <div className="h-40 w-[2px] bg-gradient-to-b from-white to-[#71BF45]" />
 
-            <div className="flex justify-around items-center w-full">
-              {/* === Timeline Section === */}
-              <div className="flex flex-col items-center relative">
-                {/* --- MAP THROUGH STEPS --- */}
-                {["Step-1", "Step-2", "Step-3"].map((step, index) => (
-                  <React.Fragment key={index}>
-                    {/* Line above the dot */}
+                      {/* Dot + Step label */}
+                      <div className="relative flex items-center gap-3 my-8">
+                        <div className="w-4 h-4 rounded-full bg-gray-400 z-10" />
+                        <p className="text-gray-200 text-lg text-nowrap">Step {index + 1}</p>
+                      </div>
 
-                    <div className="h-40 w-[2px] bg-gradient-to-b from-white to-[#71BF45]" />
+                      {/* Line below the dot (skip after last step if you want bottom gap) */}
+                      <div className="h-40 w-[2px] bg-gradient-to-b from-white to-[#71BF45]" />
+                    </React.Fragment>
+                  </div>
 
-                    {/* Dot + Step label */}
-                    <div className="relative flex items-center gap-3 my-8">
-                      <div className="w-4 h-4 rounded-full bg-gray-400 z-10" />
-                      <p className="text-gray-200 text-lg text-nowrap">{step}</p>
+                  {/* === Right Content Section === */}
+                  <div className="space-y-10">
+                    <div>
+                      <p className="font-extrabold text-xl sm:text-3xl text-white">{step.title}</p>
+                      <p className="font-light sm:text-2xl text-white max-w-xl">
+                        {step.text}
+                      </p>
                     </div>
 
-                    {/* Line below the dot (skip after last step if you want bottom gap) */}
-                    {index !== 2 && (
-                      <div className="h-40 w-[2px] bg-gradient-to-b from-white to-[#71BF45]" />
-                    )}
-                  </React.Fragment>
-                ))}
-              </div>
-
-              {/* === Right Content Section === */}
-              <div className="space-y-10">
-                <div>
-                  <p className="font-extrabold text-xl sm:text-3xl text-white">Protection</p>
-                  <p className="font-light sm:text-2xl text-white max-w-xl">
-                    Our nano-cage wraps around nutrients like a protective bubble.
-                  </p>
+                    <Image
+                      src={step.image}
+                      width={722}
+                      height={320}
+                      alt={step.title}
+                      className="rounded-[32px]"
+                    />
+                  </div>
                 </div>
-
-                <Image
-                  src="/science/protection.jpg"
-                  width={722}
-                  height={420}
-                  alt="protection-img"
-                  className="rounded-[32px]"
-                />
-              </div>
+              ))}
             </div>
           </section>
 

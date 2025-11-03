@@ -40,6 +40,44 @@ import ProductSkeleton from "@/components/ProductSkeleton";
 import { FaLeaf, FaSeedling, FaSpa } from 'react-icons/fa'
 import { useNavbarColor } from "@/context/NavbarColorContext";
 
+const tableData = [
+  {
+    col1: "Does your body actually use it?",
+    col2: "Only 10-30% absorbed. You are literally peeing out 70% of what you paid for",
+    col3: "Your cells absorb 5-10x more-precision nano-delivery ensures nutrients reach target organs"
+  },
+  {
+    col1: "Will you actually feel different?",
+    col2: "Inconsistent results. Maybe you'll notice something in 6 months?",
+    col3: "You feel the energy boost within days - because nutrients actually reach your cells"
+  },
+  {
+    col1: "Is it gentle on your stomach?",
+    col2: "High doses = nausea, bloating, discomfort",
+    col3: "You take 80% less yet get better results - small doses, zero gut irritation"
+  },
+  {
+    col1: "Does it target your specific needs?",
+    col2: "One-size-fits-all. Hope it helps something",
+    col3: "Your nutrients go exactly where you need them - brain, joints, heart, liver - base on your body's signals"
+  },
+  {
+    col1: "Is it actually natural?",
+    col2: "Chemical compounds, synthetic fillers, binders",
+    col3: "You get ancient herbal wisdom powered by modern nano-science-nature meets technology"
+  },
+  {
+    col1: "Will it harm you long term?",
+    col2: "Can stress your kidneys and liver with synthetic overload",
+    col3: "Your body naturally processes and eliminates - biodegradable, zero toxic buildup, safe to use lifelong"
+  },
+  {
+    col1: "Does it actually fix the problem?",
+    col2: "Masks symptoms temporarily, then they return",
+    col3: "Your body heals at the cellular level - multi-pathway repair addresses root causes"
+  },
+]
+
 export default function Home() {
   const [activeBtn, setActiveBtn] = useState("Digestive")
   const [products, setProducts] = useState<product[]>([])
@@ -292,24 +330,7 @@ export default function Home() {
           // last stays visible
           tl.to(text, { opacity: 1, y: 0, duration: 0.05 }, fadeOutStart);
         }
-
-
-        // small no-op to advance timeline if there's leftover time before next label
-        // const gap = STEP_DUR - MOTION_DUR;
-        // if (gap > 0) tl.to({}, { duration: gap }, `>${0}`);
       });
-
-      // Ensure last step is locked visible when container passes (both directions)
-      // const lastIcon = iconRefs.current[totalSteps - 1];
-      // const lastText = textRefs.current[totalSteps - 1];
-      // if (lastIcon && lastText) {
-      //   ScrollTrigger.create({
-      //     trigger: container,
-      //     start: "bottom center",
-      //     onEnter: () => gsap.set([lastIcon, lastText], { opacity: 1 }),
-      //     onEnterBack: () => gsap.set([lastIcon, lastText], { opacity: 1 }),
-      //   });
-      // }
 
       // refresh to ensure sizes & pin spacer are calculated
       ScrollTrigger.refresh();
@@ -537,7 +558,7 @@ export default function Home() {
       <section className="container mx-auto space-y-4 px-3 md:px-10">
         <div className="flex items-center justify-between text-sm md:text-base">
           <p className="font-semibold">Gut Improve Suplements</p>
-          <Link href="/" className="flex items-center gap-1 hover:text-[#71BF45]">
+          <Link href="/products" className="flex items-center gap-1 hover:text-[#71BF45]">
             <p>View More</p>
             <MdKeyboardArrowRight />
           </Link>
@@ -553,7 +574,7 @@ export default function Home() {
           )}
         </div>
       </section>
-
+      
       {/* STATS SECTION */}
       <section
         ref={sectionRef}
@@ -791,8 +812,100 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SCIENCE AT WORK SECTION*/}
-      <section className="container mx-auto -mt-12 lg:-mt-64 py-[30px] px-[30px] md:px-[60px] space-y-6">
+      {/* COMPARISION TABLE */}
+      <div className="container mx-auto px-[30px] md:px-[60px] pt-40">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr>
+              <th
+                className="p-2 font-semibold text-sm sm:text-xl text-[#093C16] bg-[#71BF45] rounded-tl-[30px] rounded-tr-[30px]"
+              >
+                What you care about
+              </th>
+              <th
+                style={{
+                  border: "1px solid transparent",
+                  borderRadius: "30px 30px 0 0",
+                  background:
+                    "linear-gradient(#171717, #171717) padding-box, linear-gradient(90deg, #71BF45 0%, #355920 100%) border-box",
+                  backgroundClip: "padding-box, border-box",
+                  padding: "8px",
+                  fontWeight: "500",
+                  color: "#71BF45",
+                }}
+                className="text-sm sm:text-xl"
+              >
+                Regular Supplements (What you&apos;re getting now)
+              </th>
+              <th
+                className="p-2 font-semibold text-sm sm:text-xl text-[#093C16] bg-[#71BF45] rounded-tl-[30px] rounded-tr-[30px]"
+              >
+                Zealous Health (What you deserve)
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {tableData.map((data, idx) => {
+              const isFirstRow = idx === 0;
+              const isLastRow = idx === tableData.length - 1;
+
+              return (
+                <tr key={idx}>
+                  {/* Column 1 */}
+                  <td
+                    className="text-white text-xs sm:text-base p-2.5 sm:py-2 sm:pl-5 sm:pr-10"
+                    style={{
+                      border: "0.5px solid transparent",
+                      borderRadius: `${isFirstRow ? "0 0 0 0" : isLastRow ? "0 0 0 30px" : "0"}`,
+                      background:
+                        "linear-gradient(#171717, #171717) padding-box, linear-gradient(90deg, #71BF45 0%, #FFFFFF 23%) border-box",
+                      backgroundOrigin: "border-box",
+                      backgroundClip: "padding-box, border-box",
+                    }}
+                  >
+                    {data.col1}
+                  </td>
+
+                  {/* Column 2 */}
+                  <td
+                    className="text-[#C6C4C4] text-xs sm:text-base p-2.5 sm:py-2 sm:pl-5 sm:pr-24"
+                    style={{
+                      border: "0.5px solid transparent",
+                      background:
+                        "linear-gradient(#171717, #171717) padding-box, linear-gradient(90deg, #71BF45 0%, #FFFFFF 23%) border-box",
+                      backgroundOrigin: "border-box",
+                      backgroundClip: "padding-box, border-box",
+                    }}
+                  >
+                    {data.col2}
+                  </td>
+
+                  {/* Column 3 */}
+                  <td
+                    className="p-2.5 sm:py-2 sm:pl-5 sm:pr-10 text-xs sm:text-base"
+                    style={{
+                      border: "0.5px solid transparent",
+                      borderRadius: isLastRow ? "0 0 30px 0" : "0",
+                      background:
+                        "linear-gradient(#171717, #171717) padding-box, linear-gradient(90deg, #71BF45 0%, #FFFFFF 23%) border-box",
+                      backgroundOrigin: "border-box",
+                      backgroundClip: "padding-box, border-box",
+                    }}
+                  >
+                    <div className="flex items-center gap-2 text-[#C6C4C4]">
+                      {data.col3}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* SCIENCE AT WORK SECTION */}
+      <section className="container mx-auto py-[30px] px-[30px] md:px-[60px] space-y-6">
         <div className="space-y-3 text-center">
           <p className="font-semibold text-2xl md:text-[32px] text-[#093C16]">
             Our Science at Work
