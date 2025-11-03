@@ -159,3 +159,11 @@ body {
   animation: fadeInCart 0.5s ease-out forwards;
 }
 
+@keyframes fadeInSearchResults {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeInSearchResults {
+  animation: fadeInSearchResults 0.2s ease-out forwards;
+}
+

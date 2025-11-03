@@ -22,7 +22,7 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 
 import { getItem, KEY_ACCESS_TOKEN, removeItem } from "@/utils/localStorageManager";
@@ -40,6 +40,7 @@ import { getWishlist } from "@/lib/thunks/wishlistThunks";
 import { resetWishlist } from "@/lib/features/wishlistSlice";
 import { getMyAddress, getMyInfo } from "@/lib/thunks/userThunks";
 import { useNavbarColor } from "@/context/NavbarColorContext";
+import { product } from "@/interfaces/products";
 
 const placeholderTexts = [
     "Stress Relief Syrup",
@@ -85,10 +86,6 @@ const initialLinks: NavLink[] = [
         // ]
     },
     {
-        name: "Wellness Needs",
-        href: "/wellnessNeeds",
-    },
-    {
         name: "Science",
         href: "/science"
     },
@@ -102,6 +99,10 @@ function Navbar() {
     const [inputValue, setInputValue] = useState("");
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
+    const [searchResults, setSearchResults] = useState<product[]>([]);
+    const searchRef = useRef<HTMLDivElement>(null);
+    const [showResults, setShowResults] = useState(false);
+    const router = useRouter();
 
     // Animated placeholder effect for search bar
     useEffect(() => {
@@ -116,6 +117,42 @@ function Navbar() {
         return () => clearInterval(interval);
     }, []);
 
+    // Fetch products from backend based on search input
+    useEffect(() => {
+        const fetchSearchResults = async () => {
+            if (inputValue.trim() === "") {
+                return setShowResults(false)
+            };
+
+            try {
+                const response = await axiosClient.get(`/api/products/search?keyword=${inputValue}`)
+                setSearchResults(response.data.result);
+            } catch { }
+        }
+
+        // Debounce the search input to avoid excessive API calls
+        const debounceTimeout = setTimeout(() => {
+            fetchSearchResults();
+        }, 400);
+
+        return () => clearTimeout(debounceTimeout);
+
+    }, [inputValue])
+
+    // Close search results when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+                setShowResults(false)
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside)
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside)
+        }
+    }, [])
 
 
     // ================= Sidebar and navigation logics ================
@@ -264,43 +301,89 @@ function Navbar() {
                     </div>
 
                     {/* ====== Search bar section (desktop only) ====== */}
-                    <div className="hidden lg:flex-1 lg:flex justify-between items-center border-[0.5px] border-[#71BF45] rounded-[50px] py-2 px-2.5">
-                        <div className="flex items-center gap-2.5 relative w-full">
-                            <label htmlFor='search' className="p-1 rounded-[27px] bg-[#71bf45] text-[#ffffff]">
-                                <IoSearchOutline size={15} />
-                            </label>
+                    <div ref={searchRef} className="hidden lg:flex-1 lg:flex flex-col relative z-50">
+                        <div className="flex justify-between items-center border-[0.5px] border-[#71BF45] rounded-[50px] py-2 px-2.5">
+                            <div className="flex items-center gap-2.5 relative w-full">
+                                <label htmlFor='search' className="p-1 rounded-[27px] bg-[#71bf45] text-[#ffffff]">
+                                    <IoSearchOutline size={15} />
+                                </label>
 
-                            <div className="relative w-full">
-                                {/* Search input */}
-                                <input
-                                    id='search'
-                                    type="text"
-                                    value={inputValue}
-                                    onChange={(e) => setInputValue(e.target.value)}
-                                    className={`${dark ? "text-black" : "text-white"} text-xs w-full focus:outline-none`}
-                                />
-                                {/* Animated Placeholder */}
-                                {inputValue === "" && (
-                                    <div className="absolute left-0 top-0 w-full h-full pointer-events-none flex items-center text-[#a3a3a3] text-xs overflow-hidden">
-                                        <p>Search for&nbsp; </p>
-                                        <div
-                                            className={`transition-transform duration-500 ${isAnimating
-                                                ? "-translate-y-full"
-                                                : "translate-y-0 opacity-100"
-                                                }`}
-                                            key={currentIndex}
-                                        >
-                                            &quot;{placeholderTexts[currentIndex]}&quot;
+                                <div className="relative w-full">
+                                    {/* Search input */}
+                                    <input
+                                        id='search'
+                                        type="text"
+                                        value={inputValue}
+                                        onChange={(e) => {
+                                            setInputValue(e.target.value)
+                                            setShowResults(true)
+                                        }}
+                                        className={`${dark ? "text-black" : "text-white"} text-xs w-full focus:outline-none`}
+                                    />
+                                    {/* Animated Placeholder */}
+                                    {inputValue === "" && (
+                                        <div className="absolute left-0 top-0 w-full h-full pointer-events-none flex items-center text-[#a3a3a3] text-xs overflow-hidden">
+                                            <p>Search for&nbsp; </p>
+                                            <div
+                                                className={`transition-transform duration-500 ${isAnimating
+                                                    ? "-translate-y-full"
+                                                    : "translate-y-0 opacity-100"
+                                                    }`}
+                                                key={currentIndex}
+                                            >
+                                                &quot;{placeholderTexts[currentIndex]}&quot;
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Filter Logo */}
+                            <div className="text-[#848484] border-l border-[#848484] pl-1">
+                                <VscSettings size={24} />
                             </div>
                         </div>
 
-                        {/* Filter Logo */}
-                        <div className="text-[#848484] border-l border-[#848484] pl-1">
-                            <VscSettings size={24} />
-                        </div>
+                        {/* Search Results */}
+                        {showResults && inputValue && searchResults.length > 0 && (
+                            <div
+                                className="absolute top-[105%] left-0 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-80 overflow-y-auto scrollbar-hide z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
+                            >
+                                {searchResults.map((product) => (
+                                    <div
+                                        onClick={() => {
+                                            router.push(`/productDescription/${product._id}`)
+                                            setShowResults(false);
+                                            setInputValue("");
+                                        }}
+                                        key={product._id}
+                                        className="flex items-center gap-3 p-2 hover:bg-gray-100 cursor-pointer transition-colors duration-150"
+                                    >
+                                        <div className="relative w-10 h-10">
+                                            <Image
+                                                src={product.productImg?.url}
+                                                alt={product.name}
+                                                fill
+                                                className="object-cover rounded-md"
+                                            />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium text-[#71BF45]">{product.name}</p>
+                                            <p className="text-xs text-gray-500">{product.about.slice(0, 45)}...</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* No products found message */}
+                        {showResults && inputValue && searchResults.length === 0 && (
+                            <div
+                                className="absolute top-[105%] left-0 w-full bg-white border border-gray-200 rounded-2xl shadow-lg p-3 text-sm text-gray-500 z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
+                            >
+                                No products found.
+                            </div>
+                        )}
                     </div>
 
                     {/* ====== Cart, wishlist, and login/logout section ====== */}
@@ -440,7 +523,7 @@ function Navbar() {
             </section>
 
             {/* ================ Navigation and Shop Dropdown Section ================ */}
-            <section className={isHiddenPath(pathname) ? "hidden" : "relative w-full"}>
+            <section className={isHiddenPath(pathname) ? "hidden" : "relative w-full -z-10"}>
                 <div className="hidden lg:flex justify-center">
                     <div className={`flex items-center gap-5 rounded-br-xl rounded-bl-xl
                          ${(pathname === "/" && !dark) ? "bg-transparent backdrop-blur-md" : "bg-[#71BF45]/10"} 
@@ -489,21 +572,6 @@ function Navbar() {
                             </div>
                         </div>
 
-                        <Link
-                            href="/wellnessNeeds"
-                            className={`
-                                ${pathname === "/wellnessNeeds"
-                                    ? "text-[#71BF45]"
-                                    : pathname !== "/" && pathname
-                                        ? "text-black"
-                                        : pathname === "/" && dark
-                                            ? "text-black"
-                                            : "text-[#d0d0d0]"}
-                                        flex items-center gap-[5px]
-                            `}
-                        >
-                            Wellness Needs
-                        </Link>
                         <Link
                             href="/science"
                             className={`
