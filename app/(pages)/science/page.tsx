@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react"
 import { IoIosCheckmark } from "react-icons/io";
 import HumanOrgansSvg from "@/components/HumanOrgansSvg";
+import { useScroll } from "@/context/ScrollContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -83,91 +84,44 @@ export default function Page() {
   const glowRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null)
 
-  const panel5Ref = useRef<HTMLDivElement>(null)
-  const stepsContainerRef = useRef<HTMLDivElement | null>(null)
+  const { setIsScrolling } = useScroll()
 
   useEffect(() => {
     const container = scrollContainerRef.current;
-    const panel5 = panel5Ref.current;
-    const stepsContainer = stepsContainerRef.current;
+    const section = sectionRef.current;
 
-    if (!container || !panel5 || !stepsContainer) return;
 
-    ScrollTrigger.getAll().forEach(t => t.kill())
+    const ctx = gsap.context(() => {
+      const mm = gsap.matchMedia();
 
-    // compute sizes (re-evaluated on refresh)
-    const getSizes = () => {
-      const totalWidth = container.scrollWidth;
-      const viewportWidth = window.innerWidth;
-      const panel5Width = panel5.offsetWidth;
-      return { totalWidth, viewportWidth, panel5Width };
-    };
+      mm.add("(min-width: 769px)", () => {
+        // Horizontal scroll animation for desktop
+        const totalWidth = container?.scrollWidth || 0;
+        const viewportWidth = window.innerWidth;
 
-    // ---- HORIZONTAL TIMELINE (main scroller) ----
-    const { totalWidth } = getSizes();
-    const horizontalTL = gsap.timeline({
-      defaults: { ease: "none" },
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top top",
-        end: () => `+=${totalWidth}`, // total horizontal distance maps to scroll length
-        scrub: 1,
-        pin: true,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-      },
+        gsap.to(container, {
+          x: () => -(totalWidth - viewportWidth),
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top top",
+            end: () => `+=${totalWidth}`,
+            scrub: 1,
+            pin: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          },
+        });
+      });
+
+      mm.add("(max-width: 768px)", () => {
+        // Mobile: Normal vertical scroll
+        gsap.set(container, { clearProps: "all" });
+        ScrollTrigger.getAll().forEach((t) => t.kill());
+      });
+
+      return () => mm.revert();
     });
-
-    // Move the container left by the difference (this is the horizontal scroll)
-    horizontalTL.to(container, {
-      x: () => -(getSizes().totalWidth - getSizes().viewportWidth),
-    });
-
-    // ---- PANEL 5 VERTICAL TIMELINE (takes over while horizontal timeline is at panel 5) ----
-    const stepsCount = steps.length;
-    // make sure stepsContainer has the proper height equal to stepsCount * 100vh
-    // we animate by yPercent, so we set the container height accordingly by CSS below
-
-    const verticalTL = gsap.timeline({
-      scrollTrigger: {
-        trigger: panel5,
-        start: "left center", // when panel5's left hits the left of the viewport in the horizontal scroller
-        end: () => `+=${panel5.offsetWidth}`, // the horizontal width of panel5 is the span used to drive vertical timeline
-        scrub: 1,
-        horizontal: true, // important: this trigger lives inside a horizontal scroller
-        containerAnimation: horizontalTL, // tie it to the main horizontal timeline
-        pin: true, // pin panel5 while verticalTL plays
-        anticipatePin: 1,
-        onEnter: () => horizontalTL.pause(),
-        onLeave: () => horizontalTL.play(),
-        onEnterBack: () => horizontalTL.pause(),
-        onLeaveBack: () => horizontalTL.play()
-      },
-    });
-
-    // animate stepsContainer by yPercent: each step is 100vh tall so total translate = -(stepsCount-1)*100%
-    verticalTL.to(stepsContainer, {
-      yPercent: -100 * (stepsCount - 1),
-      ease: "none",
-    });
-
-    // Access the horizontal ScrollTrigger directly
-    const horizontalST = horizontalTL.scrollTrigger;
-    const verticalST = verticalTL.scrollTrigger;
-
-    if (horizontalST && verticalST) {
-      // Update its callbacks directly
-      verticalST.vars.onEnter = () => horizontalST.disable();
-      verticalST.vars.onLeave = () => horizontalST.enable();
-      verticalST.vars.onEnterBack = () => horizontalST.disable();
-      verticalST.vars.onLeaveBack = () => horizontalST.enable();
-
-      // Re-initialize the ScrollTrigger with new vars
-      verticalST.refresh();
-    }
-
-    // refresh to ensure all sizes are correct
-    ScrollTrigger.refresh();
 
     // Mouse-follow glowing gradient
     const glow = glowRef.current;
@@ -195,11 +149,11 @@ export default function Page() {
     window.addEventListener("mousemove", moveCursor)
 
     return () => {
+      ctx.revert();
       window.removeEventListener("mousemove", moveGlow);
       window.removeEventListener("mousemove", moveCursor)
-      ScrollTrigger.getAll().forEach((t) => t.kill())
-      horizontalTL.kill()
-      verticalTL.kill();
+      // window.removeEventListener("resize", setupAnimation);
+      // ScrollTrigger.getAll().forEach((t) => t.kill())
     };
   }, []);
 
@@ -228,6 +182,25 @@ export default function Page() {
 
     return () => observer.unobserve(video)
   }, [])
+
+  // Scroll detection
+  useEffect(() => {
+    let scrollTimeout: NodeJS.Timeout;
+    const handleScroll = () => {
+      setIsScrolling(true);
+
+      clearTimeout(scrollTimeout);
+
+      scrollTimeout = setTimeout(() => {
+        setIsScrolling(false)
+      }, 200)
+    }
+
+    window.addEventListener("scroll", handleScroll)
+
+    return () =>
+      window.removeEventListener("scroll", handleScroll)
+  }, [setIsScrolling])
 
   // =============== MODAL LOGICS ================
   const [selectedCard, setSelectedCard] = useState<null | string>(null)
@@ -281,7 +254,7 @@ export default function Page() {
     <div className="bg-[#191717]">
       <div
         ref={sectionRef}
-        className="container mx-auto my-auto relative h-screen overflow-hidden text-white -mt-24 sm:-mt-28 lg:-mt-36 cursor-none"
+        className="container mx-auto my-auto relative md:h-screen overflow-hidden text-white -mt-24 sm:-mt-28 lg:-mt-36 cursor-none"
         style={{ backgroundColor: "#191717", paddingTop: "80px" }}
       >
         {/* Small white circular cursor */}
@@ -326,32 +299,32 @@ export default function Page() {
         />
 
         {/* Horizontal scroll container */}
-        <div ref={scrollContainerRef} className="flex h-screen w-max relative z-10">
+        <div ref={scrollContainerRef} className="flex flex-col md:flex-row md:h-screen w-full md:w-max relative z-10 pt-10 md:pt-0">
           {/* ---------- PANEL 1 ---------- */}
-          <section className="panel h-screen flex items-center justify-center px-8 py-5">
-            <div className="flex items-center justify-between h-full w-full">
-              <div className="flex flex-col justify-around pb-10 h-full">
+          <section className="panel flex items-center justify-center px-8 py-5">
+            <div className="flex flex-col md:flex-row justify-between h-full items-center w-full">
+              <div className="flex flex-col justify-around pb-10 h-screen">
                 <div>
-                  <h5 className="font-light text-xl sm:text-3xl text-white">
+                  <h5 className="font-light text-xl sm:text-2xl text-white">
                     Why Zealous Health is Different
                   </h5>
-                  <h1 className="font-semibold text-3xl sm:text-5xl text-white tracking-tighter text-nowrap">
+                  <h1 className="font-semibold text-3xl sm:text-4xl text-white tracking-tighter text-nowrap">
                     Science Meets Ancient Wisdom
                   </h1>
                 </div>
 
-                <p className="sm:text-xl text-[#D8DED5] w-96 sm:w-[700px]">
+                <p className="sm:text-lg text-[#D8DED5] w-96 sm:w-full md:w-[700px]">
                   Ever wonder why you take vitamins but don&apos;t feel the difference?
                   Most supplements are poorly absorbed — your body only uses about
                   10–20% of what you swallow while the rest is just expensive pee.
                 </p>
 
                 <div>
-                  <h5 className="font-light text-xl sm:text-3xl text-white">
+                  <h5 className="font-light text-xl sm:text-2xl text-white">
                     Our Game-Changing Solution
                   </h5>
                   <div className="flex items-center gap-4">
-                    <h1 className="font-semibold text-2xl sm:text-[40px] text-white text-nowrap">
+                    <h1 className="font-semibold text-2xl sm:text-4xl text-white text-nowrap">
                       Nano-Tech Meets Nature
                     </h1>
                     <div className="w-[75px] sm:w-[137px] border border-white" />
@@ -359,7 +332,7 @@ export default function Page() {
                 </div>
               </div>
 
-              <div className="relative w-screen h-[500px] sm:w-[600px] sm:h-[600px]">
+              <div className="relative -mt-4 w-[500px] h-[500px]">
                 <Image
                   src="/science/human_body.png"
                   fill
@@ -370,13 +343,13 @@ export default function Page() {
           </section>
 
           {/* ---------- PANEL 2 ---------- */}
-          <section className="panel h-screen flex items-center gap-40 text-white px-8">
-            <div className="flex flex-col justify-around h-screen">
-              <div className="space-y-2.5 sm:space-y-5">
-                <h5 className="font-medium text-2xl sm:text-4xl text-white">
+          <section className="panel flex flex-col md:flex-row md:gap-8 text-white px-8">
+            <div className="flex flex-col gap-10 md:gap-16 mt-14">
+              <div className="space-y-2.5">
+                <h5 className="font-medium text-2xl sm:text-3xl text-white">
                   BIOCAGE Technology™
                 </h5>
-                <p className="font-light text-lg sm:text-3xl text-[#D8DED5]">
+                <p className="font-light text-lg sm:text-2xl text-[#D8DED5]">
                   Think of it as a{" "}
                   <span className="font-normal italic">&quot;smart taxi&quot;</span> for your
                   nutrients
@@ -386,46 +359,49 @@ export default function Page() {
               {/* ====== FEATURES ====== */}
               <div>
                 {/* ====== HEADING ====== */}
-                <p className="text-xl sm:text-3xl text-white mb-6">What makes it special?</p>
+                <p className="text-2xl text-white mb-6">What makes it special?</p>
 
                 {/* GRID LAYOUT FOR FEATURES */}
-                <div className="grid grid-cols-3 gap-4 w-[600px]">
-                  {/* Small Box 1: Nano-sized bodyguard */}
-                  <div className="p-3 sm:p-6 rounded-[20px] flex flex-col justify-between bg-gradient-to-b from-[#71BF45] to-[#71BF45]">
-                    <h3 className="sm:text-xl font-bold mb-4 text-[#093C16]">Nano-sized bodyguards</h3>
-                    <p className="text-sm sm:text-base font-light text-white">
-                      That protect minerals on their journey through your body
-                    </p>
-                  </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:w-[600px]">
 
-                  {/* Small Box 2: Water-loving minerals */}
-                  <div className="flex flex-col justify-between bg-gradient-to-b from-[#5B5B5B] to-[#71BF45] border rounded-[20px] p-3 sm:p-6">
-                    <div>
-                      <h3 className="sm:text-xl font-bold mb-4 text-[#71BF45]">
-                        Water-loving minerals
-                      </h3>
-                      <p className="text-sm sm:text-base font-light text-white">
-                        that dissolve easily (no more chalky tablets!)
+                  <div className="flex flex-col h-full md:flex-row md:col-span-2 items-center gap-4">
+                    {/* Small Box 1: Nano-sized bodyguard */}
+                    <div className="p-3 rounded-[20px] flex flex-col justify-between bg-[#71BF45]">
+                      <h3 className="sm:text-lg font-bold mb-4 text-[#093C16]">Nano-sized bodyguards</h3>
+                      <p className="text-sm font-light text-white">
+                        That protect minerals on their journey through your body
                       </p>
+                    </div>
+
+                    {/* Small Box 2: Water-loving minerals */}
+                    <div className="flex flex-col justify-between bg-[#71BF45] border rounded-[20px] p-3">
+                      <div>
+                        <h3 className="sm:text-lg font-bold mb-4 text-[#093C16]">
+                          Water-loving minerals
+                        </h3>
+                        <p className="text-sm font-light text-white">
+                          that dissolve easily (no more chalky tablets!)
+                        </p>
+                      </div>
                     </div>
                   </div>
 
                   {/* Large Absorption Box (Spans 1 row, 1 column here, will re-position with flex below) */}
-                  <div className="col-span-1 row-span-2 p-3 sm:p-6 rounded-[20px] bg-gradient-to-b from-[#71BF45] to-[#71BF45] flex flex-col justify-between">
+                  <div className="row-span-2 p-3 rounded-[20px] bg-[#71BF45] flex flex-col justify-between">
                     <div className="text-[#093C16]">
-                      <p className="text-3xl sm:text-6xl font-bold mb-2 leading-none">5X</p>
-                      <p className="sm:text-xl font-semibold mb-4">Better<br />Absorption</p>
+                      <p className="text-4xl sm:text-5xl font-bold mb-2 leading-none">5X</p>
+                      <p className="font-semibold mb-4">Better<br />Absorption</p>
                     </div>
-                    <p className="sm:text-xl text-white">
+                    <p className="text-white">
                       Compared to regular supplements
                     </p>
                   </div>
 
                   {/* Smart Release System Box (Spans full width on small screens, below first two on medium) */}
-                  <div className="col-span-2 p-3 sm:p-6 border border-[#5B5B5B] rounded-[20px] bg-[#71BF45] flex flex-col justify-between">
+                  <div className="col-span-2 p-3 border border-[#5B5B5B] rounded-[20px] bg-[#71BF45] flex flex-col justify-between">
                     <div>
-                      <h3 className="sm:text-xl font-bold mb-4 text-[#093C16]">Smart release system</h3>
-                      <p className="text-sm sm:text-base font-light text-[#093C16]">
+                      <h3 className="sm:text-lg font-bold mb-4 text-[#093C16]">Smart release system</h3>
+                      <p className="text-sm font-light text-[#093C16]">
                         That knows exactly when to deliver nutrients to your cells
                       </p>
                     </div>
@@ -436,7 +412,7 @@ export default function Page() {
 
             <video
               ref={videoRef}
-              className="h-[750px] w-screen sm:h-full"
+              className="h-[750px] w-screen -my-40 sm:my-14 md:my-0 sm:h-full"
               playsInline
               loop
             >
@@ -448,15 +424,15 @@ export default function Page() {
           </section>
 
           {/* ---------- PANEL 3 ---------- */}
-          <section className="panel h-screen flex items-center justify-around px-8 py-5">
-            <div className="flex flex-col justify-around h-screen">
+          <section className="panel flex flex-col md:flex-row px-8 md:px-0 md:py-5">
+            <div className="flex flex-col gap-10 mt-8 md:mt-10">
 
               {/* ====== TOP HEADING ====== */}
-              <div className="space-y-2.5 sm:space-y-5">
-                <h5 className="font-medium text-2xl sm:text-4xl text-white">
+              <div className="space-y-2.5">
+                <h5 className="font-medium text-2xl sm:text-3xl text-white">
                   PHYQUANTRIX Technology™
                 </h5>
-                <p className="font-light text-lg sm:text-3xl text-[#D8DED5]">
+                <p className="font-light text-lg sm:text-2xl text-[#D8DED5]">
                   Your personal nutrient{" "}
                   <span className="font-bold">GPS system</span>
                 </p>
@@ -465,47 +441,50 @@ export default function Page() {
               {/* ====== FEATURES ====== */}
               <div>
                 {/* ====== HEADING ====== */}
-                <p className="text-xl sm:text-3xl text-white mb-6">What makes it special?</p>
+                <p className="text-2xl text-white mb-6">What makes it special?</p>
 
                 {/* GRID LAYOUT FOR FEATURES */}
-                <div className="grid grid-cols-3 gap-4 w-[600px]">
-                  {/* Small Box 1: Targeted Delivery */}
-                  <div className="p-3 sm:p-6 rounded-[20px] flex flex-col justify-between bg-[#71BF45]">
-                    <h3 className="sm:text-xl font-bold mb-4 text-[#093C16]">Targeted Delivery</h3>
-                    <p className="text-sm sm:text-base font-light text-white">
-                      Sends nutrients exactly where your body needs them most
-                    </p>
-                  </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:w-[600px]">
 
-                  {/* Small Box 2: Lower doses needed */}
-                  <div className="flex flex-col justify-between bg-[#71BF45] border rounded-[20px] p-3 sm:p-6">
-                    <div>
-                      <h3 className="sm:text-xl font-bold mb-4 text-[#093C16]">
-                        Lower doses needed
-                      </h3>
-                      <p className="text-sm sm:text-base font-light text-white">
-                        More effective with less (gentle on your stomach)
+                  <div className="flex flex-col h-full md:flex-row md:col-span-2 items-center md:items-start gap-4">
+                    {/* Small Box 1: Targeted Delivery */}
+                    <div className="p-3 rounded-[20px] flex flex-col justify-between bg-[#71BF45] h-full">
+                      <h3 className="sm:text-lg font-bold mb-4 text-[#093C16]">Targeted Delivery</h3>
+                      <p className="text-sm font-light text-white">
+                        Sends nutrients exactly where your body needs them most
                       </p>
+                    </div>
+
+                    {/* Small Box 2: Lower doses needed */}
+                    <div className="flex flex-col justify-between bg-[#71BF45] border rounded-[20px] p-3">
+                      <div>
+                        <h3 className="sm:text-lg font-bold mb-4 text-[#093C16]">
+                          Lower doses needed
+                        </h3>
+                        <p className="text-sm font-light text-white">
+                          More effective with less (gentle on your stomach)
+                        </p>
+                      </div>
                     </div>
                   </div>
 
                   {/* Large Absorption Box (Spans 1 row, 1 column here, will re-position with flex below) */}
-                  <div className="col-span-1 row-span-2 p-3 sm:p-6 rounded-[20px] bg-[#71BF45] flex flex-col justify-between">
+                  <div className="row-span-2 p-3 rounded-[20px] bg-[#71BF45] flex flex-col justify-between">
                     <div className="text-[#093C16]">
                       <p className="text-lg sm:text-xl font-bold leading-none">
                         Organ Specific Support
                       </p>
                     </div>
-                    <p className="text-sm sm:text-base text-white">
+                    <p className="text-white">
                       Can target specific areas like heart, brain, or joints
                     </p>
                   </div>
 
                   {/* Smart Release System Box (Spans full width on small screens, below first two on medium) */}
-                  <div className="col-span-2 p-3 sm:p-6 border border-[#5B5B5B] rounded-[20px] bg-[#71BF45] flex flex-col justify-between">
+                  <div className="col-span-2 p-3 border border-[#5B5B5B] rounded-[20px] bg-[#71BF45] flex flex-col justify-between">
                     <div>
-                      <h3 className="sm:text-xl font-bold mb-4 text-[#093C16]">Perfect for sensitive digestion</h3>
-                      <p className="text-sm sm:text-base font-light text-[#093C16]">
+                      <h3 className="sm:text-lg font-bold mb-4 text-[#093C16]">Perfect for sensitive digestion</h3>
+                      <p className="text-sm font-light text-[#093C16]">
                         Ideal if you have absorption issues
                       </p>
                     </div>
@@ -518,8 +497,8 @@ export default function Page() {
           </section>
 
           {/* ---------- PANEL 4 ---------- */}
-          <section className="panel flex flex-col justify-around h-screen mx-8 sm:py-5">
-            <p className="font-medium text-2xl sm:text-4xl w-[300px] sm:w-[490px]">
+          <section className="panel flex flex-col gap-8 md:gap-8 md:h-screen mx-4 md:mx-8 md:py-14">
+            <p className="font-medium text-2xl sm:text-3xl w-[300px] sm:w-[460px]">
               Ancient Wisdom + Modern Science = {" "}
               <span className="font-light italic">Magic</span>
             </p>
@@ -539,7 +518,7 @@ export default function Page() {
                       fontWeight: "500",
                       color: "#71BF45",
                     }}
-                    className="sm:text-xl"
+                    className="sm:text-lg"
                   >
                     Regular Supplements
                   </th>
@@ -560,7 +539,7 @@ export default function Page() {
                     <tr key={idx}>
                       {/* Column 1 */}
                       <td
-                        className="text-white text-sm sm:text-xl py-2 pl-5 pr-10"
+                        className="text-white text-xs md:text-sm p-3 md:py-2 md:pl-5 md:pr-10"
                         style={{
                           border: "0.5px solid transparent",
                           borderRadius: `${isFirstRow ? "30px 0 0 0" : isLastRow ? "0 0 0 30px" : "0"}`,
@@ -575,7 +554,7 @@ export default function Page() {
 
                       {/* Column 2 */}
                       <td
-                        className="text-[#C6C4C4] text-sm sm:text-base py-2 pl-5 pr-24"
+                        className="text-[#C6C4C4] text-[10px] md:text-xs p-3 md:py-2 md:pl-5 md:pr-24"
                         style={{
                           border: "0.5px solid transparent",
                           background:
@@ -589,7 +568,7 @@ export default function Page() {
 
                       {/* Column 3 */}
                       <td
-                        className="py-2 pl-5 pr-10 text-sm sm:text-base"
+                        className="p-3 md:py-2 md:pl-5 md:pr-10 text-[10px] md:text-xs"
                         style={{
                           border: "0.5px solid transparent",
                           borderRadius: isLastRow ? "0 0 30px 0" : "0",
@@ -600,7 +579,7 @@ export default function Page() {
                         }}
                       >
                         <div className="flex items-center gap-2 text-[#C6C4C4]">
-                          <IoIosCheckmark className="bg-gradient-to-b from-[#71BF45] to-[#093C16] rounded-full size-5" />
+                          <IoIosCheckmark className="bg-gradient-to-b from-[#71BF45] to-[#093C16] rounded-full size-2.5 md:size-5" />
                           {data.col3}
                         </div>
                       </td>
@@ -613,11 +592,9 @@ export default function Page() {
 
           {/* ---------- PANEL 5 ---------- */}
           <section
-            ref={panel5Ref}
-            className="panel overflow-hidden flex justify-center pl-40 w-screen"
+            className="panel md:overflow-hidden flex justify-center mt-20 md:mt-14 mx-8 md:mx-0 md:pl-40 md:w-screen"
           >
             <div
-              ref={stepsContainerRef}
               className="space-y-20 w-full"
             >
               <p className="font-semibold text-2xl sm:text-4xl text-white text-nowrap">
@@ -669,17 +646,17 @@ export default function Page() {
           </section>
 
           {/* ---------- PANEL 6 ---------- */}
-          <section className="panel relative w-screen h-screen mx-8 py-5 overflow-hidden">
+          <section className="panel relative md:w-screen md:h-screen mt-20 md:mt-12 px-8 space-y-8 md:space-y-2.5 py-2.5 md:overflow-hidden">
             {/* UPPER ROW */}
-            <div className="flex items-center">
-              <div className="flex-1 space-y-4">
-                <p className="text-2xl sm:text-4xl">
+            <div className="flex flex-col md:flex-row gap-8 md:gap-0 items-center">
+              <div className="flex-1 space-y-3">
+                <p className="text-2xl sm:text-3xl w-[400px]">
                   Ready to{" "}
                   <span className="font-semibold">
                     experience what absorption should feel like?
                   </span>
                 </p>
-                <p className="text-[#D8DED5] sm:text-xl">
+                <p className="text-[#D8DED5] sm:text-lg">
                   We&apos;ve cracked the code on making supplements
                   actually work. By combining ancient herbal wisdom with space-age nanotechnology,
                   we deliver nutrients your body can actually user -
@@ -699,8 +676,8 @@ export default function Page() {
             </div>
 
             {/* ====== FLOATING CARDS ====== */}
-            <div className="flex items-center gap-10">
-              <div className="flex-1 flex flex-col gap-5 items-end px-10">
+            <div className="flex flex-col gap-8 md:gap-10 md:flex-row items-center">
+              <div className="flex-1 flex flex-col gap-8 md:gap-2 items-center md:items-end px-10">
                 <Card
                   text="Multi-Pathway Disease Targeting"
                   onClick={() =>
@@ -720,14 +697,14 @@ export default function Page() {
                 />
               </div>
 
-              <div className="flex-1 flex flex-col gap-5">
+              <div className="flex-1 flex flex-col gap-8 md:gap-20">
                 <MainCard
                   text="Phospholipids & Charged Nanoemulsion"
                   onClick={() =>
                     setSelectedCard("Phospholipids & Charged Nanoemulsion")
                   }
                 />
-                <div className="flex items-center gap-5 ">
+                <div className="flex flex-col md:flex-row gap-8 items-center md:gap-5 ">
                   <Card
                     text="Responsive Smart Release"
                     onClick={() => setSelectedCard("Responsive Smart Release")}
@@ -810,7 +787,7 @@ function Card({
       whileHover={{ scale: 1.05 }}
       transition={{ duration: 0.3 }}
       onClick={onClick}
-      className="text-white rounded-full py-3 text-center text-sm md:text-base lg:text-2xl w-full border border-[#71BF45]"
+      className="text-white rounded-full py-3 px-10 md:px-0 text-center text-sm md:text-base lg:text-lg w-full border border-[#71BF45]"
     >
       {text}
     </motion.div>
@@ -829,7 +806,7 @@ function CircleCard({
       whileHover={{ scale: 1.05 }}
       transition={{ duration: 0.3 }}
       onClick={onClick}
-      className="text-white flex items-center justify-center text-center text-sm md:text-2xl w-56 h-56 border border-[#71BF45F] rounded-full"
+      className="text-white flex items-center justify-center text-center text-sm md:text-lg w-40 h-40 md:h-36 md:w-36 border border-[#71BF45F] rounded-full"
     >
       {text}
     </motion.div>
@@ -848,7 +825,7 @@ function MainCard({
       whileHover={{ scale: 1.05 }}
       transition={{ duration: 0.3 }}
       onClick={onClick}
-      className="relative rounded-[40px] px-8 py-4 text-sm md:text-2xl flex flex-col items-center justify-between gap-4 w-fit border border-[#71BF45]"
+      className="relative rounded-[40px] px-8 py-4 text-sm md:text-lg flex flex-col items-center justify-between gap-4 w-full border border-[#71BF45]"
     >
       <span>{text}</span>
       <div className="flex items-center justify-center w-8 h-8 rounded-full text-black bg-white transition">

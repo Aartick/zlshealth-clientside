@@ -26,7 +26,7 @@ export default function NoProductsComponent() {
                 transition={{ type: "spring", duration: 1 }}
                 className="mb-6 z-10"
             >
-                <ShoppingBag className="w-24 h-24 text-[#71BF45]" />
+                <ShoppingBag className="w-20 h-20 sm:w-24 sm:h-24 text-[#71BF45]" />
             </motion.div>
 
             {/* Message Heading */}
@@ -34,7 +34,7 @@ export default function NoProductsComponent() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.6 }}
-                className="text-5xl font-extrabold tracking-tight text-[#71BF45] z-10"
+                className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#71BF45] z-10"
             >
                 No Products Found
             </motion.h1>
@@ -60,7 +60,7 @@ export default function NoProductsComponent() {
 
             {/* Decorative text glow */}
             <motion.div
-                className="absolute text-[8rem] font-extrabold text-[#71BF45]/10 select-none"
+                className="absolute text-[5rem] sm:text-[8rem] font-extrabold text-[#71BF45]/10 select-none"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.2, duration: 1 }}

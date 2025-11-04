@@ -1,5 +1,5 @@
 // Array containing navigation paths where top bar needs to be hidden
-export const topBarHiddenPaths = ["/products", "/productDescription", "/science"];
+export const topBarHiddenPaths = ["/products", "/productDescription"];
 
 /**
  * Checks if a given pathname should be hidden.

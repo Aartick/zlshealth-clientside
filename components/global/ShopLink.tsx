@@ -134,86 +134,86 @@ function ShopLink() {
     ]
 
     return (
-        <div className='h-full mx-10 scrollbar-hide rounded-2xl overflow-y-scroll flex flex-wrap lg:flex-nowrap p-10 gap-[35px] bg-white text-black'>
+        <div className='h-[400px] lg:h-full mx-5 md:mx-10 scrollbar-hide rounded-2xl overflow-y-scroll flex flex-wrap lg:flex-nowrap p-5 md:p-10 gap-[35px] bg-white text-black shadow-2xl'>
 
             {/* ====== FIRST COLUMN: Shop by Category ====== */}
-            <div className="space-y-5">
-                <p className="font-normal text-3xl whitespace-nowrap">
+            <div className="space-y-2.5 lg:space-y-5">
+                <p className="font-normal text-xl md:text-3xl whitespace-nowrap">
                     <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
                         SHOP BY C
                     </span>
                     ATEGORY
                 </p>
-                <div className="space-y-1">
-                    <div className="space-y-3">
+                <div className="lg:space-y-1">
+                    <div className="space-y-1.5 lg:space-y-3">
                         {/* Render each category item */}
                         {firstCol.map((item, idx) => (
                             <Link
                                 key={idx}
                                 href={`/products?${item.type}=${encodeURIComponent(item.label)}`}
-                                className='p-2.5 space-y-2 rounded-xl transition-shadow duration-300 hover:shadow-xs hover:shadow-[#71BF45] group'
+                                className='p-2.5 space-y-1 md:space-y-2 rounded-xl transition-shadow duration-300 hover:shadow-xs hover:shadow-[#71BF45] group'
                             >
                                 <div className='relative flex items-center gap-3'>
                                     {/* Category icon/image */}
                                     {item.img}
                                     {/* Category title */}
-                                    <p className='font-semibold whitespace-nowrap transition-colors duration-300 group-hover:text-[#71BF45]'>
+                                    <p className='text-sm md:text-base font-semibold whitespace-nowrap transition-colors duration-300 group-hover:text-[#71BF45]'>
                                         {item.title}
                                     </p>
                                 </div>
                                 {/* Category description */}
-                                <p className='font-normal text-sm text-[#848484] pl-[37px] whitespace-nowrap'>
+                                <p className='font-normal text-xs md:text-sm text-[#848484] pl-[37px] whitespace-nowrap'>
                                     {item.desc}
                                 </p>
                             </Link>
                         ))}
                     </div>
                     {/* Link to all products */}
-                    <Link href="/products" className='text-[#36810B] font-normal underline decoration-solid'>See All Products</Link>
+                    <Link href="/products" className='text-sm md:text-base text-[#36810B] font-normal underline decoration-solid'>See All Products</Link>
                 </div>
             </div>
 
             {/* ====== SECOND COLUMN: Shop by Need ====== */}
-            <div className="space-y-5">
-                <p className="font-normal text-3xl whitespace-nowrap">
+            <div className="space-y-2.5 lg:space-y-5">
+                <p className="font-normal text-xl md:text-3xl whitespace-nowrap">
                     <span className="underline decoration-solid decoration-[#71BF45] decoration-[11%] underline-offset-[25%]">
                         SHOP BY N
                     </span>
                     EED
                 </p>
-                <div className="flex gap-4">
+                <div className="flex flex-col lg:flex-row lg:gap-4">
                     {/* FIRST PART: Immunity, Diabetes, Stress, Hormonal */}
-                    <div className="space-y-1">
-                        <div className="space-y-3">
+                    <div className="lg:space-y-1">
+                        <div className="space-y-1.5 lg:space-y-3">
                             {/* Render each need item */}
                             {secondCol.map((item, idx) => (
                                 <Link
                                     key={idx}
                                     href={`/products?${item.type}=${encodeURIComponent(item.label)}`}
-                                    className='p-2.5 space-y-2.5 rounded-xl transition-shadow duration-300 hover:shadow-xs hover:shadow-[#71BF45] group'
+                                    className='p-2.5 space-y-1 md:space-y-2.5 rounded-xl transition-shadow duration-300 hover:shadow-xs hover:shadow-[#71BF45] group'
                                 >
                                     <div className='relative flex items-center gap-3'>
                                         {/* Need icon/image */}
                                         {item.img}
                                         {/* Need title */}
-                                        <p className='font-semibold whitespace-nowrap transition-colors duration-300 group-hover:text-[#71BF45]'>
+                                        <p className='text-sm md:text-base font-semibold whitespace-nowrap transition-colors duration-300 group-hover:text-[#71BF45]'>
                                             {item.title}
                                         </p>
                                     </div>
                                     {/* Need description */}
-                                    <p className='font-normal text-sm text-[#848484] pl-[37px] whitespace-nowrap'>
+                                    <p className='font-normal text-xs md:text-sm text-[#848484] pl-[37px] whitespace-nowrap'>
                                         {item.desc}
                                     </p>
                                 </Link>
                             ))}
                         </div>
                         {/* Link to all products */}
-                        <Link href="/products" className='text-[#36810B] font-normal underline decoration-solid'>See All Products</Link>
+                        <Link href="/products" className='hidden lg:block text-base text-[#36810B] font-normal underline decoration-solid'>See All Products</Link>
                     </div>
 
                     {/* SECOND PART: Mental, PCOS, Respiratory */}
-                    <div className="space-y-3">
-                        <div className="space-y-3">
+                    <div className="-mt-5 lg:mt-0 lg:space-y-3">
+                        <div className="space-1.5 lg:space-y-3">
                             {/* Render each additional need item */}
                             {thirdCol.map((item, idx) => (
                                 <Link
@@ -225,23 +225,26 @@ function ShopLink() {
                                         {/* Need icon/image */}
                                         {item.img}
                                         {/* Need title */}
-                                        <p className='font-semibold whitespace-nowrap transition-colors duration-300 group-hover:text-[#71BF45]'>
+                                        <p className='text-sm md:text-base font-semibold whitespace-nowrap transition-colors duration-300 group-hover:text-[#71BF45]'>
                                             {item.title}
                                         </p>
                                     </div>
                                     {/* Need description */}
-                                    <p className='font-normal text-sm text-[#848484] pl-[37px] whitespace-nowrap'>
+                                    <p className='font-normal text-xs sm:text-sm text-[#848484] pl-[37px] whitespace-nowrap'>
                                         {item.desc}
                                     </p>
                                 </Link>
                             ))}
                         </div>
+
+                        {/* Link to all products */}
+                        <Link href="/products" className='lg:hidden text-sm text-[#36810B] font-normal underline decoration-solid'>See All Products</Link>
                     </div>
                 </div>
             </div>
 
             {/* ====== THIRD COLUMN: Featured shop image ====== */}
-            <div className='relative w-[350px] h-[490px]'>
+            <div className='hidden lg:block relative w-[350px] h-[490px]'>
                 <Image
                     src="/shopLink.jpg"
                     alt='img'
