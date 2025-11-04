@@ -35,12 +35,12 @@ import ShopLink from "./ShopLink";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { getCart } from "@/lib/thunks/cartThunks";
 import { resetCart } from "@/lib/features/cartSlice";
-import { isHiddenPath } from "@/utils/hiddenPaths";
 import { getWishlist } from "@/lib/thunks/wishlistThunks";
 import { resetWishlist } from "@/lib/features/wishlistSlice";
 import { getMyAddress, getMyInfo } from "@/lib/thunks/userThunks";
 import { useNavbarColor } from "@/context/NavbarColorContext";
 import { product } from "@/interfaces/products";
+import { useScroll } from "@/context/ScrollContext";
 
 const placeholderTexts = [
     "Stress Relief Syrup",
@@ -50,50 +50,9 @@ const placeholderTexts = [
     "Anti-Acne Cream",
 ];
 
-// Navigation link interfaces
-interface Category {
-    name: string;
-    href: string;
-}
-
-interface SubPath {
-    name: string;
-    href: string;
-    categories?: Category[];
-}
-
-interface NavLink {
-    name: string;
-    href: string;
-    subPaths?: SubPath[];
-}
-
-// Initial navigation links
-const initialLinks: NavLink[] = [
-    { name: "Home", href: "/" },
-    {
-        name: "Shop",
-        href: "/products",
-        // subPaths: [
-        //     {
-        //         name: "Shop By Category",
-        //         href: "/"
-        //     },
-        //     {
-        //         name: "Shop By Need",
-        //         href: "/"
-        //     }
-        // ]
-    },
-    {
-        name: "Science",
-        href: "/science"
-    },
-    { name: "Blog", href: "/blogs" },
-];
-
 function Navbar() {
     const { dark } = useNavbarColor();
+    const { isScrolling } = useScroll();
 
     // States for search bar
     const [inputValue, setInputValue] = useState("");
@@ -159,7 +118,6 @@ function Navbar() {
 
     // States for sidebar and navigation links
     const [openSidebar, setOpenSidebar] = useState<boolean>(false)
-    const [navLinks,] = useState(initialLinks)
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -291,15 +249,6 @@ function Navbar() {
                         </Link>
                     </div>
 
-                    {/* Hamburger menu for sidebar (mobile) */}
-                    <div className="lg:hidden p-2 rounded-full text-[#71BF45] bg-[#ffffff] shadow-[0px_4px_15.8px_0px_#0000000F_inset,4px_0px_15.8px_0px_#DADADA08_inset]">
-                        <RxHamburgerMenu
-                            size={18}
-                            className="text-[#71BF45] lg:hidden cursor-pointer"
-                            onClick={() => setOpenSidebar(!openSidebar)}
-                        />
-                    </div>
-
                     {/* ====== Search bar section (desktop only) ====== */}
                     <div ref={searchRef} className="hidden lg:flex-1 lg:flex flex-col relative z-50">
                         <div className="flex justify-between items-center border-[0.5px] border-[#71BF45] rounded-[50px] py-2 px-2.5">
@@ -387,7 +336,7 @@ function Navbar() {
                     </div>
 
                     {/* ====== Cart, wishlist, and login/logout section ====== */}
-                    <div className="hidden lg:flex items-center gap-3 sm:gap-5">
+                    <div className="flex items-center gap-3 sm:gap-5">
                         <div className="flex items-center gap-3 text-lg sm:text-2xl">
                             {/* Cart icon with product count */}
                             <Link
@@ -404,9 +353,9 @@ function Navbar() {
                             >
                                 <BsCart2 />
                                 {totalProducts > 0 && (
-                                    <span className="absolute top-3 right-3 flex items-center justify-center">
-                                        <span className="absolute inline-flex h-5 w-5 rounded-full bg-red-500 opacity-75 animate-ping"></span>
-                                        <span className="relative inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white text-xs font-bold">
+                                    <span className="absolute top-0 sm:top-3 right-0 sm:right-3 flex items-center justify-center">
+                                        <span className="absolute inline-flex h-4 sm:h-5 w-4 sm:w-5 rounded-full bg-red-500 opacity-75 animate-ping"></span>
+                                        <span className="relative inline-flex h-4 sm:h-5 w-4 sm:w-5 items-center justify-center rounded-full bg-red-500 text-white text-[10px] sm:text-xs font-bold">
                                             {totalProducts}
                                         </span>
                                     </span>
@@ -417,7 +366,7 @@ function Navbar() {
                             <Link
                                 href="/wishlist"
                                 className={`
-                                    relative p-2 sm:p-5 rounded-full
+                                    hidden lg:block relative p-2 sm:p-5 rounded-full
                                      ${pathname === "/"
                                         ? (dark ? "text-[#71BF45] bg-[#ffffff] shadow-[0px_4px_15.8px_0px_#0000000F_inset,4px_0px_15.8px_0px_#DADADA08_inset]"
                                             : "text-white bg-[#ffffff]/10")
@@ -436,12 +385,27 @@ function Navbar() {
                                     </span>
                                 )}
                             </Link>
+
+                            {/* Hamburger menu for sidebar (mobile) */}
+                            <div className={`lg:hidden p-2 rounded-full
+                                ${pathname === "/"
+                                    ? (dark ? "text-[#71BF45] bg-[#ffffff] shadow-[0px_4px_15.8px_0px_#0000000F_inset,4px_0px_15.8px_0px_#DADADA08_inset]"
+                                        : "text-white bg-[#ffffff]/10"
+                                    ) : (pathname === "/science"
+                                        ? "text-white bg-[#ffffff]/10" : "text-[#71BF45] bg-[#ffffff] shadow-[0px_4px_15.8px_0px_#0000000F_inset,4px_0px_15.8px_0px_#DADADA08_inset]")
+                                }`}>
+                                <RxHamburgerMenu
+                                    size={18}
+                                    className="text-[#71BF45] lg:hidden cursor-pointer"
+                                    onClick={() => setOpenSidebar(!openSidebar)}
+                                />
+                            </div>
                         </div>
 
                         {/* Login/Logout button */}
                         <Link
                             className={`
-                                flex items-center gap-[6px] 
+                                hidden lg:flex items-center gap-[6px] 
                                 text-xs sm:text-base 
                                 rounded-[4px] sm:rounded-[43px]
                                  p-2 sm:p-4 ${pathname === "/"
@@ -472,49 +436,97 @@ function Navbar() {
                 </div>
 
                 {/* SEARCH BAR (Mobile Only) */}
-                <div className="mt-2 lg:hidden w-full flex justify-between items-center border-[0.5px] border-[#71BF45] rounded-[50px] py-2 px-2.5">
-                    <div className="flex items-center gap-2.5 relative w-full">
-                        <label htmlFor='search' className="p-1 rounded-[27px] bg-[#71bf45] text-[#ffffff]">
-                            <IoSearchOutline size={15} />
-                        </label>
+                <div ref={searchRef} className="mt-2 lg:hidden relative">
+                    <div className="w-full flex justify-between items-center border-[0.5px] border-[#71BF45] rounded-[50px] py-2 px-2.5">
+                        <div className="flex items-center gap-2.5 relative w-full">
+                            <label htmlFor='search' className="p-1 rounded-[27px] bg-[#71bf45] text-[#ffffff]">
+                                <IoSearchOutline size={15} />
+                            </label>
 
-                        <div className="relative w-full">
-                            {/* Search input */}
-                            <input
-                                id='search'
-                                type="text"
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                className={`${dark ? "text-black" : "text-white"} text-xs w-full focus:outline-none`}
-                            />
-                            {/* Animated Placeholder */}
-                            {inputValue === "" && (
-                                <div className="absolute left-0 top-0 w-full h-full pointer-events-none flex items-center text-[#a3a3a3] text-xs overflow-hidden">
-                                    <p>Search for&nbsp; </p>
-                                    <div
-                                        className={`transition-transform duration-500 ${isAnimating
-                                            ? "-translate-y-full"
-                                            : "translate-y-0 opacity-100"
-                                            }`}
-                                        key={currentIndex}
-                                    >
-                                        &quot;{placeholderTexts[currentIndex]}&quot;
+                            <div className="relative w-full">
+                                {/* Search input */}
+                                <input
+                                    id='search'
+                                    type="text"
+                                    value={inputValue}
+                                    onChange={(e) => {
+                                        setInputValue(e.target.value)
+                                        setShowResults(true)
+                                    }}
+                                    className={`${dark ? "text-black" : "text-white"} text-xs w-full focus:outline-none`}
+                                />
+                                {/* Animated Placeholder */}
+                                {inputValue === "" && (
+                                    <div className="absolute left-0 top-0 w-full h-full pointer-events-none flex items-center text-[#a3a3a3] text-xs overflow-hidden">
+                                        <p>Search for&nbsp; </p>
+                                        <div
+                                            className={`transition-transform duration-500 ${isAnimating
+                                                ? "-translate-y-full"
+                                                : "translate-y-0 opacity-100"
+                                                }`}
+                                            key={currentIndex}
+                                        >
+                                            &quot;{placeholderTexts[currentIndex]}&quot;
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Filter Logo */}
+                        <div className="text-[#848484] border-l border-[#848484] pl-1">
+                            <VscSettings size={24} />
                         </div>
                     </div>
 
-                    {/* Filter Logo */}
-                    <div className="text-[#848484] border-l border-[#848484] pl-1">
-                        <VscSettings size={24} />
-                    </div>
+                    {/* Search Results */}
+                    {showResults && inputValue && searchResults.length > 0 && (
+                        <div
+                            className="absolute top-[105%] left-0 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-80 overflow-y-auto scrollbar-hide z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
+                        >
+                            {searchResults.map((product) => (
+                                <div
+                                    onClick={() => {
+                                        router.push(`/productDescription/${product._id}`)
+                                        setShowResults(false);
+                                        setInputValue("");
+                                    }}
+                                    key={product._id}
+                                    className="flex items-center gap-3 p-2 hover:bg-gray-100 cursor-pointer transition-colors duration-150"
+                                >
+                                    <div className="relative w-10 h-10">
+                                        <Image
+                                            src={product.productImg?.url}
+                                            alt={product.name}
+                                            fill
+                                            className="object-cover rounded-md"
+                                        />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-[#71BF45]">{product.name}</p>
+                                        <p className="text-xs text-gray-500">{product.about.slice(0, 45)}...</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* No products found message */}
+                    {showResults && inputValue && searchResults.length === 0 && (
+                        <div
+                            className="absolute top-[105%] left-0 w-full bg-white border border-gray-200 rounded-2xl shadow-lg p-3 text-sm text-gray-500 z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
+                        >
+                            No products found.
+                        </div>
+                    )}
                 </div>
 
                 {/* ============ Sidebar popup (mobile) ============ */}
                 {openSidebar && (
                     <Sidebar
-                        links={navLinks}
+                        totalCartProducts={totalProducts}
+                        totalWishlistProducts={totalWishlistProducts}
+                        myProfile={myProfile}
                         onClose={() => {
                             setOpenSidebar(false)
                         }}
@@ -523,9 +535,11 @@ function Navbar() {
             </section>
 
             {/* ================ Navigation and Shop Dropdown Section ================ */}
-            <section className={isHiddenPath(pathname) ? "hidden" : "relative w-full -z-10"}>
-                <div className="hidden lg:flex justify-center">
-                    <div className={`flex items-center gap-5 rounded-br-xl rounded-bl-xl
+            <section className={`relative w-full -z-10 transition-transform duration-500
+                ${isScrolling ? "-translate-y-full" : "translate-y-0"}
+                `}>
+                <div className="mx-4 sm:mx-0 sm:flex justify-center">
+                    <div className={`flex items-center justify-around sm:gap-10 rounded-br-xl rounded-bl-xl
                          ${(pathname === "/" && !dark) ? "bg-transparent backdrop-blur-md" : "bg-[#71BF45]/10"} 
                          py-5 px-2.5`
                     }>
@@ -534,7 +548,7 @@ function Navbar() {
                             className={
                                 pathname === "/"
                                     ? "text-[#71BF45]" // active color
-                                    : pathname !== "/" && pathname // when not home page
+                                    : pathname !== "/" && pathname !== "/science" && pathname // when not home page
                                         ? "text-black"
                                         : "text-[#d0d0d0]" // on home but inactive
                             }
@@ -543,13 +557,17 @@ function Navbar() {
                         </Link>
 
                         {/* SHOP DROPDOWN */}
-                        <div className="relative" ref={dropdownRef}>
+                        <div
+                            className="relative"
+                            ref={dropdownRef}
+                            onMouseEnter={() => setOpen(true)}
+                            onMouseLeave={() => setOpen(false)}
+                        >
                             <button
-                                onClick={() => setOpen(!open)}
                                 className={`
                                 ${open
                                         ? "text-[#71BF45]"
-                                        : pathname !== "/" && pathname
+                                        : pathname !== "/" && pathname !== "/science" && pathname
                                             ? "text-black"
                                             : pathname === "/" && dark
                                                 ? "text-black"
@@ -565,7 +583,7 @@ function Navbar() {
 
                             {/* ShopLink dropdown menu */}
                             <div
-                                className={`absolute top-[140%] -left-[490px] transition-all duration-300 ease-in-out ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
+                                className={`absolute top-[100%] -left-[100px] sm:-left-[230px] lg:-left-[490px] transition-all duration-300 ease-in-out ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
                                     } z-50`}
                             >
                                 <ShopLink />
@@ -592,7 +610,7 @@ function Navbar() {
                             className={
                                 pathname === "/blogs"
                                     ? "text-[#71BF45]" // active
-                                    : pathname !== "/" && pathname
+                                    : pathname !== "/" && pathname !== "/science" && pathname
                                         ? "text-black"
                                         : pathname === "/" && dark
                                             ? "text-black"
