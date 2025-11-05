@@ -42,6 +42,7 @@ import { formatAddress } from '@/utils/formatAddress'
 import { formatDate } from '@/utils/formatDate'
 import CartButton from '@/components/CartButton'
 import { convertWishlistToProduct } from '@/interfaces/cartWish'
+import { useRouter } from 'next/navigation'
 
 const paymentMehods = [
     "/cart/Visa.png",
@@ -82,6 +83,7 @@ function Page() {
 
     // Dispatch items to the cart / appConfig
     const dispatch = useAppDispatch()
+    const router = useRouter();
 
 
 
@@ -167,12 +169,28 @@ function Page() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            if (!isUser) {
+                toast.error("Please login to place order")
+                router.push('/login')
+                return;
+            }
+
+            if (cart.length === 0) {
+                return toast.error("Cart is empty.")
+            }
+
+            if (activeButton === "cart") {
+                setActiveButton("shopping")
+                return;
+            }
+
             setMakingOrder(true)
             // Get the user's default address (latest from state)
             const defaultAddress = address.find((adrs: Address) => adrs.isDefault)
 
             if (defaultAddress === undefined) {
                 setActiveButton("shopping")
+                setMakingOrder(false)
                 return;
             }
             // If no address present in backend (means first-time entry)
@@ -230,7 +248,7 @@ function Page() {
             if (cart?.length === 0) {
                 return toast.error("Cart is empty")
             }
-
+            setActiveButton("payment")
             const response = await axiosClient.post('/api/orders', { cart, address })
             const order = response.data.result
             const paymentSuccess = await handlePayment(Number(paymentAmount), order.orderId)
@@ -311,16 +329,16 @@ function Page() {
         <div className='flex flex-col items-center m-10'>
 
             {orderSuccessful ? (
-                <div className='w-full flex items-center justify-between mb-3.5 container mx-auto'>
+                <div className='w-full flex flex-col md:flex-row items-center space-y-10 md:space-y-0 md:justify-between mb-10 md:mb-3.5 container mx-auto'>
                     {/* ============ Thankyou Message / Billing Address ============ */}
-                    <div className="space-y-6 py-10 text-wrap max-w-lg">
+                    <div className="space-y-6 md:py-10 text-wrap max-w-xs lg:max-w-lg">
 
                         {/* ============ Thankyou Message ============ */}
                         <div className="space-y-3">
-                            <p className="font-medium text-2xl text-[#093C16]">
+                            <p className="font-medium text-xl md:text-2xl text-[#093C16]">
                                 Thank you for your purchase, {addresses.fullName}!
                             </p>
-                            <div className="font-medium text-[#848484]">
+                            <div className="text-sm md:text-base font-medium text-[#848484]">
                                 Your order has been received and is now being processed.
                                 We&apos;ll send you a confirmation email shortly, and you&apos;ll
                                 be notified again once your package is shipped.
@@ -329,26 +347,26 @@ function Page() {
 
                         {/* ============ Billing Address ============ */}
                         <div className="space-y-3">
-                            <h5 className="font-medium text-xl text-[#093C16]">
+                            <h5 className="font-medium text-lg md:text-xl text-[#093C16]">
                                 Billing Address
                             </h5>
-                            <p className="font-medium text-[#000000]">
+                            <p className="text-sm md:text-base font-medium text-[#000000]">
                                 Name:{" "}
                                 <span className='text-[#848484]'>{addresses.fullName}</span>
                             </p>
-                            <p className="font-medium text-[#000000]">
+                            <p className="text-sm md:text-base font-medium text-[#000000]">
                                 Address:{" "}
                                 <span className='text-[#848484]'>
                                     {formatAddress(addresses)}
                                 </span>
                             </p>
-                            <p className="font-medium text-[#000000]">
+                            <p className="text-sm md:text-base font-medium text-[#000000]">
                                 Phone:{" "}
                                 <span className='text-[#848484]'>
                                     {addresses.phone}
                                 </span>
                             </p>
-                            <p className="font-medium text-[#000000]">
+                            <p className="text-sm md:text-base font-medium text-[#000000]">
                                 Email:{" "}
                                 <span className='text-[#848484]'>
                                     {addresses.email}
@@ -358,8 +376,8 @@ function Page() {
                     </div>
 
                     {/* ============ Order Summary ============ */}
-                    <div className="flex flex-col space-y-4 p-10 rounded-[20px] border border-[#71BF45]">
-                        <p className="font-medium text-xl text-[#093C16] text-center">
+                    <div className="flex flex-col space-y-3 md:space-y-4 p-5 md:p-10 rounded-[20px] border border-[#71BF45]">
+                        <p className="font-medium text-lg md:text-xl text-[#093C16] text-center">
                             Order Summary
                         </p>
                         <div className="flex items-center justify-between border-b-2 border-[#848484]">
@@ -429,7 +447,10 @@ function Page() {
                         {/* Confirmation Button */}
                         <button
                             type="button"
-                            onClick={() => setOrderSuccessful(false)}
+                            onClick={() => {
+                                setActiveButton("cart"),
+                                    setOrderSuccessful(false)
+                            }}
                             className='p-2.5 bg-[#848484] rounded-[8px] text-white font-semibold'
                         >
                             Order Confirmed
@@ -1094,12 +1115,14 @@ function Page() {
                                 {/* Payment Section */}
                                 {activeButton === "payment" && (
                                     <>
-                                        <div className="hidden p-2.5 border border-[#e3e3e3] rounded-[20px] transition-all duration-500 ease-out opacity-0 translate-y-2 animate-fadeInCart">
+                                        <div className="p-2.5 border border-[#e3e3e3] rounded-[20px] w-full md:w-[500px] h-full transition-all duration-500 ease-out opacity-0 translate-y-2 animate-fadeInCart">
                                             <div className="space-y-3">
                                                 {/* HEADER */}
                                                 <div className="border-b-2 p-2.5 border-[#e3e3e3] font-medium">
                                                     Payment Method
                                                 </div>
+
+                                                <p className="text-[#71BF45] text-center">Processing...</p>
                                             </div>
                                         </div>
                                     </>
@@ -1153,7 +1176,7 @@ function Page() {
                                         className={`rounded-[10px] py-2 md:py-3 px-2.5 text-white bg-[#093C16] w-full
                                              ${makingOrder ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}
                                     >
-                                        Place Order
+                                        {activeButton === "cart" ? "Next" : "Place Order"}
                                     </button>
 
                                     <div className="space-y-3">

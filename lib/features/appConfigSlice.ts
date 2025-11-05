@@ -28,7 +28,11 @@ const initialState: AppState = {
 const appConfigSlice = createSlice({
   name: "appConfigSlice",
   initialState,
-  reducers: {},
+  reducers: {
+    removeMyInfo: (state) => {
+      (state.myProfile = initialDetails), (state.myAddress = []);
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(getMyInfo.fulfilled, (state, action) => {
       state.myProfile = action.payload;
@@ -37,7 +41,7 @@ const appConfigSlice = createSlice({
       const updatedAddress = Array.isArray(action.payload)
         ? action.payload
         : [];
-        
+
       state.myAddress = updatedAddress;
     });
   },
@@ -45,3 +49,6 @@ const appConfigSlice = createSlice({
 
 // Export reducer for store
 export default appConfigSlice.reducer;
+
+// Export actions for dispatch
+export const { removeMyInfo } = appConfigSlice.actions;

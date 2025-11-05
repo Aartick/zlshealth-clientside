@@ -75,10 +75,10 @@ function Footer() {
                             inks
                         </p>
                         <Link href="/profile" className="flex whitespace-nowrap">Track Your Order</Link>
-                        <Link href="/profile" className="flex whitespace-nowrap">
+                        <Link href="/cancellationAndRefund" className="flex whitespace-nowrap">
                             Cancellation & Refund
                         </Link>
-                        <Link href="/" className="flex whitespace-nowrap">Terms & Conditions</Link>
+                        <Link href="/termsAndCondition" className="flex whitespace-nowrap">Terms & Conditions</Link>
                         <Link href="/aboutUs" className="flex whitespace-nowrap">About Us</Link>
                         <Link href="/contactUs" className="flex whitespace-nowrap">Contact Us</Link>
                     </div>

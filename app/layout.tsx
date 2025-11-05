@@ -25,7 +25,6 @@ import Providers from "./Providers";
 import { SessionProvider } from "next-auth/react";
 import Breadcrumbs from "@/components/global/Breadcrumbs";
 import { NavbarColorProvider } from "@/context/NavbarColorContext";
-import { ScrollProvider } from "@/context/ScrollContext";
 
 // Load Geist Sans font and set CSS variable
 const geistSans = Geist({
@@ -61,7 +60,6 @@ export default function RootLayout({
           <StoreProvider>
             {/* Provide additional UI context/providers */}
             <Providers />
-            <ScrollProvider>
               <NavbarColorProvider>
                 {/* Render global navigation bar */}
                 <Navbar />
@@ -79,7 +77,6 @@ export default function RootLayout({
                 {/* Render global footer */}
                 <Footer />
               </NavbarColorProvider>
-            </ScrollProvider>
           </StoreProvider>
         </SessionProvider>
       </body>

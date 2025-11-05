@@ -574,7 +574,7 @@ export default function Home() {
           )}
         </div>
       </section>
-      
+
       {/* STATS SECTION */}
       <section
         ref={sectionRef}
@@ -742,6 +742,60 @@ export default function Home() {
         </div>
       </section>
 
+      {/* COMPARISION TABLE */}
+      <div className="container mx-auto pt-24 px-[30px] md:px-[60px]">
+        <div className="overflow-hidden rounded-2xl shadow-lg border border-[#093C16]">
+          <table className="w-full border-separate border-spacing-0">
+            <thead>
+              <tr>
+                <th className="p-4 text-base sm:text-xl font-semibold text-white bg-[#71BF45] rounded-tl-2xl">
+                  What you care about
+                </th>
+                <th className="p-4 text-base sm:text-xl font-semibold text-white bg-[#71BF45] border-l border-[#093C16]">
+                  Regular Supplements
+                  <br />
+                  <span className="text-sm sm:text-base font-normal">
+                    (What you&apos;re getting now)
+                  </span>
+                </th>
+                <th className="p-4 text-base sm:text-xl font-semibold text-white bg-[#71BF45] border-l border-[#093C16] rounded-tr-2xl">
+                  Zealous Health
+                  <br />
+                  <span className="text-sm sm:text-base font-normal">
+                    (What you deserve)
+                  </span>
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {tableData.map((data, idx) => (
+                <tr
+                  key={idx}
+                  className={`${idx % 2 === 0 ? "bg-[#f8fff4]" : "bg-[#eaf8e3]"
+                    } hover:bg-[#d7f2ca] transition-colors duration-200`}
+                >
+                  {/* Column 1 */}
+                  <td className="text-xs sm:text-base p-4 sm:pl-6 border-t border-[#093C16]">
+                    {data.col1}
+                  </td>
+
+                  {/* Column 2 */}
+                  <td className="text-xs sm:text-base p-4 sm:pl-6 border-t border-l border-[#093C16]">
+                    {data.col2}
+                  </td>
+
+                  {/* Column 3 */}
+                  <td className="text-xs sm:text-base p-4 sm:pl-6 border-t border-l border-[#093C16]">
+                    <div className="flex items-center gap-2">{data.col3}</div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {/* OUR PROCESS */}
       <section ref={divRef} className="relative w-full overflow-hidden pt-28 md:pt-36">
         <h3 className="text-center text-2xl sm:text-3xl md:text-4xl font-semibold text-[#093C16] mb-8">
@@ -811,98 +865,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-
-      {/* COMPARISION TABLE */}
-      <div className="container mx-auto px-[30px] md:px-[60px] pt-40">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr>
-              <th
-                className="p-2 font-semibold text-sm sm:text-xl text-[#093C16] bg-[#71BF45] rounded-tl-[30px] rounded-tr-[30px]"
-              >
-                What you care about
-              </th>
-              <th
-                style={{
-                  border: "1px solid transparent",
-                  borderRadius: "30px 30px 0 0",
-                  background:
-                    "linear-gradient(#171717, #171717) padding-box, linear-gradient(90deg, #71BF45 0%, #355920 100%) border-box",
-                  backgroundClip: "padding-box, border-box",
-                  padding: "8px",
-                  fontWeight: "500",
-                  color: "#71BF45",
-                }}
-                className="text-sm sm:text-xl"
-              >
-                Regular Supplements (What you&apos;re getting now)
-              </th>
-              <th
-                className="p-2 font-semibold text-sm sm:text-xl text-[#093C16] bg-[#71BF45] rounded-tl-[30px] rounded-tr-[30px]"
-              >
-                Zealous Health (What you deserve)
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {tableData.map((data, idx) => {
-              const isFirstRow = idx === 0;
-              const isLastRow = idx === tableData.length - 1;
-
-              return (
-                <tr key={idx}>
-                  {/* Column 1 */}
-                  <td
-                    className="text-white text-xs sm:text-base p-2.5 sm:py-2 sm:pl-5 sm:pr-10"
-                    style={{
-                      border: "0.5px solid transparent",
-                      borderRadius: `${isFirstRow ? "0 0 0 0" : isLastRow ? "0 0 0 30px" : "0"}`,
-                      background:
-                        "linear-gradient(#171717, #171717) padding-box, linear-gradient(90deg, #71BF45 0%, #FFFFFF 23%) border-box",
-                      backgroundOrigin: "border-box",
-                      backgroundClip: "padding-box, border-box",
-                    }}
-                  >
-                    {data.col1}
-                  </td>
-
-                  {/* Column 2 */}
-                  <td
-                    className="text-[#C6C4C4] text-xs sm:text-base p-2.5 sm:py-2 sm:pl-5 sm:pr-24"
-                    style={{
-                      border: "0.5px solid transparent",
-                      background:
-                        "linear-gradient(#171717, #171717) padding-box, linear-gradient(90deg, #71BF45 0%, #FFFFFF 23%) border-box",
-                      backgroundOrigin: "border-box",
-                      backgroundClip: "padding-box, border-box",
-                    }}
-                  >
-                    {data.col2}
-                  </td>
-
-                  {/* Column 3 */}
-                  <td
-                    className="p-2.5 sm:py-2 sm:pl-5 sm:pr-10 text-xs sm:text-base"
-                    style={{
-                      border: "0.5px solid transparent",
-                      borderRadius: isLastRow ? "0 0 30px 0" : "0",
-                      background:
-                        "linear-gradient(#171717, #171717) padding-box, linear-gradient(90deg, #71BF45 0%, #FFFFFF 23%) border-box",
-                      backgroundOrigin: "border-box",
-                      backgroundClip: "padding-box, border-box",
-                    }}
-                  >
-                    <div className="flex items-center gap-2 text-[#C6C4C4]">
-                      {data.col3}
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
 
       {/* SCIENCE AT WORK SECTION */}
       <section className="container mx-auto py-[30px] px-[30px] md:px-[60px] space-y-6">
