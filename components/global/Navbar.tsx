@@ -40,7 +40,7 @@ import { resetWishlist } from "@/lib/features/wishlistSlice";
 import { getMyAddress, getMyInfo } from "@/lib/thunks/userThunks";
 import { useNavbarColor } from "@/context/NavbarColorContext";
 import { product } from "@/interfaces/products";
-import { useScroll } from "@/context/ScrollContext";
+import { removeMyInfo } from "@/lib/features/appConfigSlice";
 
 const placeholderTexts = [
     "Stress Relief Syrup",
@@ -52,7 +52,7 @@ const placeholderTexts = [
 
 function Navbar() {
     const { dark } = useNavbarColor();
-    const { isScrolling } = useScroll();
+    const [isScrolling, setIsScrolling] = useState(false);
 
     // States for search bar
     const [inputValue, setInputValue] = useState("");
@@ -188,6 +188,9 @@ function Navbar() {
             if (isUser) {
                 const response = await axiosClient.get("/api/auth?type=logout")
                 removeItem(KEY_ACCESS_TOKEN)
+                dispatch(removeMyInfo());
+                dispatch(resetCart())
+                dispatch(resetWishlist())
                 signOut({ redirect: false })
                 toast.success(response.data.result)
             }
@@ -196,6 +199,27 @@ function Navbar() {
 
     const currentPath = window.location.pathname + window.location.search;
     const path = `/login?redirect=${encodeURIComponent(currentPath)}`
+
+
+
+    // Scroll detection
+    useEffect(() => {
+        let scrollTimeout: NodeJS.Timeout;
+        const handleScroll = () => {
+            setIsScrolling(true);
+
+            clearTimeout(scrollTimeout);
+
+            scrollTimeout = setTimeout(() => {
+                setIsScrolling(false)
+            }, 200)
+        }
+
+        window.addEventListener("scroll", handleScroll)
+
+        return () =>
+            window.removeEventListener("scroll", handleScroll)
+    }, [setIsScrolling])
 
     return (
         <nav className="z-40 fixed w-full">

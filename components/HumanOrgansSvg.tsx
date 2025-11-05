@@ -29,11 +29,10 @@ const InfoBox = ({ organ }: { organ: OrganData }) => {
         >
             {renderOnLeft ?
                 <>
-
-                    <div className="flex-2 space-y-2">
+                    <div className="ml-16 md:ml-0 flex-2 space-y-2">
                         <span className="text-lg">{organ.name}</span>
                         <ul
-                            className={`list-disc text-sm text-[#A9A4A4] space-y-1`}
+                            className={`list-disc w-36 text-xs md:text-sm text-[#A9A4A4] space-y-1`}
                         >
                             {organ.info.map((item, i) => (
                                 <li key={i}>{item}</li>
@@ -54,10 +53,10 @@ const InfoBox = ({ organ }: { organ: OrganData }) => {
                             <RiArrowRightSLine className='-ml-2 text-[#71BF45]' />
                         </div>
                     </div>
-                    <div className="flex-2 space-y-2">
+                    <div className="flex-5 md:flex-2 space-y-2">
                         <span className="text-lg">{organ.name}</span>
                         <ul
-                            className={`list-disc text-sm text-[#A9A4A4] space-y-1 ${renderOnLeft ? "pl-10" : ""
+                            className={`list-disc w-36 text-xs md:w-full md:text-sm text-[#A9A4A4] space-y-1 ${renderOnLeft ? "pl-10" : ""
                                 }`}
                         >
                             {organ.info.map((item, i) => (
@@ -168,7 +167,7 @@ function HumanOrgansSvg() {
                     info,
                     position,
                 });
-            }, 300)
+            }, 200)
         }
     };
 

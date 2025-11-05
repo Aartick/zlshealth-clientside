@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
           },
         }
       );
-    } catch {
+    } catch  {
       // console.error(
       //   "Shiprocket Error Response:",
       //   e.response?.data || e.message

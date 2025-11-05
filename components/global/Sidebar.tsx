@@ -23,6 +23,10 @@ import { UserDetails } from '@/interfaces/user';
 import { LuLogOut } from 'react-icons/lu';
 import { FaGear } from 'react-icons/fa6';
 import { useRouter } from 'next/navigation';
+import { removeMyInfo } from '@/lib/features/appConfigSlice';
+import { useAppDispatch } from '@/lib/hooks';
+import { resetCart } from '@/lib/features/cartSlice';
+import { resetWishlist } from '@/lib/features/wishlistSlice';
 
 // Props for Sidebar component
 interface Props {
@@ -41,6 +45,7 @@ function Sidebar({
     // State for sidebar closing animation
     const [isClosing, setIsClosing] = useState(false);
     const router = useRouter();
+    const dispatch = useAppDispatch();
 
     // Handle sidebar close with animation
     const handleCloseClick = () => {
@@ -59,6 +64,9 @@ function Sidebar({
             if (isUser) {
                 const response = await axiosClient.get("/api/auth?type=logout")
                 removeItem(KEY_ACCESS_TOKEN)
+                dispatch(removeMyInfo())
+                dispatch(resetCart())
+                dispatch(resetWishlist())
                 signOut({ redirect: false })
                 toast.success(response.data.result)
             }

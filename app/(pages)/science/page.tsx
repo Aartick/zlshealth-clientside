@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react"
 import { IoIosCheckmark } from "react-icons/io";
 import HumanOrgansSvg from "@/components/HumanOrgansSvg";
-import { useScroll } from "@/context/ScrollContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -78,13 +77,12 @@ const steps = [
 ]
 
 export default function Page() {
+
+  // ============== HORIZONTAL/VERTICAL SCROLL LOGICS ================
   const sectionRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null)
-
-  const { setIsScrolling } = useScroll()
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -157,6 +155,8 @@ export default function Page() {
     };
   }, []);
 
+  // =============== VIDEO LOGICS ================
+  const videoRef = useRef<HTMLVideoElement>(null)
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -183,24 +183,35 @@ export default function Page() {
     return () => observer.unobserve(video)
   }, [])
 
-  // Scroll detection
+  // ============== 3D SPIN LOGICS ================
+  const imgRef = useRef<HTMLDivElement>(null)
+  const spinTween = useRef<gsap.core.Tween | null>(null);
+
   useEffect(() => {
-    let scrollTimeout: NodeJS.Timeout;
-    const handleScroll = () => {
-      setIsScrolling(true);
+    const el = imgRef.current;
 
-      clearTimeout(scrollTimeout);
+    if (!el) return;
 
-      scrollTimeout = setTimeout(() => {
-        setIsScrolling(false)
-      }, 200)
-    }
+    ScrollTrigger.create({
+      trigger: el,
+      start: "top 80%",
+      end: "bottom+=500 top",
+      onEnter: () => {
+        spinTween.current = gsap.to(el, {
+          rotationY: 360,
+          ease: "none",
+          repeat: -1,
+          duration: 8, // rotation speed
+          transformOrigin: "center center",
+        });
+      },
+      onLeave: () => spinTween.current?.pause(),
+      onEnterBack: () => spinTween.current?.play(),
+      onLeaveBack: () => spinTween.current?.pause(),
+    });
 
-    window.addEventListener("scroll", handleScroll)
-
-    return () =>
-      window.removeEventListener("scroll", handleScroll)
-  }, [setIsScrolling])
+    return () => { spinTween.current?.kill(); }
+  }, []);
 
   // =============== MODAL LOGICS ================
   const [selectedCard, setSelectedCard] = useState<null | string>(null)
@@ -303,6 +314,7 @@ export default function Page() {
           {/* ---------- PANEL 1 ---------- */}
           <section className="panel flex items-center justify-center px-8 py-5">
             <div className="flex flex-col md:flex-row justify-between h-full items-center w-full">
+              {/* FIRST PART */}
               <div className="flex flex-col justify-around pb-10 h-screen">
                 <div>
                   <h5 className="font-light text-xl sm:text-2xl text-white">
@@ -332,11 +344,17 @@ export default function Page() {
                 </div>
               </div>
 
-              <div className="relative -mt-4 w-[500px] h-[500px]">
+              {/* SECOND PART */}
+              <div
+                ref={imgRef}
+                className="relative -mt-4 w-[400px] h-[400px] md:w-[500px] md:h-[500px] will-change-transform"
+                style={{ perspective: "1000px" }}
+              >
                 <Image
                   src="/science/human_body.png"
                   fill
                   alt="human_body"
+                  style={{ transformStyle: "preserve-3d" }}
                 />
               </div>
             </div>

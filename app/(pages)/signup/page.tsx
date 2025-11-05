@@ -149,9 +149,9 @@ function Page() {
                             onChange={(e) => setTermsAndCondition(e.target.checked)}
                         />
                         <p >By continuing, I agree to Zealous&apos;s {" "}
-                            <span className="underline font-semibold decoration-solid text-[#71BF45]">Terms of Condition</span>
+                            <Link href="/termsAndCondition" className="underline font-semibold decoration-solid text-[#71BF45]">Terms of Condition</Link>
                             {" "} and {" "}
-                            <span className="underline font-semibold decoration-solid text-[#71BF45]">Privacy Policy.</span>
+                            <Link href="/legalAndPrivacyPolicy" className="underline font-semibold decoration-solid text-[#71BF45]">Privacy Policy.</Link>
                         </p>
                     </div>
 
@@ -176,19 +176,13 @@ function Page() {
                     </div>
                 </form>
 
-                {/* Google signup button and help link */}
-                <div className='space-y-2.5'>
-                    <button
-                        disabled={loading}
-                        onClick={handleGoogleLogin}
-                        className={`flex items-center justify-center gap-2.5 px-3 py-[11px] border-2 border-[#71BF45] rounded-lg drop-shadow-[0_2px_12px_rgba(63,137,249,0.08)] w-full ${loading ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}>
-                        <p className="text-base font-semibold">Continue With Google</p>
-                    </button>
-                    <div className="flex items-center gap-2.5 justify-center text-sm sm:text-base flex-wrap">
-                        <p>Have trouble logging in?</p>
-                        <p className='text-[#71BF45] font-extrabold cursor-pointer'>Get Help</p>
-                    </div>
-                </div>
+                {/* Google signup button */}
+                <button
+                    disabled={loading}
+                    onClick={handleGoogleLogin}
+                    className={`flex items-center justify-center gap-2.5 px-3 py-[11px] border-2 border-[#71BF45] rounded-lg drop-shadow-[0_2px_12px_rgba(63,137,249,0.08)] w-full ${loading ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}>
+                    <p className="text-base font-semibold">Continue With Google</p>
+                </button>
             </div>
 
             {/* SECOND COLUMN: Signup image, hidden on mobile */}
