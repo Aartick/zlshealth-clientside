@@ -8,10 +8,10 @@ function Page() {
   const router = useRouter()
 
   return (
-    <div className='container mx-auto space-y-4 p-10 text-justify'>
+    <div className='container mx-auto space-y-4 p-5 md:p-10 text-justify'>
       {/* Title */}
       <div className="pb-2.5 space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <p className='font-medium text-xl text-[#093C16]'>The Truth About Supplements</p>
           <p className='font-semibold text-[#848484]'>Author | 5 min read | Sep 22, 2025</p>
         </div>
@@ -28,6 +28,16 @@ function Page() {
       <div className="flex gap-20">
         <div className="flex-1 space-y-4">
           <h2 className='font-medium text-sm'>Introduction</h2>
+
+          <div className="md:hidden relative w-full h-[300px] sm:h-[400px]">
+            <Image
+              src="/blogs/1.jpg"
+              alt="blog-1"
+              fill
+              className='rounded-xl'
+            />
+          </div>
+
           <p className='text-xs'>
             Supplements are everywhere - from pharmacy shelves to online
             wellness stores. Yet, despite their popularity, they&apos;re often surrounded by misinformation.
@@ -46,7 +56,7 @@ function Page() {
             smarter choices for your own health.
           </p>
         </div>
-        <div className="flex-1 relative w-[636px] h-[262px]">
+        <div className="hidden md:block flex-1 relative w-[636px] h-[262px]">
           <Image
             src="/blogs/1.jpg"
             alt="blog-1"
@@ -117,7 +127,7 @@ function Page() {
 
       <div className="space-y-3">
         <h2 className='font-medium text-sm'>2. Clearing the Confusion</h2>
-        <div className="flex items-center gap-20">
+        <div className="flex flex-col-reverse lg:flex-row items-center lg:gap-20">
           <div className='flex-1 space-y-4 text-xs'>
             <p>
               If you&apos;ve ever Googled &quot;Do I need supplements?&quot;, you know how
@@ -125,6 +135,16 @@ function Page() {
               claims to skeptics warning of dangers, it&apos;s hard to know what to believe.
               This confusion is fueled by three main factors:
             </p>
+
+            <div className="hidden px-5">
+              <div className='relative w-full h-[200px]'>
+                <Image
+                  src="/blogs/2.jpg"
+                  alt='blog-2'
+                  fill
+                />
+              </div>
+            </div>
 
             <ul className='list-decimal ml-3 space-y-1'>
               <li>
@@ -159,21 +179,22 @@ function Page() {
             </p>
           </div>
 
-          <div className='flex justify-end'>
-            <Image
-              src="/blogs/2.jpg"
-              alt='blog-2'
-              width={323}
-              height={240}
-              className='rounded-[20px] object-contain'
-            />
+          <div className='flex lg:justify-end'>
+            <div className="relative w-[450px] sm:w-[550px] md:w-[650px] lg:w-[323px] h-[300px] lg:h-[240px]">
+              <Image
+                src="/blogs/2.jpg"
+                alt='blog-2'
+                fill
+                className='rounded-[20px]'
+              />
+            </div>
           </div>
         </div>
       </div>
 
       <p className="
           border-l-3 border-[#71BF45] 
-          p-5 font-bold italic 
+          px-5 py-1 md:p-5 font-bold italic 
           text-sm text-[#848484] tracking-tight
         "
       >
@@ -185,9 +206,10 @@ function Page() {
       </p>
 
       {/* Myths VS Truths */}
-      <div className="flex gap-20">
+      <div className="flex flex-col-reverse gap-3 md:flex-row md:gap-20">
+
         <div className="space-y-3">
-          <h5 className='text-sm font-medium'>Myths vs Truths</h5>
+          <h5 className='hidden md:block text-sm font-medium'>Myths vs Truths</h5>
 
           {/* Myth 1 */}
           <div className="border-2 border-[#D9D9D9] rounded-[20px] py-[5px] px-5">
@@ -231,41 +253,44 @@ function Page() {
             </p>
           </div>
         </div>
-        <div className="pt-[30px] space-y-3">
-          <p className="py-5 px-2.5 rounded-[20px] border-3 border-[#D9D9D9]
+
+        <div className="flex flex-row gap-3 md:gap-0 md:flex-col md:pt-[30px] md:space-y-3">
+          <p className="py-5 px-2.5 rounded-[10px] md:rounded-[20px] border-3 border-[#D9D9D9]
           text-sm underline decoration-solid decoration-[#71BF45]
           ">
             Supplements don&apos;t replace food - they complement it.
           </p>
 
-          <div className="relative w-full h-[238px]">
+          <div className="relative w-full md:h-[238px]">
             <Image
               src="/blogs/3.jpg"
               fill
               alt='blog-3'
-              className='rounded-[20px]'
+              className='rounded-[10px] md:rounded-[20px]'
             />
           </div>
         </div>
+
+        <h5 className='md:hidden text-sm font-medium'>Myths vs Truths</h5>
       </div>
 
       {/* Conclusion */}
       <div className="space-y-5">
         <p className="font-medium text-sm">Conclusion</p>
 
-        <div className="flex gap-20">
+        <div className="flex flex-col gap-5 md:flex-row md:gap-10 lg:gap-20">
           {/* IMAGE */}
-          <div className="flex-1 relative w-[636px] h-[277px]">
+          <div className="md:flex-1 relative w-full md:w-[636px] h-[200px] sm:h-[300px] md:h-[277px]">
             <Image
               src="/blogs/4.jpg"
               fill
               alt="4-img"
-              className='rounded-[20px]'
+              className='rounded-[10px] md:rounded-[20px]'
             />
           </div>
 
           {/* DESCRIPTION */}
-          <div className="flex-1 space-y-[30px]">
+          <div className="md:flex-1 space-y-[30px]">
             <p className="text-xs">
               Supplements are not a miracle, nor are they a scam - they&apos;re{" "}
               <span className='text-[#71BF45] font-bold'>tools for better health.</span>{" "}
@@ -288,7 +313,7 @@ function Page() {
 
             <button
               onClick={() => router.push("/products")}
-              className="py-2.5 px-5 rounded-[10px] bg-[#093C16]
+              className="py-2.5 px-5 w-full md:w-fit rounded-[10px] bg-[#093C16]
                          text-white cursor-pointer"
             >
               Explore Our Products

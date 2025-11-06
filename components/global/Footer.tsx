@@ -74,7 +74,12 @@ function Footer() {
                             </span>
                             inks
                         </p>
-                        <Link href="/profile" className="flex whitespace-nowrap">Track Your Order</Link>
+                        <Link
+                            href={`/profile?card=${encodeURIComponent("ordersAndReturns")}&activeSection=${encodeURIComponent("trackOrders")}`}
+                            className="flex whitespace-nowrap"
+                        >
+                            Track Your Order
+                        </Link>
                         <Link href="/cancellationAndRefund" className="flex whitespace-nowrap">
                             Cancellation & Refund
                         </Link>
@@ -141,10 +146,10 @@ function Footer() {
 
                 {/* Legal links */}
                 <div className="flex gap-12 sm:gap-6 items-center text-xs sm:text-sm lg:text-base">
-                    <Link href="/">
+                    <Link href="/legalAndPrivacyPolicy">
                         <p className="underline decoration-solid">Privacy Policy</p>
                     </Link>
-                    <Link href="/">
+                    <Link href="/termsAndCondition">
                         <p className="underline decoration-solid">Terms of Use</p>
                     </Link>
                     <Link href="/">
