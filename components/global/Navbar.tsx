@@ -52,7 +52,6 @@ const placeholderTexts = [
 
 function Navbar() {
     const { dark } = useNavbarColor();
-    const [isScrolling, setIsScrolling] = useState(false);
 
     // States for search bar
     const [inputValue, setInputValue] = useState("");
@@ -202,24 +201,31 @@ function Navbar() {
 
 
 
-    // Scroll detection
+    // ================ Scroll detection logics ================
+
+    const [isVisible, setIsVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
+
     useEffect(() => {
-        let scrollTimeout: NodeJS.Timeout;
         const handleScroll = () => {
-            setIsScrolling(true);
+            const currentScrollY = window.scrollY;
 
-            clearTimeout(scrollTimeout);
+            // Hide when scrolling down
+            if (currentScrollY > lastScrollY && currentScrollY > 50) {
+                setIsVisible(false);
+            }
+            // Show when scrolling up
+            else if (currentScrollY < lastScrollY) {
+                setIsVisible(true);
+            }
 
-            scrollTimeout = setTimeout(() => {
-                setIsScrolling(false)
-            }, 200)
-        }
+            setLastScrollY(currentScrollY);
+        };
 
-        window.addEventListener("scroll", handleScroll)
+        window.addEventListener("scroll", handleScroll);
 
-        return () =>
-            window.removeEventListener("scroll", handleScroll)
-    }, [setIsScrolling])
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [lastScrollY]);
 
     return (
         <nav className="z-40 fixed w-full">
@@ -560,7 +566,7 @@ function Navbar() {
 
             {/* ================ Navigation and Shop Dropdown Section ================ */}
             <section className={`relative w-full -z-10 transition-transform duration-500
-                ${isScrolling ? "-translate-y-full" : "translate-y-0"}
+                ${isVisible ? "translate-y-0" : "-translate-y-full"}
                 `}>
                 <div className="mx-4 sm:mx-0 sm:flex justify-center">
                     <div className={`flex items-center justify-around sm:gap-10 rounded-br-xl rounded-bl-xl

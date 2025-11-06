@@ -125,6 +125,9 @@ function Page() {
     // Check if user is logged in
     const isUser = getItem(KEY_ACCESS_TOKEN)
 
+    const currentPath = window.location.pathname + window.location.search;
+    const path = `/login?redirect=${encodeURIComponent(currentPath)}`
+
 
 
     // ================ Addresses/Shopping Logics ================
@@ -171,7 +174,7 @@ function Page() {
         try {
             if (!isUser) {
                 toast.error("Please login to place order")
-                router.push('/login')
+                router.push(path)
                 return;
             }
 
@@ -188,11 +191,6 @@ function Page() {
             // Get the user's default address (latest from state)
             const defaultAddress = address.find((adrs: Address) => adrs.isDefault)
 
-            if (defaultAddress === undefined) {
-                setActiveButton("shopping")
-                setMakingOrder(false)
-                return;
-            }
             // If no address present in backend (means first-time entry)
             const isNewAddress = !defaultAddress
 
@@ -213,12 +211,12 @@ function Page() {
             // Compare each field to check if something changed
             const isChanged = Object.keys(addresses).some((key) => {
                 const typedKey = key as keyof Address;
-                return addresses[typedKey] !== defaultAddress[typedKey]
+                return addresses[typedKey] !== defaultAddress![typedKey]
             });
 
             // If address fields are same -> skip backend update and place order
             if (!isChanged) {
-                placeOrder(defaultAddress)
+                placeOrder(defaultAddress!)
                 return;
             }
 
@@ -522,15 +520,14 @@ function Page() {
 
                         {/* PAYMENT BUTTON */}
                         <button
-                            onClick={() => setActiveButton("payment")}
-                            className="flex items-center gap-2.5 transition-all duration-500 ease-out cursor-pointer"
+                            className="flex items-center gap-2.5 transition-all duration-500 ease-out"
                         >
                             {/* Step number */}
                             <p
                                 className={`font-extrabold text-xs md:text-sm py-[2.5px] px-2 md:py-[7px] md:px-3.5 rounded-[60px] transition-all duration-500 ease-out
                         ${activeButton === "payment"
                                         ? "text-white bg-[#71BF45]"
-                                        : "text-[#848484] bg-[#e3e3e3]"}`}
+                                        : "text-[#848484] bg-[#e3e3e3] cursor-not-allowed"}`}
                             >
                                 3
                             </p>

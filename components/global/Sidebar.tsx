@@ -83,7 +83,7 @@ function Sidebar({
 
             {/* Sidebar panel */}
             <div
-                className={`relative h-fit top-28 w-64 px-4 pb-5 pt-4 space-y-3 rounded-tl-xl rounded-bl-xl bg-[#ffffff] text-[#355920]] transition-transform duration-300 
+                className={`relative h-[450px] overflow-y-scroll scrollbar-hide top-28 w-64 px-4 pb-5 pt-4 space-y-3 rounded-tl-xl rounded-bl-xl bg-[#ffffff] text-[#355920]] transition-transform duration-300 
           ${isClosing ? "sidebar-slide-out" : "sidebar-slide-in"}`}
             >
 
@@ -138,7 +138,7 @@ function Sidebar({
                     {/* Profile Button */}
                     <Link
                         className='flex items-center gap-2 px-[5px] py-4 border-b border-[#e3e3e3]'
-                        href={isUser ? "/profile" : "/login"}
+                        href={isUser ? "/profile" : path}
                         onClick={handleCloseClick}
                     >
                         <div>
@@ -176,14 +176,22 @@ function Sidebar({
                     >
                         <p className='text-black font-medium text-sm'>Orders & Returns</p>
                         <Link
-                            href={isUser ? "/profile" : "/login"}
+                            href={
+                                isUser
+                                    ? `/profile?card=${encodeURIComponent("ordersAndReturns")}&activeSection=${encodeURIComponent("allOrders")}`
+                                    : path
+                            }
                             className='text-xs text-[#848484]'
                             onClick={handleCloseClick}
                         >
                             All Orders
                         </Link>
                         <Link
-                            href={isUser ? "/profile" : "/login"}
+                            href={
+                                isUser
+                                    ? `/profile?card=${encodeURIComponent("ordersAndReturns")}&activeSection=${encodeURIComponent("trackOrders")}`
+                                    : path
+                            }
                             className='text-xs text-[#848484]'
                             onClick={handleCloseClick}
                         >
@@ -196,14 +204,14 @@ function Sidebar({
                     >
                         <p className='text-black font-medium text-sm'>Legal</p>
                         <Link
-                            href={isUser ? "/profile" : "/login"}
+                            href="/termsAndCondition"
                             className='text-xs text-[#848484]'
                             onClick={handleCloseClick}
                         >
                             Terms of Use
                         </Link>
                         <Link
-                            href={isUser ? "/profile" : "/login"}
+                            href="/legalAndPrivaryPolicy"
                             className='text-xs text-[#848484]'
                             onClick={handleCloseClick}
                         >
@@ -213,10 +221,10 @@ function Sidebar({
 
                     <div className='border-b border-[#e3e3e3] py-2.5 space-y-4'>
                         {/* Settings Item */}
-                        <div className="flex items-center gap-2.5 font-medium text-[#848484] text-sm">
+                        <Link href={isUser ? "/profile" : path} className="flex items-center gap-2.5 font-medium text-[#848484] text-sm">
                             <FaGear />
                             <p>Settings</p>
-                        </div>
+                        </Link>
 
                         {/* Help & Feedback Item with custom SVG */}
                         <div className="flex items-center gap-2.5 font-medium text-[#848484] text-sm">
@@ -231,7 +239,7 @@ function Sidebar({
                         <div
                             className="flex items-center gap-3 mt-4 text-[#093C16] cursor-pointer"
                             onClick={() => {
-                                isUser ? handleLogout : router.push(path)
+                                isUser ? handleLogout() : router.push(path)
                                 handleCloseClick()
                             }}
                         >

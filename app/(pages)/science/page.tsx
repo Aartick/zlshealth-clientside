@@ -664,7 +664,7 @@ export default function Page() {
           </section>
 
           {/* ---------- PANEL 6 ---------- */}
-          <section className="panel relative md:w-screen md:h-screen mt-20 md:mt-12 px-8 space-y-8 md:space-y-2.5 py-2.5 md:overflow-hidden">
+          <section className="panel relative md:w-screen md:h-screen mt-20 md:mt-12 px-8 space-y-8 md:space-y-2.5 py-2.5 pr-20 md:overflow-hidden">
             {/* UPPER ROW */}
             <div className="flex flex-col md:flex-row gap-8 md:gap-0 items-center">
               <div className="flex-1 space-y-3">
