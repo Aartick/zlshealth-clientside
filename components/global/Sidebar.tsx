@@ -211,7 +211,7 @@ function Sidebar({
                             Terms of Use
                         </Link>
                         <Link
-                            href="/legalAndPrivaryPolicy"
+                            href="/legalAndPrivacyPolicy"
                             className='text-xs text-[#848484]'
                             onClick={handleCloseClick}
                         >

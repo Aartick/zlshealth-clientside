@@ -22,11 +22,7 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import {
-  addToCart,
-  getCart,
-  removeFromCart,
-} from "../thunks/cartThunks";
+import { addToCart, getCart, removeFromCart } from "../thunks/cartThunks";
 import { productType } from "@/interfaces/cartWish";
 
 // Cart state definition
@@ -80,22 +76,63 @@ const groceryCartSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // Update cart state after backend add-to-cart
-    builder.addCase(addToCart.fulfilled, (state, action) => {
-      // Make sure action.payload always be an array
-      const updatedCart = Array.isArray(action.payload)
-        ? action.payload
-        : [action.payload];
-      state.cart = updatedCart;
-    });
-    // Update cart state after backend remove-from-cart
-    builder.addCase(removeFromCart.fulfilled, (state, action) => {
-      // Make sure action.payload always be an array
-      const updatedCart = Array.isArray(action.payload)
-        ? action.payload
-        : [action.payload];
-      state.cart = updatedCart;
-    });
+    // ====== ADD TO CART ======
+    builder
+      .addCase(addToCart.pending, (state, action) => {
+        const { productId } = action.meta.arg;
+
+        const product = state.cart.find((item) => item._id === productId);
+        if (product) {
+          product.loading = true;
+        } else {
+          state.cart.push({
+            _id: productId,
+            loading: true,
+          } as productType);
+        }
+      })
+      // Update cart state after backend add-to-cart
+      .addCase(addToCart.fulfilled, (state, action) => {
+        // Make sure action.payload always be an array
+        const updatedCart = Array.isArray(action.payload)
+          ? action.payload
+          : [action.payload];
+        state.cart = updatedCart.map((p) => ({
+          ...p,
+          loading: false,
+        }));
+      })
+      .addCase(addToCart.rejected, (state, action) => {
+        const { productId } = action.meta.arg;
+
+        const product = state.cart.find((item) => item._id === productId);
+        if (product) product.loading = false;
+      });
+
+    // ====== REMOVE FROM CART ======
+    builder
+      .addCase(removeFromCart.pending, (state, action) => {
+        const { productId } = action.meta.arg;
+        const product = state.cart.find((item) => item._id === productId);
+        if (product) product.loading = true;
+      })
+      // Update cart state after backend remove-from-cart
+      .addCase(removeFromCart.fulfilled, (state, action) => {
+        // Make sure action.payload always be an array
+        const updatedCart = Array.isArray(action.payload)
+          ? action.payload
+          : [action.payload];
+        state.cart = updatedCart.map((p) => ({
+          ...p,
+          loading: false,
+        }));
+      })
+      .addCase(removeFromCart.rejected, (state, action) => {
+        const { productId } = action.meta.arg;
+        const product = state.cart.find((item) => item._id === productId);
+        if (product) product.loading = false;
+      });
+
     // Update cart state from backend (returns all the items)
     builder.addCase(getCart.fulfilled, (state, action) => {
       // Make sure action.payload always be an array

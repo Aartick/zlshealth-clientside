@@ -38,6 +38,7 @@ function WishlistButton({ product }: ProductProps) {
     const wishlist = useAppSelector((state) => state.wishlistSlice.products)
     // Check if product is in wishlist
     const isInWishlist = wishlist.some((prod) => prod._id === product._id)
+    const isLoading = wishlist.find((prod) => prod._id === product._id)?.loading;
 
     // Toggle wishlist status for this product
     const toggleFavorite = () => {
@@ -64,7 +65,8 @@ function WishlistButton({ product }: ProductProps) {
                     price: product.price,
                     quantity: 1,
                     about: product.about,
-                    discount: product.discount
+                    discount: product.discount,
+                    loading: true
                 }))
             }
 
@@ -75,14 +77,20 @@ function WishlistButton({ product }: ProductProps) {
         // Heart icon button, filled if in wishlist, outlined if not
         <div
             onClick={toggleFavorite}
-            className="rounded-[30px] p-[10px] bg-[#ffffff] text-[18px] sm:text-2xl cursor-pointer transform transition-transform duration-300 hover:scale-110"
+            className={`rounded-[30px] p-[10px] bg-[#ffffff] text-[18px] sm:text-2xl transform transition-transform duration-300 hover:scale-110
+                ${isLoading ? "opacity-80 cursor-not-allowed" : "cursor-pointer"}
+                `}
         >
             {isInWishlist ? (
                 // Filled heart icon for wishlist
-                <BsSuitHeartFill className="text-red-500 transition-all duration-300 transform scale-110" />
+                <BsSuitHeartFill className={`text-red-500 transition-all duration-300 transform scale-110
+                    ${isLoading ? "opacity-80" : ""}
+                    `} />
             ) : (
                 // Outlined heart icon for not in wishlist
-                <BsSuitHeart className="text-[#2e2e2e] transition-all duration-300 transform scale-100" />
+                <BsSuitHeart className={`text-[#2e2e2e] transition-all duration-300 transform scale-100
+                    ${isLoading ? "opacity-80" : ""}
+                    `} />
             )}
         </div>
     )

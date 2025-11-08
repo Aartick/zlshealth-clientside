@@ -71,14 +71,37 @@ const wishlistSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // Update wishlist state after backend add-to-wishlist
-    builder.addCase(addToWishlist.fulfilled, (state, action) => {
-      // Make sure action.payload always be an array
-      const updatedWishlist = Array.isArray(action.payload)
-        ? action.payload
-        : [action.payload];
-      state.products = updatedWishlist;
-    });
+    builder
+      .addCase(addToWishlist.pending, (state, action) => {
+        const { productId } = action.meta.arg;
+
+        const product = state.products.find((item) => item._id === productId);
+        if (product) {
+          product.loading = true;
+        } else {
+          state.products.push({
+            _id: productId,
+            loading: true,
+          } as productType);
+        }
+      })
+      // Update wishlist state after backend add-to-wishlist
+      .addCase(addToWishlist.fulfilled, (state, action) => {
+        // Make sure action.payload always be an array
+        const updatedWishlist = Array.isArray(action.payload)
+          ? action.payload
+          : [action.payload];
+        state.products = updatedWishlist.map((p) => ({
+          ...p,
+          loading: false,
+        }));
+      })
+      .addCase(addToWishlist.rejected, (state, action) => {
+        const { productId } = action.meta.arg;
+
+        const product = state.products.find((item) => item._id === productId);
+        if (product) product.loading = false;
+      });
     // Update wishlist state after backend remove-from-wishlist
     builder.addCase(removeFromWishlist.fulfilled, (state, action) => {
       // Make sure action.payload always be an array
@@ -99,8 +122,12 @@ const wishlistSlice = createSlice({
 });
 
 // Export actions for dispatch
-export const { addToWishlistGuest, removeFromWishlistGuest, deleteFromWishlistGuest, resetWishlist } =
-  wishlistSlice.actions;
+export const {
+  addToWishlistGuest,
+  removeFromWishlistGuest,
+  deleteFromWishlistGuest,
+  resetWishlist,
+} = wishlistSlice.actions;
 
 // Export reducer for store
 export default wishlistSlice.reducer;

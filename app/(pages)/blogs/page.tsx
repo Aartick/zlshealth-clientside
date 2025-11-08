@@ -6,9 +6,9 @@ import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
 function Page() {
 
   return (
-    <div className='container mx-auto space-y-[30px] bg-white text-black p-10'>
+    <div className='container mx-auto space-y-[30px] bg-white text-black p-5 md:p-10'>
       <div className="space-y-4">
-        <div className="relative w-full h-[625px]">
+        <div className="relative w-full h-[250px] sm:h-[400px] lg:h-[625px]">
           <Image
             src="/aboutUs/1.jpg"
             alt='hero-img'
@@ -31,19 +31,19 @@ function Page() {
         </div>
 
         <div className='px-2.5 space-y-3'>
-          <div className="flex items-center justify-between">
-            <p className="font-medium text-xl text-[#093C16]">
+          <div className="flex flex-col gap-1.5 md:gap-0 md:flex-row md:items-center justify-between">
+            <p className="font-medium text-lg md:text-xl text-[#093C16]">
               The Truth About Supplements
             </p>
-            <p className="font-medium text-xl text-[#093C16]">
+            <p className="font-medium md:text-xl text-[#093C16]">
               Author | 5 min read | Sep 22, 2025
             </p>
           </div>
 
           <div className="flex items-center gap-2.5">
-            <p className="border border-[#D6D6D6] py-[5px] px-2.5 text-[#093C16] text-sm rounded-[30px]">Supplements</p>
-            <p className="border border-[#D6D6D6] py-[5px] px-2.5 text-[#093C16] text-sm rounded-[30px]">Wellness</p>
-            <p className="border border-[#D6D6D6] py-[5px] px-2.5 text-[#093C16] text-sm rounded-[30px]">Myths</p>
+            <p className="border border-[#D6D6D6] py-[5px] px-2.5 text-[#093C16] text-xs md:text-sm rounded-full">Supplements</p>
+            <p className="border border-[#D6D6D6] py-[5px] px-2.5 text-[#093C16] text-xs md:text-sm rounded-full">Wellness</p>
+            <p className="border border-[#D6D6D6] py-[5px] px-2.5 text-[#093C16] text-xs md:text-sm rounded-full">Myths</p>
           </div>
 
           <p className="font-medium text-xs text-[#848484]">
@@ -54,8 +54,9 @@ function Page() {
           </p>
 
           <button className="
-                    py-2.5 px-5 rounded-[10px]
-                    border border-[#71BF45]
+                    py-[5px] md:py-2.5 px-2.5 md:px-5 
+                    text-xs md:text-base
+                    border border-[#71BF45] rounded-full md:rounded-[10px]
                     text-[#36810B] font-semibold
             "
           >
@@ -65,19 +66,19 @@ function Page() {
       </div>
 
       <div className="space-y-4">
-        <p className="p-2.5 font-medium text-2xl text-[#093C16]">
+        <p className="px-2.5 md:p-2.5 font-medium text-xl md:text-2xl text-[#093C16]">
           All Blogs
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {Array.from({ length: 4 }).map((_, idx) => (
             <BlogCard key={idx} />
           ))}
         </div>
       </div>
 
-      <div className="flex justify-between items-center px-3">
-        <div className='flex-1' />
+      <div className="flex flex-col gap-2.5 md:gap-0 md:flex-row justify-between items-center px-3">
+        <div className='hidden md:block flex-1' />
 
         <div className="flex-1 flex items-center justify-center gap-5 font-medium">
           <p>1</p>
@@ -88,7 +89,7 @@ function Page() {
           <p>10</p>
         </div>
 
-        <div className="flex-1 flex items-center justify-end gap-2.5">
+        <div className="flex-1 flex items-center justify-between w-full md:justify-end md:gap-2.5">
           <button className="
                     border border-[#E3E3E3]
                     py-2 px-3 rounded-[8px] 

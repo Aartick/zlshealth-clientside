@@ -578,7 +578,7 @@ export default function Home() {
       {/* STATS SECTION */}
       <section
         ref={sectionRef}
-        className="w-full md:overflow-hidden">
+        className="flex flex-col items-center justify-center h-screen w-full md:overflow-hidden">
         {/* LEFT SHADOW */}
         <svg
           className="absolute left-0 top-1/2 -translate-y-1/2"
@@ -659,7 +659,7 @@ export default function Home() {
           </defs>
         </svg>
 
-        <div className="relative z-10 container mx-auto px-6 pt-32 md:pt-32 lg:pt-20 flex flex-col-reverse h-full md:h-auto justify-between md:flex-row items-center md:justify-around">
+        <div className="relative z-10 container mx-auto px-6 pt-32 lg:pt-20 flex flex-col-reverse h-fit md:h-auto md:flex-row items-center gap-20 md:justify-around">
           {/* LEFT TEXT */}
           <p className="font-medium text-3xl sm:text-4xl md:text-5xl lg:text-6xl max-w-xl">
             A brand rooted in <span className="font-extralight">nature.</span>
@@ -743,22 +743,22 @@ export default function Home() {
       </section>
 
       {/* COMPARISION TABLE */}
-      <div className="container mx-auto pt-24 px-[30px] md:px-[60px]">
+      <div className="container mx-auto pt-24 px-2.5 sm:px-[30px] md:px-[60px]">
         <div className="overflow-hidden rounded-2xl shadow-lg border border-[#093C16]">
           <table className="w-full border-separate border-spacing-0">
             <thead>
               <tr>
-                <th className="p-4 text-base sm:text-xl font-semibold text-white bg-[#71BF45] rounded-tl-2xl">
+                <th className="py-2 sm:p-4 text-base sm:text-xl font-semibold text-white bg-[#71BF45] rounded-tl-2xl">
                   What you care about
                 </th>
-                <th className="p-4 text-base sm:text-xl font-semibold text-white bg-[#71BF45] border-l border-[#093C16]">
+                <th className="py-2 sm:p-4 text-base sm:text-xl font-semibold text-white bg-[#71BF45] border-l border-[#093C16]">
                   Regular Supplements
                   <br />
                   <span className="text-sm sm:text-base font-normal">
                     (What you&apos;re getting now)
                   </span>
                 </th>
-                <th className="p-4 text-base sm:text-xl font-semibold text-white bg-[#71BF45] border-l border-[#093C16] rounded-tr-2xl">
+                <th className="py-2 sm:p-4 text-base sm:text-xl font-semibold text-white bg-[#71BF45] border-l border-[#093C16] rounded-tr-2xl">
                   Zealous Health
                   <br />
                   <span className="text-sm sm:text-base font-normal">
@@ -776,17 +776,17 @@ export default function Home() {
                     } hover:bg-[#d7f2ca] transition-colors duration-200`}
                 >
                   {/* Column 1 */}
-                  <td className="text-xs sm:text-base p-4 sm:pl-6 border-t border-[#093C16]">
+                  <td className="text-xs sm:text-base px-2 py-4 sm:pl-6 border-t border-[#093C16]">
                     {data.col1}
                   </td>
 
                   {/* Column 2 */}
-                  <td className="text-xs sm:text-base p-4 sm:pl-6 border-t border-l border-[#093C16]">
+                  <td className="text-xs sm:text-base px-2 py-4 sm:pl-6 border-t border-l border-[#093C16]">
                     {data.col2}
                   </td>
 
                   {/* Column 3 */}
-                  <td className="text-xs sm:text-base p-4 sm:pl-6 border-t border-l border-[#093C16]">
+                  <td className="text-xs sm:text-base px-2 py-4 sm:pl-6 border-t border-l border-[#093C16]">
                     <div className="flex items-center gap-2">{data.col3}</div>
                   </td>
                 </tr>
@@ -797,13 +797,13 @@ export default function Home() {
       </div>
 
       {/* OUR PROCESS */}
-      <section ref={divRef} className="relative w-full overflow-hidden pt-28 md:pt-36">
+      <section ref={divRef} className="flex flex-col items-center justify-center h-screen relative w-full overflow-hidden md:pt-36">
         <h3 className="text-center text-2xl sm:text-3xl md:text-4xl font-semibold text-[#093C16] mb-8">
           Our Process
         </h3>
 
         {/* Responsive Curve Wrapper */}
-        <div className="relative w-full max-w-[1600px] mx-auto aspect-[1440/632]">
+        <div className="relative w-full h-fit overflow-hidden max-w-[1600px] mx-auto aspect-[1440/632]">
           <svg
             viewBox="-100 -80 1640 792"
             fill="none"
@@ -848,7 +848,7 @@ export default function Home() {
         </div>
 
         {/* TEXTS (below curve, responsive widths) */}
-        <div className="absolute mt-24 sm:mt-0 top-1/2 w-full flex items-start justify-center">
+        <div className="absolute mt-24 sm:mt-0 top-4/5 w-full flex items-start justify-center">
           {processSteps.map((step, i) => (
             <div
               key={i}
@@ -867,7 +867,7 @@ export default function Home() {
       </section>
 
       {/* SCIENCE AT WORK SECTION */}
-      <section className="container mx-auto py-[30px] px-[30px] md:px-[60px] space-y-6">
+      <section className="container mx-auto px-[30px] md:px-[60px] space-y-6">
         <div className="space-y-3 text-center">
           <p className="font-semibold text-2xl md:text-[32px] text-[#093C16]">
             Our Science at Work
