@@ -30,6 +30,7 @@ function CartButton({ product }: ProductProps) {
     const added = cart.some((prod) => prod._id === product._id)
     // Get cart item details for quantity display
     const cartItem = cart.find((prod) => prod._id === product._id)
+    const isLoading = cartItem?.loading;
 
     // Add product to cart (handles user/guest)
     const handleAddToCart = () => {
@@ -37,7 +38,7 @@ function CartButton({ product }: ProductProps) {
             // For logged-in user, dispatch backend thunk
             dispatch(addToCart({
                 productId: product._id,
-                quantity: 1
+                quantity: 1,
             }))
         } else {
             // For guest, update Redux cart
@@ -51,7 +52,8 @@ function CartButton({ product }: ProductProps) {
                 price: product.price,
                 quantity: 1,
                 about: product.about,
-                discount: product.discount
+                discount: product.discount,
+                loading: true,
             }))
         }
     }
@@ -73,17 +75,22 @@ function CartButton({ product }: ProductProps) {
             {!added && (
                 <button
                     onClick={handleAddToCart}
-                    className="bg-[#093C16] rounded-md sm:rounded-[10px] py-[5px] sm:py-3 px-[10px] text-[#ffffff] font-semibold text-sm w-full cursor-pointer">
-                    Add To Cart
+                    disabled={isLoading}
+                    className={`bg-[#093C16] rounded-md sm:rounded-[10px] py-[5px] sm:py-3 px-[10px] text-[#ffffff] font-semibold text-sm w-full cursor-pointer ${isLoading ? 'opacity-90' : ''
+                        }`}>
+                    {isLoading ? "Adding...." : "Add To Cart"}
                 </button>
             )}
 
             {/* Show quantity controls if product is in cart */}
             {added && (
-                <div className="flex items-center justify-around gap-2 bg-[#093C16] py-[5px] sm:py-3 px-[10px] text-[#ffffff] font-semibold text-sm rounded-md sm:rounded-[10px]">
+                <div className={`flex items-center justify-around gap-2 bg-[#093C16] py-[5px] sm:py-3 px-[10px] text-[#ffffff] font-semibold text-sm rounded-md sm:rounded-[10px]
+                ${isLoading ? "opacity-90" : ""}
+                `}>
                     {/* Remove one from cart */}
                     <button
-                        className='cursor-pointer'
+                        className={isLoading ? "" : "cursor-pointer"}
+                        disabled={isLoading}
                         onClick={handleRemoveFromCart}
                     >
                         -
@@ -96,7 +103,8 @@ function CartButton({ product }: ProductProps) {
 
                     {/* Add one to cart */}
                     <button
-                        className='cursor-pointer'
+                        className={isLoading ? "" : "cursor-pointer"}
+                        disabled={isLoading}
                         onClick={handleAddToCart}
                     >
                         +

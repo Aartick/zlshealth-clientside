@@ -22,7 +22,7 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 
 import { getItem, KEY_ACCESS_TOKEN, removeItem } from "@/utils/localStorageManager";
@@ -58,9 +58,9 @@ function Navbar() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
     const [searchResults, setSearchResults] = useState<product[]>([]);
-    const searchRef = useRef<HTMLDivElement>(null);
+    const desktopSearchRef = useRef<HTMLDivElement>(null);
+    const mobileSearchRef = useRef<HTMLDivElement>(null);
     const [showResults, setShowResults] = useState(false);
-    const router = useRouter();
 
     // Animated placeholder effect for search bar
     useEffect(() => {
@@ -100,7 +100,14 @@ function Navbar() {
     // Close search results when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+            const target = event.target as Node;
+
+            if (
+                desktopSearchRef.current &&
+                !desktopSearchRef.current.contains(target) &&
+                mobileSearchRef.current &&
+                !mobileSearchRef.current.contains(target)
+            ) {
                 setShowResults(false)
             }
         }
@@ -280,7 +287,7 @@ function Navbar() {
                     </div>
 
                     {/* ====== Search bar section (desktop only) ====== */}
-                    <div ref={searchRef} className="hidden lg:flex-1 lg:flex flex-col relative z-50">
+                    <div ref={desktopSearchRef} className="hidden lg:flex-1 lg:flex flex-col relative z-50">
                         <div className="flex justify-between items-center border-[0.5px] border-[#71BF45] rounded-[50px] py-2 px-2.5">
                             <div className="flex items-center gap-2.5 relative w-full">
                                 <label htmlFor='search' className="p-1 rounded-[27px] bg-[#71bf45] text-[#ffffff]">
@@ -329,9 +336,9 @@ function Navbar() {
                                 className="absolute top-[105%] left-0 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-80 overflow-y-auto scrollbar-hide z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
                             >
                                 {searchResults.map((product) => (
-                                    <div
+                                    <Link
+                                        href={`/productDescription/${product._id}`}
                                         onClick={() => {
-                                            router.push(`/productDescription/${product._id}`)
                                             setShowResults(false);
                                             setInputValue("");
                                         }}
@@ -350,7 +357,7 @@ function Navbar() {
                                             <p className="text-sm font-medium text-[#71BF45]">{product.name}</p>
                                             <p className="text-xs text-gray-500">{product.about.slice(0, 45)}...</p>
                                         </div>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
                         )}
@@ -466,7 +473,7 @@ function Navbar() {
                 </div>
 
                 {/* SEARCH BAR (Mobile Only) */}
-                <div ref={searchRef} className="mt-2 lg:hidden relative">
+                <div ref={mobileSearchRef} className="mt-2 lg:hidden relative">
                     <div className="w-full flex justify-between items-center border-[0.5px] border-[#71BF45] rounded-[50px] py-2 px-2.5">
                         <div className="flex items-center gap-2.5 relative w-full">
                             <label htmlFor='search' className="p-1 rounded-[27px] bg-[#71bf45] text-[#ffffff]">
@@ -515,9 +522,9 @@ function Navbar() {
                             className="absolute top-[105%] left-0 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-80 overflow-y-auto scrollbar-hide z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
                         >
                             {searchResults.map((product) => (
-                                <div
+                                <Link
+                                    href={`/productDescription/${product._id}`}
                                     onClick={() => {
-                                        router.push(`/productDescription/${product._id}`)
                                         setShowResults(false);
                                         setInputValue("");
                                     }}
@@ -536,7 +543,7 @@ function Navbar() {
                                         <p className="text-sm font-medium text-[#71BF45]">{product.name}</p>
                                         <p className="text-xs text-gray-500">{product.about.slice(0, 45)}...</p>
                                     </div>
-                                </div>
+                                </Link>
                             ))}
                         </div>
                     )}

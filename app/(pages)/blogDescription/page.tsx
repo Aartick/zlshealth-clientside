@@ -136,16 +136,6 @@ function Page() {
               This confusion is fueled by three main factors:
             </p>
 
-            <div className="hidden px-5">
-              <div className='relative w-full h-[200px]'>
-                <Image
-                  src="/blogs/2.jpg"
-                  alt='blog-2'
-                  fill
-                />
-              </div>
-            </div>
-
             <ul className='list-decimal ml-3 space-y-1'>
               <li>
                 <span className="font-bold">
@@ -180,7 +170,7 @@ function Page() {
           </div>
 
           <div className='flex lg:justify-end'>
-            <div className="relative w-[450px] sm:w-[550px] md:w-[650px] lg:w-[323px] h-[300px] lg:h-[240px]">
+            <div className="relative w-[380px] sm:w-[550px] md:w-[650px] lg:w-[323px] h-[300px] lg:h-[240px]">
               <Image
                 src="/blogs/2.jpg"
                 alt='blog-2'

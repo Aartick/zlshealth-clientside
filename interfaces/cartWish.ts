@@ -11,6 +11,7 @@ export interface productType {
   quantity: number;
   about: string;
   discount: number;
+  loading: boolean;
 }
 
 export const convertWishlistToProduct = (item: productType): product => ({
