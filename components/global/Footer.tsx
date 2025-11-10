@@ -17,10 +17,16 @@ import { BsLinkedin } from "react-icons/bs";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { getItem, KEY_ACCESS_TOKEN } from "@/utils/localStorageManager";
 
 function Footer() {
     // Get current route path
     const pathname = usePathname()
+    const isUser = getItem(KEY_ACCESS_TOKEN)
+
+    const currentPath = window.location.pathname + window.location.search;
+    const path = `/login?redirect=${encodeURIComponent(currentPath)}`
+
     return (
         <footer className={`${pathname === "/"
             ? "bg-[#FBFFF9]"
@@ -75,7 +81,7 @@ function Footer() {
                             inks
                         </p>
                         <Link
-                            href={`/profile?card=${encodeURIComponent("ordersAndReturns")}&activeSection=${encodeURIComponent("trackOrders")}`}
+                            href={isUser ? `/profile?card=${encodeURIComponent("ordersAndReturns")}&activeSection=${encodeURIComponent("trackOrders")}` : path}
                             className="flex whitespace-nowrap"
                         >
                             Track Your Order

@@ -1,6 +1,8 @@
 import toast from "react-hot-toast";
 import { axiosClient } from "./axiosClient";
 import { OrderSummary } from "@/app/(pages)/cart/page";
+import { productType } from "@/interfaces/cartWish";
+import { Address } from "@/interfaces/user";
 
 declare global {
   interface Window {
@@ -38,7 +40,8 @@ const loadRazorpayScript = (): Promise<boolean> => {
 // Function to initialize Razorpay payment
 const initPay = (
   data: RazorpayOrder,
-  orderId: string
+  cart: productType[],
+  address: Address
 ): Promise<OrderSummary | null> => {
   return new Promise((resolve) => {
     const { id, amount, currency } = data;
@@ -53,12 +56,14 @@ const initPay = (
       handler: async (response: RazorpayResponse) => {
         try {
           const verificationResponse = await axiosClient.post(
-            `/api/payments/verify?orderId=${orderId}`,
+            `/api/payments/verify`,
             {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
               amount: amount / 100, // Convert paise -> INR
+              cart,
+              address,
             }
           );
           if (verificationResponse.data.status === "ok") {
@@ -81,7 +86,11 @@ const initPay = (
   });
 };
 
-export const handlePayment = async (totalPrice: number, orderId: string) => {
+export const handlePayment = async (
+  totalPrice: number,
+  cart: productType[],
+  address: Address
+) => {
   try {
     const scriptLoaded = await loadRazorpayScript();
     if (!scriptLoaded) {
@@ -93,7 +102,7 @@ export const handlePayment = async (totalPrice: number, orderId: string) => {
       amount: totalPrice,
     });
 
-    return await initPay(response.data.result as RazorpayOrder, orderId);
+    return await initPay(response.data.result as RazorpayOrder, cart, address);
   } catch (error) {
     toast.error("Unable to initiate payment");
     return null;

@@ -43,6 +43,7 @@ import { formatDate } from '@/utils/formatDate'
 import CartButton from '@/components/CartButton'
 import { convertWishlistToProduct } from '@/interfaces/cartWish'
 import { useRouter } from 'next/navigation'
+import PaymentProcessing from '@/components/PaymentProcessing'
 
 const paymentMehods = [
     "/cart/Visa.png",
@@ -63,6 +64,7 @@ export interface OrderSummary {
 }
 
 function Page() {
+    const [status, setStatus] = useState<"processing" | "success" | "failed">("success")
     const [activeButton, setActiveButton] = useState("cart")
     const [addresses, setAddresses] = useState<Address>(initialAddress)
     const [futureAddress, setFutureAddress] = useState(false);
@@ -246,11 +248,11 @@ function Page() {
             if (cart?.length === 0) {
                 return toast.error("Cart is empty")
             }
+            setStatus("processing")
             setActiveButton("payment")
-            const response = await axiosClient.post('/api/orders', { cart, address })
-            const order = response.data.result
-            const paymentSuccess = await handlePayment(Number(paymentAmount), order.orderId)
+            const paymentSuccess = await handlePayment(Number(paymentAmount), cart, address)
             if (paymentSuccess) {
+                setStatus("success")
                 setOrderSummary({
                     orderId: paymentSuccess.orderId,
                     date: paymentSuccess.date,
@@ -260,19 +262,12 @@ function Page() {
                     totalItems: cart?.length,
                     payableAmount: Number(paymentAmount),
                 })
+                await dispatch(deleteCart())
+                setOrderSuccessful(true)
             } else {
-                setOrderSummary({
-                    orderId: order.orderId,
-                    date: order.date,
-                    paymentMethod: order.paymentMethod,
-                    totalAmount: totalPrice,
-                    discountPrice: totalPrice - discountedTotalPrice,
-                    totalItems: cart?.length,
-                    payableAmount: Number(paymentAmount),
-                })
+                setStatus("failed")
+                setActiveButton("shopping")
             }
-            await dispatch(deleteCart())
-            setOrderSuccessful(true)
         } catch { }
         setMakingOrder(false)
     }
@@ -1111,18 +1106,9 @@ function Page() {
 
                                 {/* Payment Section */}
                                 {activeButton === "payment" && (
-                                    <>
-                                        <div className="p-2.5 border border-[#e3e3e3] rounded-[20px] w-full md:w-[500px] h-full transition-all duration-500 ease-out opacity-0 translate-y-2 animate-fadeInCart">
-                                            <div className="space-y-3">
-                                                {/* HEADER */}
-                                                <div className="border-b-2 p-2.5 border-[#e3e3e3] font-medium">
-                                                    Payment Method
-                                                </div>
-
-                                                <p className="text-[#71BF45] text-center">Processing...</p>
-                                            </div>
-                                        </div>
-                                    </>
+                                    <div className="border border-[#e3e3e3] rounded-[20px] w-full md:w-[500px] h-80 transition-all duration-500 ease-out opacity-0 translate-y-2 animate-fadeInCart">
+                                        <PaymentProcessing status={status} />
+                                    </div>
                                 )}
                             </div>
 
