@@ -64,10 +64,10 @@ export async function GET(req: NextRequest) {
             paymentStatus: data.data.payment_status,
             shiprocketStatus: data.data.shipments.status || "Unknown",
           };
-        } catch (error: any) {
+        } catch (error) {
           console.error(
             `Failed to fetch status for order ${order.orderId}:`,
-            error.message
+            error
           );
           return {
             orderId: order.orderId,
