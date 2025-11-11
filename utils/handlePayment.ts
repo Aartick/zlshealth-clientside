@@ -79,6 +79,11 @@ const initPay = (
         }
       },
       theme: { color: "#71BF45" },
+      modal: {
+        ondismiss: () => {
+          resolve(null);
+        },
+      },
     };
 
     const paymentObject = new window.Razorpay(options);
