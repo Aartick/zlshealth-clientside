@@ -848,7 +848,7 @@ export default function Home() {
         </div>
 
         {/* TEXTS (below curve, responsive widths) */}
-        <div className="absolute mt-24 sm:mt-0 top-4/5 w-full flex items-start justify-center">
+        <div className="absolute top-4/5 w-full flex items-start justify-center">
           {processSteps.map((step, i) => (
             <div
               key={i}

@@ -346,7 +346,7 @@ function Page() {
             </button>
 
             {/* ================ MAIN CONTENT ================ */}
-            <div className="flex-4 space-y-4 border border-[#f4f4f4] rounded-[36px] p-[30px] overflow-y-scroll scrollbar-hide">
+            <div className="flex-4 space-y-4 border border-[#f4f4f4] rounded-[36px] p-2.5 md:p-[30px] overflow-y-scroll scrollbar-hide">
 
 
                 {/* CARDS SECTION (Profile, Orders & Returns, Legal) */}
