@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react"
 import { IoIosCheckmark } from "react-icons/io";
 import HumanOrgansSvg from "@/components/HumanOrgansSvg";
+import HumanModel from "@/components/HumanModel";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -313,7 +314,7 @@ export default function Page() {
         <div ref={scrollContainerRef} className="flex flex-col md:flex-row md:h-screen w-full md:w-max relative z-10 pt-10 md:pt-0">
           {/* ---------- PANEL 1 ---------- */}
           <section className="panel flex items-center justify-center px-8 py-5">
-            <div className="flex flex-col md:flex-row justify-between h-full items-center w-full">
+            <div className="flex flex-col md:flex-row justify-between h-full items-center w-full lg:w-screen">
               {/* FIRST PART */}
               <div className="flex flex-col justify-around pb-10 h-screen">
                 <div>
@@ -346,16 +347,11 @@ export default function Page() {
 
               {/* SECOND PART */}
               <div
-                ref={imgRef}
-                className="relative -mt-4 w-[400px] h-[400px] md:w-[500px] md:h-[500px] will-change-transform"
+                id="human-model-container"
+                className="w-full h-screen"
                 style={{ perspective: "1000px" }}
               >
-                <Image
-                  src="/science/human_body.png"
-                  fill
-                  alt="human_body"
-                  style={{ transformStyle: "preserve-3d" }}
-                />
+                <HumanModel />
               </div>
             </div>
           </section>
