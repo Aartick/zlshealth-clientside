@@ -606,7 +606,7 @@ export default function Page() {
 
           {/* ---------- PANEL 5 ---------- */}
           <section
-            className="panel md:overflow-hidden flex justify-center mt-20 md:mt-14 mx-8 md:mx-0 md:pl-40 md:w-screen"
+            className="panel md:overflow-scroll scrollbar-hide flex justify-center mt-20 md:mt-14 md:mb-24 mx-8 md:mx-0 md:px-40"
           >
             <div
               className="space-y-20 w-full"
@@ -617,7 +617,7 @@ export default function Page() {
               {steps.map((step, index) => (
                 <div
                   key={index}
-                  className="flex gap-20 items-center w-full"
+                  className={`flex gap-20 items-center w-full ${index === steps.length && "pb-80"}`}
                 >
                   {/* === Timeline Section === */}
                   <div className="flex flex-col items-center relative">
@@ -640,19 +640,20 @@ export default function Page() {
                   {/* === Right Content Section === */}
                   <div className="space-y-10">
                     <div>
-                      <p className="font-extrabold text-xl sm:text-3xl text-white">{step.title}</p>
-                      <p className="font-light sm:text-2xl text-white max-w-xl">
+                      <p className="font-extrabold text-xl sm:text-2xl text-white">{step.title}</p>
+                      <p className="font-light sm:text-xl text-white max-w-xl">
                         {step.text}
                       </p>
                     </div>
 
-                    <Image
-                      src={step.image}
-                      width={722}
-                      height={320}
-                      alt={step.title}
-                      className="rounded-[32px]"
-                    />
+                    <div className="relative w-full h-[200px] md:h-[300px]">
+                      <Image
+                        src={step.image}
+                        fill
+                        alt={step.title}
+                        className="rounded-[32px]"
+                      />
+                    </div>
                   </div>
                 </div>
               ))}
