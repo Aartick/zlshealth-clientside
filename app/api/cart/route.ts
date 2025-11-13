@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
     return success(201, responseWrapper);
   } catch (e) {
     console.error(e);
-    return error(500, "Something went wrong.");
+    return error(500, "Something went wrong while adding to cart.");
   }
 }
 
@@ -134,7 +134,7 @@ export async function GET(req: NextRequest) {
     return success(201, responseWrapper);
   } catch (e) {
     console.error(e);
-    return error(500, "Something went wrong.");
+    return error(500, "Something went wrong getting cart.");
   }
 }
 

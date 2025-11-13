@@ -35,7 +35,7 @@ function Footer() {
         }
         >
             {/* Main footer layout: left and right sections */}
-            <div className="container mx-auto flex flex-col lg:flex-row 
+            <div className="max-w-screen-2xl mx-auto flex flex-col lg:flex-row 
             gap-6 md:gap-[50px] lg:justify-between"
             >
                 {/* LEFT SECTION: Logo, tagline, address, contact */}
@@ -141,7 +141,7 @@ function Footer() {
             />
 
             {/* BOTTOM SECTION: Copyright and legal links */}
-            <div className="container mx-auto
+            <div className="max-w-screen-2xl mx-auto
                     flex flex-col lg:flex-row 
                     gap-2 lg:justify-between items-center"
             >

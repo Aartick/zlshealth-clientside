@@ -6,7 +6,7 @@ import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
 function Page() {
 
   return (
-    <div className='container mx-auto space-y-[30px] bg-white text-black p-5 md:p-10'>
+    <div className='max-w-screen-2xl mx-auto space-y-[30px] bg-white text-black p-5 md:p-10'>
       <div className="space-y-4">
         <div className="relative w-full h-[250px] sm:h-[400px] lg:h-[625px]">
           <Image

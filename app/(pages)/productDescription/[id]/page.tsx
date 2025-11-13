@@ -106,7 +106,7 @@ function Page() {
     }
 
     return (
-        <div className='space-y-5 pb-10 container mx-auto'>
+        <div className='space-y-5 pb-10 max-w-screen-2xl mx-auto'>
 
             {/* ================ Product Images And Details ================ */}
             <div className="flex flex-col md:flex-row">
@@ -114,26 +114,35 @@ function Page() {
                 {loading
                     ? <ProductDescriptionSkeleton />
                     : (
-                        <div className="flex-1 px-6 py-12 sm:py-10 lg:py-6 flex gap-4">
+                        <div className="flex-1 p-6 sm:py-10 lg:py-6 flex flex-col-reverse md:flex-row items-center md:items-start gap-4">
                             {/* Thumbnail images */}
-                            <div className="flex flex-col space-y-3">
+                            <div className="flex items-center justify-center md:flex-col space-x-3 md:space-x-0 md:space-y-3 
+                            overflow-x-auto md:overflow-visible w-full md:w-auto 
+                            py-0.5 md:py-0 px-1 md:px-0 scrollbar-hide
+                            ">
                                 {thumbnails.map((img, i) => (
-                                    <Image
+                                    <div
                                         key={i}
-                                        src={img}
-                                        width={150}
-                                        height={150}
-                                        alt={`Thumbnail ${i + 1}`}
-                                        className={`rounded-xs cursor-pointer transition-all duration-300 
-                                    ${selectedImage === img ? "ring-2 ring-[#71BF45]" : ""
-                                            }`}
+                                        className={`
+                                                    flex-shrink-0 cursor-pointer transition-all duration-300 rounded-md
+                                                    ${selectedImage === img ? "ring-2 ring-[#71BF45]" : ""}
+                                        `}
                                         onClick={() => setSelectedImage(img)}
-                                    />
+                                    >
+                                        <Image
+                                            src={img}
+                                            alt={`Thumbnail ${i + 1}`}
+                                            width={0}
+                                            height={0}
+                                            sizes="(max-width: 640px) 70px, (max-width: 1024px) 90px, 110px"
+                                            className="w-[70px] sm:w-[90px] md:w-[100px] lg:w-[120px] h-[70px] sm:h-[90px] md:h-[100px] lg:h-[120px] rounded-md object-cover"
+                                        />
+                                    </div>
                                 ))}
                             </div>
 
                             {/* Selected product image */}
-                            <div className="md:flex-2 relative w-screen md:w-[400px] lg:w-[525px] h-[492px]">
+                            <div className="md:flex-2 relative w-full h-[300px] sm:h-[350px] md:w-[400px] lg:w-[525px] lg:h-[492px]">
                                 {/* Wishlist Heart Button */}
                                 <div className="absolute top-3 right-3 z-10">
                                     <WishlistButton product={product} />
@@ -403,12 +412,12 @@ function Page() {
                 {/* Similar Products */}
                 <div
                     ref={scrollRef}
-                    className="flex items-center scroll-smooth
+                    className="flex scroll-smooth
                     overflow-x-auto gap-5 scrollbar-hide"
                 >
                     {similarProducts.map((product) => (
                         <div
-                            className='sm:w-[250px] md:w-[300px] shrink-0'
+                            className='w-[200px] sm:w-[250px] md:w-[300px] shrink-0'
                             key={product._id}
                         >
                             <Product product={product} />

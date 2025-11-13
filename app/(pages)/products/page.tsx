@@ -219,7 +219,7 @@ function Page() {
     }
 
     return (
-        <div className='pt-4 container mx-auto '>
+        <div className='pt-4 max-w-screen-2xl mx-auto '>
             {/* Header image for products page */}
             <div className="relative w-full h-[200px] sm:h-[300px] md:h-[376px]">
                 <Image

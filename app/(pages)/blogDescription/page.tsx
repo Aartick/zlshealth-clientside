@@ -8,7 +8,7 @@ function Page() {
   const router = useRouter()
 
   return (
-    <div className='container mx-auto space-y-4 p-5 md:p-10 text-justify'>
+    <div className='max-w-screen-2xl mx-auto space-y-4 p-5 md:p-10 text-justify'>
       {/* Title */}
       <div className="pb-2.5 space-y-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">

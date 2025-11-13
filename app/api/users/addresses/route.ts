@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     return success(200, user.addresses);
   } catch (e) {
     console.log(e);
-    return error(500, "Something went wrong.");
+    return error(500, "Something went wrong while getting user address.");
   }
 }
 

@@ -98,7 +98,7 @@ function Page() {
     }
 
     return (
-        <div className='container mx-auto flex flex-col md:flex-row items-center gap-6 md:gap-[42px] pt-[30px] px-4 sm:px-[30px] md:px-[60px] pb-[60px]'>
+        <div className='max-w-screen-2xl mx-auto flex flex-col md:flex-row items-center gap-6 md:gap-[42px] pt-[30px] px-4 sm:px-[30px] md:px-[60px] pb-[60px]'>
 
             {/* FIRST COLUMN: Signup form and actions */}
             <div className="w-full max-w-md space-y-[30px] rounded-[20px] border-3 border-[#e3e3e3] p-5 sm:p-[30px]">

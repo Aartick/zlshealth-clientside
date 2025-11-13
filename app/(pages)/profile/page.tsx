@@ -222,13 +222,13 @@ function Page() {
     const [sidebarOpen, setSidebarOpen] = useState(false)
 
     return (
-        <div className='container mx-auto relative flex gap-8 px-2 py-4 md:p-8 h-screen'>
+        <div className='max-w-screen-2xl mx-auto relative flex gap-8 px-2 py-4 md:p-8 h-screen'>
             {/* ================ Sidebar Container ================ */}
             <div className={`
-            bg-white lg:border lg:border-[#f4f4f4] lg:rounded-[36px] p-[30px] overflow-y-scroll scrollbar-hide
+            bg-white lg:border lg:border-[#f4f4f4] rounded-br-[36px] lg:rounded-[36px] p-[30px] overflow-y-scroll scrollbar-hide
                     transition-all duration-500 ease-in-out
                     lg:static lg:w-[300px] lg:opacity-100 lg:translate-x-0
-                    absolute left-0 h-full z-30 lg:z-0
+                    absolute left-0 h-fit lg:h-full z-30 lg:z-0
                     ${sidebarOpen ? "translate-x-0 w-[300px] opacity-100 shadow-2xl lg:shadow-none" : "-translate-x-full w-[300px] opacity-0"}`}
             >
                 {/* Sidebar Content Wrapper */}

@@ -53,7 +53,7 @@ function CartButton({ product }: ProductProps) {
                 quantity: 1,
                 about: product.about,
                 discount: product.discount,
-                loading: true,
+                loading: false,
             }))
         }
     }

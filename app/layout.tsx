@@ -42,6 +42,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "ZLS Health",
   description: "Zealous Health",
+  icons: {
+    icon: "/favicon.ico"
+  }
 };
 
 export default function RootLayout({

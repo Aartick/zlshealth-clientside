@@ -408,7 +408,7 @@ export default function Home() {
       </p>
 
       {/* PRODUCTS FILTERS */}
-      <section className="container mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 px-10 text-xs md:text-base">
+      <section className="max-w-screen-2xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 px-10 text-xs md:text-base">
         <button
           onClick={() => setActiveBtn("Digestive")}
           className={`
@@ -555,7 +555,7 @@ export default function Home() {
       </section>
 
       {/* PRODUCTS */}
-      <section className="container mx-auto space-y-4 px-3 md:px-10">
+      <section className="max-w-screen-2xl mx-auto space-y-4 px-3 md:px-10">
         <div className="flex items-center justify-between text-sm md:text-base">
           <p className="font-semibold">Gut Improve Suplements</p>
           <Link href="/products" className="flex items-center gap-1 hover:text-[#71BF45]">
@@ -659,7 +659,7 @@ export default function Home() {
           </defs>
         </svg>
 
-        <div className="relative z-10 container mx-auto px-6 pt-32 lg:pt-20 flex flex-col-reverse h-fit md:h-auto md:flex-row items-center gap-20 md:justify-around">
+        <div className="relative z-10 max-w-screen-2xl mx-auto px-6 pt-32 lg:pt-20 flex flex-col-reverse h-fit md:h-auto md:flex-row items-center gap-20 md:justify-around">
           {/* LEFT TEXT */}
           <p className="font-medium text-3xl sm:text-4xl md:text-5xl lg:text-6xl max-w-xl">
             A brand rooted in <span className="font-extralight">nature.</span>
@@ -743,7 +743,7 @@ export default function Home() {
       </section>
 
       {/* COMPARISION TABLE */}
-      <div className="container mx-auto pt-24 px-2.5 sm:px-[30px] md:px-[60px]">
+      <div className="max-w-screen-2xl mx-auto pt-24 px-2.5 sm:px-[30px] md:px-[60px]">
         <div className="overflow-hidden rounded-2xl shadow-lg border border-[#093C16]">
           <table className="w-full border-separate border-spacing-0">
             <thead>
@@ -867,7 +867,7 @@ export default function Home() {
       </section>
 
       {/* SCIENCE AT WORK SECTION */}
-      <section className="container mx-auto px-[30px] md:px-[60px] space-y-6">
+      <section className="max-w-screen-2xl mx-auto px-[30px] md:px-[60px] space-y-6">
         <div className="space-y-3 text-center">
           <p className="font-semibold text-2xl md:text-[32px] text-[#093C16]">
             Our Science at Work
@@ -965,7 +965,7 @@ export default function Home() {
       </section>
 
       {/* BLOGS SECTION */}
-      <section className="container mx-auto space-y-3 sm:space-y-4 px-6 sm:px-[60px]">
+      <section className="max-w-screen-2xl mx-auto space-y-3 sm:space-y-4 px-6 sm:px-[60px]">
         <p className="font-semibold text-2xl sm:text-[32px] text-[#093C16] text-center">
           Our Blogs
         </p>

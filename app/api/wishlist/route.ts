@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
     return success(201, responseWrapper);
   } catch (e) {
     console.log(e);
-    return error(500, "Something went wrong");
+    return error(500, "Something went wrong while adding to wishlist");
   }
 }
 
@@ -148,7 +148,7 @@ export async function PUT(req: NextRequest) {
     return success(200, responseWrapper);
   } catch (e) {
     console.log(e);
-    return error(500, "Something went wrong");
+    return error(500, "Something went wrong while removing form wishlist");
   }
 }
 
@@ -174,7 +174,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Map wishlist products to response format
-    const responseWrapper = wishlist.products.map((pro: WishlistProduct) => {
+    const responseWrapper = wishlist?.products.map((pro: WishlistProduct) => {
       const product = pro.productId as ProductDoc;
       return {
         _id: product._id,
@@ -190,6 +190,6 @@ export async function GET(req: NextRequest) {
     return success(201, responseWrapper);
   } catch (e) {
     console.error(e);
-    return error(500, "Something went wrong.");
+    return error(500, "Something went wrong while getting wishlist.");
   }
 }
