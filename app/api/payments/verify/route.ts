@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
           billing_country: "India",
           billing_email: address.email || user.email,
           billing_phone: Number(address.phone || user.phone),
-          billing_alternate_phone: Number(user.phone),
+          billing_alternate_phone: Number(user.phone || address.phone),
           shipping_is_billing: 1,
           order_items: productDetails.map((product) => ({
             name: product.name,
