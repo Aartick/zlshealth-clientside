@@ -25,7 +25,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 
-import { getItem, KEY_ACCESS_TOKEN, removeItem } from "@/utils/localStorageManager";
+import { getItem, KEY_ACCESS_TOKEN, MERGE_DONE_KEY, removeItem, setItem } from "@/utils/localStorageManager";
 import { axiosClient } from "@/utils/axiosClient";
 import toast from "react-hot-toast";
 
@@ -41,6 +41,7 @@ import { getMyAddress, getMyInfo } from "@/lib/thunks/userThunks";
 import { useNavbarColor } from "@/context/NavbarColorContext";
 import { product } from "@/interfaces/products";
 import { removeMyInfo } from "@/lib/features/appConfigSlice";
+import { persistor } from "@/lib/store";
 
 const placeholderTexts = [
     "Stress Relief Syrup",
@@ -171,21 +172,32 @@ function Navbar() {
 
     // Sync user info, address, cart and wishlist with backend
     useEffect(() => {
-        const syncCart = async () => {
-            if (isUser) {
-                await dispatch(getMyInfo())
-                // await dispatch(mergeGuestCart());
-                await dispatch(getMyAddress())
-                await dispatch(getCart());
-                await dispatch(getWishlist())
-            } else {
-                dispatch(resetCart());
-                dispatch(resetWishlist())
-            }
-        };
-        syncCart()
-    }, [isUser, dispatch])
+        let bootstrapped = false;
 
+        const unsubscribe = persistor.subscribe(() => {
+            if (persistor.getState().bootstrapped && !bootstrapped) {
+                bootstrapped = true;
+                runSync(); // run ONCE on initial load
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        if (persistor.getState().bootstrapped) {
+            runSync(); // run every time user logs in/out
+        }
+    }, [isUser]);
+
+    const runSync = () => {
+        if (isUser) {
+            dispatch(getMyInfo());
+            dispatch(getMyAddress());
+            dispatch(getCart());
+            dispatch(getWishlist());
+        }
+    };
 
 
     // ================= Handle logout action ================
@@ -198,6 +210,7 @@ function Navbar() {
                 dispatch(resetCart())
                 dispatch(resetWishlist())
                 signOut({ redirect: false })
+                setItem(MERGE_DONE_KEY, "false")
                 toast.success(response.data.result)
             }
         } catch { }

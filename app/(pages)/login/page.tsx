@@ -13,6 +13,9 @@
 
 // Import required modules and components
 import { googleLogIn } from '@/app/actions';
+import { useAppDispatch } from '@/lib/hooks';
+import { mergeGuestCart } from '@/lib/thunks/cartThunks';
+import { mergeGuestWishlist } from '@/lib/thunks/wishlistThunks';
 // import { auth } from '@/app/auth';
 import { axiosClient } from '@/utils/axiosClient';
 import { KEY_ACCESS_TOKEN, setItem } from '@/utils/localStorageManager';
@@ -29,6 +32,7 @@ function Page() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
+    const dispatch = useAppDispatch()
     const router = useRouter();
     const searchParams = useSearchParams();
     const redirectUrl = searchParams.get("redirect") || "/";
@@ -66,6 +70,11 @@ function Page() {
             // Reset form fields
             setEmail("")
             setPassword("")
+
+            // Merge guest cart and guest wishlist to db 
+            dispatch(mergeGuestCart());
+            dispatch(mergeGuestWishlist())
+            
             // Redirect user to the specified URL
             router.push(redirectUrl)
         } catch { }

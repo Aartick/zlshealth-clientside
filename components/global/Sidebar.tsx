@@ -11,7 +11,7 @@
 
 // Import required modules and components
 import { axiosClient } from '@/utils/axiosClient';
-import { getItem, KEY_ACCESS_TOKEN, removeItem } from '@/utils/localStorageManager';
+import { getItem, KEY_ACCESS_TOKEN, MERGE_DONE_KEY, removeItem, setItem } from '@/utils/localStorageManager';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
@@ -67,6 +67,7 @@ function Sidebar({
                 dispatch(resetCart())
                 dispatch(resetWishlist())
                 signOut({ redirect: false })
+                setItem(MERGE_DONE_KEY, "false")
                 toast.success(response.data.result)
             }
         } catch { }
