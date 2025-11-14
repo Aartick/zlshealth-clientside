@@ -2,7 +2,7 @@ import React from 'react'
 
 function page() {
     return (
-        <div className='mx-auto container'>
+        <div className='mx-auto max-w-screen-2xl'>
             <div className='px-20 pb-20 pt-10 space-y-10 font-serif'>
                 <p className='text-2xl font-bold'>
                     Legal & Privacy Policy

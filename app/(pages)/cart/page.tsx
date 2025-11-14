@@ -322,7 +322,7 @@ function Page() {
         <div className='flex flex-col items-center m-10'>
 
             {orderSuccessful ? (
-                <div className='w-full flex flex-col md:flex-row items-center space-y-10 md:space-y-0 md:justify-between mb-10 md:mb-3.5 container mx-auto'>
+                <div className='w-full flex flex-col md:flex-row items-center space-y-10 md:space-y-0 md:justify-between mb-10 md:mb-3.5 max-w-screen-2xl mx-auto'>
                     {/* ============ Thankyou Message / Billing Address ============ */}
                     <div className="space-y-6 md:py-10 text-wrap max-w-xs lg:max-w-lg">
 
@@ -540,7 +540,7 @@ function Page() {
                     </div>
 
                     {/* ================ DISCOUNT BANNER ================= */}
-                    <div className="p-5 rounded-[20px] border-2 border-[#e3e3e3] space-y-3.5 w-full container mx-auto">
+                    <div className="p-5 rounded-[20px] border-2 border-[#e3e3e3] space-y-3.5 w-full max-w-screen-2xl mx-auto">
                         <div className="flex items-center gap-[5px] text-[#71BF45]">
                             <BiSolidOffer />
                             <p className="font-semibold underline decoration-solid decoration-[12.5%]">
@@ -1278,12 +1278,12 @@ function Page() {
                 {/* Similar Products */}
                 <div
                     ref={scrollRef}
-                    className="flex items-center scroll-smooth
-                    overflow-x-auto gap-5 scrollbar-hide"
+                    className="flex scroll-smooth
+                    overflow-x-auto gap-2.5 sm:gap-5 scrollbar-hide"
                 >
                     {similarProducts.map((product) => (
                         <div
-                            className='sm:w-[250px] md:w-[300px] shrink-0'
+                            className='w-[20 0px] sm:w-[250px] md:w-[300px] shrink-0'
                             key={product?._id}
                         >
                             <Product product={product} />

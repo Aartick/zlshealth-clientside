@@ -29,7 +29,7 @@ function page() {
     const horizontalScroll = [...imgs, ...imgs]
 
     return (
-        <div className='space-y-[30px] container mx-auto'>
+        <div className='space-y-[30px] max-w-screen-2xl mx-auto'>
             {/* Header + Image */}
             <div className='flex flex-col items-center text-center pb-5 px-5 sm:px-0 space-y-3'>
                 <p className="font-bold text-3xl md:text-[40px] text-[#093C16] max-w-[658px]">
@@ -53,7 +53,7 @@ function page() {
             </div>
 
             {/* ================ IMAGE CAROUSEL ================ */}
-            <div className="relative overflow-hidden container mx-auto">
+            <div className="relative overflow-hidden max-w-screen-2xl mx-auto">
                 <div className="flex gap-4 animate-scroll-left">
                     {/* Duplicate images for infinite scroll */}
                     {horizontalScroll.map((data, idx) => (
@@ -70,7 +70,7 @@ function page() {
             </div>
 
             {/* ================ OUR STORY ================ */}
-            <div className="flex items-center h-[292px] bg-gradient-to-b from-white to-[#79D347] text-center container ">
+            <div className="flex items-center h-[292px] bg-gradient-to-b from-white to-[#79D347] text-center max-w-screen-2xl ">
                 {/* Decorative Leaves */}
                 <div className='w-16 sm:w-24 md:w-40 lg:w-[327px] lg:h-[511px] flex-shrink-0'>
                     <svg className='w-full h-auto' viewBox="0 0 327 511" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -266,7 +266,7 @@ export default function Page() {
     <div className="bg-[#191717]">
       <div
         ref={sectionRef}
-        className="container mx-auto my-auto relative md:h-screen overflow-hidden text-white -mt-24 sm:-mt-28 lg:-mt-36 cursor-none"
+        className="max-w-screen-2xl mx-auto my-auto relative md:h-screen overflow-hidden text-white -mt-24 sm:-mt-28 lg:-mt-36 cursor-none"
         style={{ backgroundColor: "#191717", paddingTop: "80px" }}
       >
         {/* Small white circular cursor */}

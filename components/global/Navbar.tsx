@@ -247,7 +247,7 @@ function Navbar() {
                         : "bg-white text-black")
                 }`}
             >
-                <div className="container mx-auto w-full flex justify-between items-center sm:gap-[40px]">
+                <div className="max-w-screen-2xl mx-auto w-full flex justify-between items-center sm:gap-[40px]">
                     {/* ====== Company Logo and location section ====== */}
                     <div className="flex flex-row gap-[21px]">
                         <Link

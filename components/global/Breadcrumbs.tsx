@@ -31,7 +31,7 @@ export default function Breadcrumbs() {
       {hideBreadcrumbs.includes(pathname) ? null : (
         <nav
           className={`${ "mt-24 lg:mt-0"
-            } text-sm text-gray-600 container mx-auto`}
+            } text-sm text-gray-600 max-w-screen-2xl mx-auto`}
         >
           <ol className="flex space-x-2">
             {/* Home */}

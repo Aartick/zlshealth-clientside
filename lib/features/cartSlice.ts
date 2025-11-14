@@ -87,8 +87,17 @@ const groceryCartSlice = createSlice({
         } else {
           state.cart.push({
             _id: productId,
+            category: "",
+            productTypes: [""],
+            benefits: [""],
+            name: "",
+            img: "",
+            price: 0,
+            quantity: 0,
+            about: "",
+            discount: 0,
             loading: true,
-          } as productType);
+          });
         }
       })
       // Update cart state after backend add-to-cart
