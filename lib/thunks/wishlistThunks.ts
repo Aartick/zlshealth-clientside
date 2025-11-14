@@ -14,7 +14,36 @@
  */
 
 import { axiosClient } from "@/utils/axiosClient";
+import { RootState } from "../store";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { resetWishlist } from "../features/wishlistSlice";
+
+// Merge guest wishlist items into user wishlist on login
+export const mergeGuestWishlist = createAsyncThunk(
+  "wishlist/mergeGuestWishlist",
+  async (_, { getState, dispatch }) => {
+    try {
+      const state = getState() as RootState;
+      const guestWishlist = state.wishlistSlice.products;
+
+      // If guest wishlist is empty, do nothing
+      if (!guestWishlist.length) return;
+
+      // Prepare product to merge
+      const productsToMerge = guestWishlist.map((item) => ({
+        productId: item._id,
+      }));
+
+      await axiosClient.post("/api/wishlist/mergeGuestWishlist", {
+        products: productsToMerge,
+      });
+
+      dispatch(resetWishlist());
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
 
 // Add a product to the wishlist (backend)
 export const addToWishlist = createAsyncThunk(

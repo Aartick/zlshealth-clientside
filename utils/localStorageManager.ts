@@ -11,6 +11,8 @@ export const KEY_ACCESS_TOKEN = "access_token";
  */
 export const REDIRECT_PATH = "redirectPath";
 
+export const MERGE_DONE_KEY = "merge_done";
+
 /**
  * @function getItem
  * @description Safely retrieves an item from localStorage (only in browser).

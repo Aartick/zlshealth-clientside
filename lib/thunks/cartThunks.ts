@@ -26,7 +26,7 @@ export const mergeGuestCart = createAsyncThunk(
   async (_, { getState, dispatch }) => {
     try {
       const state = getState() as RootState;
-      const guestCart = state.cartSlice.cart;
+      const guestCart = state.cartSlice?.cart;
 
       // If guest cart is empty, do nothing
       if (!guestCart.length) return;

@@ -47,7 +47,7 @@ import { MdChevronRight, MdKeyboardArrowRight } from 'react-icons/md'
 import { RxCross2 } from 'react-icons/rx'
 import { SlArrowDown } from 'react-icons/sl'
 import { signOut } from "next-auth/react";
-import { KEY_ACCESS_TOKEN, removeItem } from '@/utils/localStorageManager'
+import { KEY_ACCESS_TOKEN, MERGE_DONE_KEY, removeItem, setItem } from '@/utils/localStorageManager'
 import { removeMyInfo } from '@/lib/features/appConfigSlice'
 import { resetCart } from '@/lib/features/cartSlice'
 import { resetWishlist } from '@/lib/features/wishlistSlice'
@@ -211,6 +211,7 @@ function Page() {
                 dispatch(resetCart())
                 dispatch(resetWishlist())
                 signOut({ redirect: false })
+                setItem(MERGE_DONE_KEY, "false")
                 toast.success(response.data.result)
                 router.back()
             }
