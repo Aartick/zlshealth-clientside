@@ -357,8 +357,8 @@ export default function Page() {
           </section>
 
           {/* ---------- PANEL 2 ---------- */}
-          <section className="panel flex flex-col md:flex-row md:gap-8 text-white px-8">
-            <div className="flex flex-col gap-10 md:gap-16 mt-14">
+          <section className="panel flex flex-col md:flex-row md:gap-8 2xl:gap-16 text-white">
+            <div className="flex flex-col gap-10 md:gap-16 2xl:justify-around md:mt-14 2xl:mt-0 px-8 md:px-0">
               <div className="space-y-2.5">
                 <h5 className="font-medium text-2xl sm:text-3xl text-white">
                   BIOCAGE Technology™
@@ -426,7 +426,7 @@ export default function Page() {
 
             <video
               ref={videoRef}
-              className="h-[750px] w-screen -my-40 sm:my-14 md:my-0 sm:h-full"
+              className="h-[750px] w-screen 2xl:w-[1536px] -my-40 sm:my-14 md:my-0 sm:h-full"
               playsInline
               loop
             >
@@ -438,8 +438,8 @@ export default function Page() {
           </section>
 
           {/* ---------- PANEL 3 ---------- */}
-          <section className="panel flex flex-col md:flex-row px-8 md:px-0 md:py-5">
-            <div className="flex flex-col gap-10 mt-8 md:mt-10">
+          <section className="panel flex flex-col md:flex-row px-8 2xl:pl-16 md:py-5">
+            <div className="flex flex-col gap-10 2xl:justify-around sm:mt-8 md:mt-10 2xl:mt-0">
 
               {/* ====== TOP HEADING ====== */}
               <div className="space-y-2.5">
@@ -511,7 +511,7 @@ export default function Page() {
           </section>
 
           {/* ---------- PANEL 4 ---------- */}
-          <section className="panel flex flex-col gap-8 md:gap-8 md:h-screen mx-4 md:mx-8 md:py-14">
+          <section className="panel flex flex-col gap-8 2xl:justify-around md:h-screen mx-4 md:mx-8 md:py-14 2xl:py-0">
             <p className="font-medium text-2xl sm:text-3xl w-[300px] sm:w-[460px]">
               Ancient Wisdom + Modern Science = {" "}
               <span className="font-light italic">Magic</span>
@@ -609,7 +609,7 @@ export default function Page() {
             className="panel md:overflow-scroll scrollbar-hide flex justify-center mt-20 md:mt-14 md:mb-24 mx-8 md:mx-0 md:px-40"
           >
             <div
-              className="space-y-20 w-full"
+              className="space-y-10 md:space-y-20 w-full"
             >
               <p className="font-semibold text-2xl sm:text-4xl text-white text-nowrap">
                 The Science Made Simple
@@ -617,14 +617,14 @@ export default function Page() {
               {steps.map((step, index) => (
                 <div
                   key={index}
-                  className={`flex gap-20 items-center w-full ${index === steps.length && "pb-80"}`}
+                  className={`flex gap-10 sm:gap-14 md:gap-20 items-center w-full ${index === steps.length && "pb-80"}`}
                 >
                   {/* === Timeline Section === */}
                   <div className="flex flex-col items-center relative">
                     {/* --- MAP THROUGH STEPS --- */}
                     <React.Fragment key={index}>
                       {/* Line above the dot */}
-                      <div className="h-40 w-[2px] bg-gradient-to-b from-white to-[#71BF45]" />
+                      <div className="h-32 md:h-40 w-[2px] bg-gradient-to-b from-white to-[#71BF45]" />
 
                       {/* Dot + Step label */}
                       <div className="relative flex items-center gap-3 my-8">
@@ -633,7 +633,7 @@ export default function Page() {
                       </div>
 
                       {/* Line below the dot (skip after last step if you want bottom gap) */}
-                      <div className="h-40 w-[2px] bg-gradient-to-b from-white to-[#71BF45]" />
+                      <div className="h-32 md:h-40 w-[2px] bg-gradient-to-b from-white to-[#71BF45]" />
                     </React.Fragment>
                   </div>
 
@@ -646,7 +646,7 @@ export default function Page() {
                       </p>
                     </div>
 
-                    <div className="relative w-full h-[200px] md:h-[300px]">
+                    <div className="relative w-full h-[200px] sm:h-[250px] md:h-[300px]">
                       <Image
                         src={step.image}
                         fill
@@ -661,10 +661,10 @@ export default function Page() {
           </section>
 
           {/* ---------- PANEL 6 ---------- */}
-          <section className="panel relative md:w-screen md:h-screen mt-20 md:mt-12 px-8 space-y-8 md:space-y-2.5 py-2.5 pr-20 md:overflow-hidden">
+          <section className="panel relative flex flex-col 2xl:justify-around md:w-screen md:h-screen mt-20 md:mt-0 space-y-8 md:space-y-2.5 2xl:space-y-0 py-2.5 md:pr-20 2xl:w-[1536px]">
             {/* UPPER ROW */}
-            <div className="flex flex-col md:flex-row gap-8 md:gap-0 items-center">
-              <div className="flex-1 space-y-3">
+            <div className="flex flex-col md:flex-row gap-8 md:gap-0 md:items-center 2xl:h-1/2">
+              <div className="flex-1 px-8 md:px-0 space-y-3">
                 <p className="text-2xl sm:text-3xl w-[400px]">
                   Ready to{" "}
                   <span className="font-semibold">
@@ -691,8 +691,8 @@ export default function Page() {
             </div>
 
             {/* ====== FLOATING CARDS ====== */}
-            <div className="flex flex-col gap-8 md:gap-10 md:flex-row items-center">
-              <div className="flex-1 flex flex-col gap-8 md:gap-2 items-center md:items-end px-10">
+            <div className="flex flex-col gap-8 md:gap-10 md:flex-row items-center 2xl:h-1/2">
+              <div className="flex-1 flex flex-col gap-8 md:gap-2 2xl:gap-12 h-full items-center md:items-end px-10">
                 <Card
                   text="Multi-Pathway Disease Targeting"
                   onClick={() =>
@@ -712,7 +712,7 @@ export default function Page() {
                 />
               </div>
 
-              <div className="flex-1 flex flex-col gap-8 md:gap-20">
+              <div className="flex-1 flex flex-col gap-8 md:gap-20 2xl:justify-around 2xl:h-full 2xl:-mt-32">
                 <MainCard
                   text="Phospholipids & Charged Nanoemulsion"
                   onClick={() =>
@@ -821,7 +821,7 @@ function CircleCard({
       whileHover={{ scale: 1.05 }}
       transition={{ duration: 0.3 }}
       onClick={onClick}
-      className="text-white flex items-center justify-center text-center text-sm md:text-lg w-40 h-40 md:h-36 md:w-36 border border-[#71BF45F] rounded-full"
+      className="text-white flex items-center justify-center text-center text-sm md:text-lg w-40 h-40 md:h-36 md:w-36 2xl:h-40 2xl:w-40 2xl:p-1.5 border border-[#71BF45F] rounded-full"
     >
       {text}
     </motion.div>
