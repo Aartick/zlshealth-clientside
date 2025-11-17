@@ -58,22 +58,22 @@ const steps = [
   {
     title: "Protection",
     text: "Our nano-cage wraps around nutrients like a protective bubble.",
-    image: "/science/protection.jpg"
+    image: "/science/step1.png"
   },
   {
     title: "Transport",
     text: "Smart delivery system navigates your digestive system like GPS.",
-    image: "/science/protection.jpg"
+    image: "/science/step2.png"
   },
   {
     title: "Release",
     text: "Nutrients are released exactly where and when your cells need them.",
-    image: "/science/protection.jpg"
+    image: "/science/step3.png"
   },
   {
     title: "Results",
     text: "Experience real benefits because your body actually uses what you take!",
-    image: "/science/protection.jpg"
+    image: "/science/step4.png"
   }
 ]
 
@@ -633,7 +633,9 @@ export default function Page() {
           {/* ---------- PANEL 6 ---------- */}
           <section className="panel relative flex flex-col 2xl:justify-around md:w-screen md:h-screen mt-20 md:mt-0 space-y-8 md:space-y-2.5 2xl:space-y-0 py-2.5 md:pr-20 2xl:w-[1536px]">
             {/* UPPER ROW */}
-            <div className="flex flex-col md:flex-row gap-8 md:gap-0 md:items-center 2xl:h-1/2">
+            <div className={`flex flex-col md:flex-row gap-8 md:gap-0 md:items-center 2xl:h-1/2
+              ${selectedCard !== null && "blur-[2px]"}
+              `}>
               <div className="flex-1 px-8 md:px-0 space-y-3">
                 <p className="text-2xl sm:text-3xl w-[400px]">
                   Ready to{" "}
@@ -661,7 +663,9 @@ export default function Page() {
             </div>
 
             {/* ====== FLOATING CARDS ====== */}
-            <div className="flex flex-col gap-8 md:gap-10 md:flex-row items-center 2xl:h-1/2">
+            <div className={`flex flex-col gap-8 md:gap-10 md:flex-row items-center 2xl:h-1/2
+              ${selectedCard !== null && "blur-[2px]"}
+              `}>
               <div className="flex-1 flex flex-col gap-8 md:gap-2 2xl:gap-12 h-full items-center md:items-end px-10">
                 <Card
                   text="Multi-Pathway Disease Targeting"
@@ -707,7 +711,7 @@ export default function Page() {
                 <>
                   {/* Overlay */}
                   <motion.div
-                    className="absolute inset-0 bg-black/60 backdrop-blur-sm z-40"
+                    className="absolute inset-0 z-40 -mt-6"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
