@@ -1,3 +1,4 @@
+import dbConnect from "@/dbConnect/dbConnect";
 import Cart from "@/models/Cart";
 import { verifyAccessToken } from "@/utils/authMiddleware";
 import { error, success } from "@/utils/responseWrapper";
@@ -34,6 +35,8 @@ export async function POST(req: NextRequest) {
     if (!productId || !quantity) {
       return error(400, "All fields are required.");
     }
+
+    await dbConnect();
 
     // Verify JWT token and extract customer ID
     const { valid, response, _id } = await verifyAccessToken(req);
@@ -100,6 +103,7 @@ export async function POST(req: NextRequest) {
  */
 export async function GET(req: NextRequest) {
   try {
+    await dbConnect();
     // Verify JWT token and extract customer ID
     const { valid, response, _id } = await verifyAccessToken(req);
     if (!valid) return response!;

@@ -16,12 +16,12 @@ function HumanBodyModel() {
     if (!modelRef.current) return;
 
     // Normalize model orientation
-    modelRef.current.rotation.set(0, 3.5, 0); 
+    modelRef.current.rotation.set(0, 4.6, 0);
 
     // Animate rotation based on scroll
     const ctx = gsap.context(() => {
-      gsap.to(modelRef.current!.rotation, {
-        y: `+=${Math.PI * 2}`, // full revolution
+      const rotationTween = gsap.to(modelRef.current!.rotation, {
+        y: `+=${150 * (Math.PI / 180)}`, // revolution less then 180
         ease: "none",
         scrollTrigger: {
           trigger: "#human-model-container",
@@ -30,9 +30,22 @@ function HumanBodyModel() {
           scrub: true,
         },
       });
+
+      const handleResize = () => {
+        if (modelRef.current) {
+          rotationTween.scrollTrigger?.refresh()
+        }
+      }
+
+      window.addEventListener("resize", handleResize)
     });
 
-    return () => ctx.revert();
+    ScrollTrigger.refresh();
+
+    return () => {
+      window.removeEventListener("resize", () => { })
+      ctx.revert();
+    }
   }, []);
 
   return <primitive ref={modelRef} object={scene} scale={2} position={[0, -1.6, 0]} />;

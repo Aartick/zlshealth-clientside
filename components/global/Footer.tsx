@@ -31,7 +31,9 @@ function Footer() {
         <footer className={`${pathname === "/"
             ? "bg-[#FBFFF9]"
             : "bg-white"} text-black border-t border-[#000000] p-5 
-            sm:p-10 lg:py-20 lg:px-16`
+            sm:p-10 lg:py-20 lg:px-16
+            ${pathname === "/science" && "hidden"}
+            `
         }
         >
             {/* Main footer layout: left and right sections */}

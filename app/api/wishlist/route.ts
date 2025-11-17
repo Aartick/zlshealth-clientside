@@ -1,3 +1,4 @@
+import dbConnect from "@/dbConnect/dbConnect";
 import Wishlist from "@/models/Wishlist";
 import { verifyAccessToken } from "@/utils/authMiddleware";
 import { error, success } from "@/utils/responseWrapper";
@@ -33,6 +34,8 @@ export async function POST(req: NextRequest) {
     if (!productId) {
       return error(400, "Product ID is required.");
     }
+
+    await dbConnect();
 
     // Verify JWT token and extract customer ID
     const { valid, response, _id } = await verifyAccessToken(req);
@@ -102,6 +105,8 @@ export async function PUT(req: NextRequest) {
       return error(400, "Product ID is required.");
     }
 
+    await dbConnect();
+
     // Verify JWT token and extract customer ID
     const { valid, response, _id } = await verifyAccessToken(req);
     if (!valid) return response!;
@@ -160,6 +165,8 @@ export async function PUT(req: NextRequest) {
  */
 export async function GET(req: NextRequest) {
   try {
+    await dbConnect();
+    
     // Verify JWT token and extract customer ID
     const { valid, response, _id } = await verifyAccessToken(req);
     if (!valid) return response!;

@@ -184,36 +184,6 @@ export default function Page() {
     return () => observer.unobserve(video)
   }, [])
 
-  // ============== 3D SPIN LOGICS ================
-  const imgRef = useRef<HTMLDivElement>(null)
-  const spinTween = useRef<gsap.core.Tween | null>(null);
-
-  useEffect(() => {
-    const el = imgRef.current;
-
-    if (!el) return;
-
-    ScrollTrigger.create({
-      trigger: el,
-      start: "top 80%",
-      end: "bottom+=500 top",
-      onEnter: () => {
-        spinTween.current = gsap.to(el, {
-          rotationY: 360,
-          ease: "none",
-          repeat: -1,
-          duration: 8, // rotation speed
-          transformOrigin: "center center",
-        });
-      },
-      onLeave: () => spinTween.current?.pause(),
-      onEnterBack: () => spinTween.current?.play(),
-      onLeaveBack: () => spinTween.current?.pause(),
-    });
-
-    return () => { spinTween.current?.kill(); }
-  }, []);
-
   // =============== MODAL LOGICS ================
   const [selectedCard, setSelectedCard] = useState<null | string>(null)
 
@@ -266,7 +236,7 @@ export default function Page() {
     <div className="bg-[#191717]">
       <div
         ref={sectionRef}
-        className="max-w-screen-2xl mx-auto my-auto relative md:h-screen overflow-hidden text-white -mt-24 sm:-mt-28 lg:-mt-36 cursor-none"
+        className=" my-auto relative md:h-screen overflow-hidden text-white -mt-24 sm:-mt-28 lg:-mt-36 cursor-none"
         style={{ backgroundColor: "#191717", paddingTop: "80px" }}
       >
         {/* Small white circular cursor */}
