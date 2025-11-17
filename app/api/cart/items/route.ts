@@ -1,3 +1,4 @@
+import dbConnect from "@/dbConnect/dbConnect";
 import Cart from "@/models/Cart";
 import { verifyAccessToken } from "@/utils/authMiddleware";
 import { error, success } from "@/utils/responseWrapper";
@@ -31,6 +32,8 @@ export async function POST(req: NextRequest) {
     if (!products || !Array.isArray(products)) {
       return error(400, "Products are required");
     }
+
+    await dbConnect();
 
     // Verify JWT and extract user ID
     const { valid, response, _id } = await verifyAccessToken(req);

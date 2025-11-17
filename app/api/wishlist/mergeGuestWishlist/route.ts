@@ -3,6 +3,7 @@ import { verifyAccessToken } from "@/utils/authMiddleware";
 import { error, success } from "@/utils/responseWrapper";
 import { NextRequest } from "next/server";
 import mongoose from "mongoose";
+import dbConnect from "@/dbConnect/dbConnect";
 
 interface WishlistProduct {
   productId: string;
@@ -10,6 +11,8 @@ interface WishlistProduct {
 
 export async function POST(req: NextRequest) {
   try {
+    await dbConnect();
+    
     const { products } = await req.json();
 
     if (!Array.isArray(products)) {
