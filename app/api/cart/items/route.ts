@@ -81,6 +81,7 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   try {
+    await dbConnect()
     // Verify JWT and extract user ID
     const { valid, response, _id } = await verifyAccessToken(req);
     if (!valid) return response!;
@@ -149,6 +150,7 @@ export async function PUT(req: NextRequest) {
  */
 export async function DELETE(req: NextRequest) {
   try {
+    await dbConnect()
     const { searchParams } = new URL(req.url);
     const productId = searchParams.get("productId");
 

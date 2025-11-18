@@ -58,22 +58,22 @@ const steps = [
   {
     title: "Protection",
     text: "Our nano-cage wraps around nutrients like a protective bubble.",
-    image: "/science/protection.jpg"
+    image: "/science/step1.png"
   },
   {
     title: "Transport",
     text: "Smart delivery system navigates your digestive system like GPS.",
-    image: "/science/protection.jpg"
+    image: "/science/step2.png"
   },
   {
     title: "Release",
     text: "Nutrients are released exactly where and when your cells need them.",
-    image: "/science/protection.jpg"
+    image: "/science/step3.png"
   },
   {
     title: "Results",
     text: "Experience real benefits because your body actually uses what you take!",
-    image: "/science/protection.jpg"
+    image: "/science/step4.png"
   }
 ]
 
@@ -231,6 +231,18 @@ export default function Page() {
   }
 
   const closeModal = () => setSelectedCard(null)
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeModal()
+    }
+
+    document.addEventListener("keydown", handleEscape)
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape)
+    }
+  }, [])
 
   return (
     <div className="bg-[#191717]">
@@ -657,7 +669,6 @@ export default function Page() {
                   }
                 />
               </div>
-
             </div>
 
             {/* ====== FLOATING CARDS ====== */}
@@ -701,57 +712,57 @@ export default function Page() {
                 </div>
               </div>
             </div>
-
-            <AnimatePresence>
-              {selectedCard && (
-                <>
-                  {/* Overlay */}
-                  <motion.div
-                    className="absolute inset-0 bg-black/60 backdrop-blur-sm z-40"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={closeModal}
-                  >
-                    <motion.div
-                      className="absolute inset-0 flex items-center justify-center z-50 p-6"
-                      initial={{ opacity: 0, scale: 0.85 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.85 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <div
-                        className="bg-white max-w-5xl w-full h-[60vh] overflow-hidden flex flex-col sm:flex-row gap-8 shadow-2xl"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {/* TEXT ON LEFT */}
-                        <div className="flex-1 flex flex-col justify-center space-y-10 p-8">
-                          <h2 className="text-2xl text-[#093C16] font-semibold">
-                            {cardDetails[selectedCard].title}
-                          </h2>
-                          <p className="text-[#544848] leading-relaxed text-lg">
-                            {cardDetails[selectedCard].description}
-                          </p>
-                        </div>
-
-                        {/* IMAGE ON RIGHT */}
-                        <div className="flex-1 flex items-center justify-center">
-                          <div className="relative h-full w-full">
-                            <Image
-                              src={cardDetails[selectedCard].image}
-                              alt={cardDetails[selectedCard].title}
-                              fill
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  </motion.div>
-                </>
-              )}
-            </AnimatePresence>
           </section>
         </div>
+
+        <AnimatePresence>
+          {selectedCard && (
+            <>
+              {/* Overlay */}
+              <motion.div
+                className="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-40"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={closeModal}
+              >
+                <motion.div
+                  className="fixed inset-0 flex items-center justify-center z-50 p-6 mt-20"
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.85 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div
+                    className="bg-white max-w-5xl w-full h-[60vh] overflow-hidden flex flex-col sm:flex-row gap-8 shadow-2xl"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {/* TEXT ON LEFT */}
+                    <div className="flex-1 flex flex-col justify-center space-y-10 p-8">
+                      <h2 className="text-2xl text-[#093C16] font-semibold">
+                        {cardDetails[selectedCard].title}
+                      </h2>
+                      <p className="text-[#544848] leading-relaxed text-lg">
+                        {cardDetails[selectedCard].description}
+                      </p>
+                    </div>
+
+                    {/* IMAGE ON RIGHT */}
+                    <div className="flex-1 flex items-center justify-center">
+                      <div className="relative h-full w-full">
+                        <Image
+                          src={cardDetails[selectedCard].image}
+                          alt={cardDetails[selectedCard].title}
+                          fill
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

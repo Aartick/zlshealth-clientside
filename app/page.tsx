@@ -221,127 +221,143 @@ export default function Home() {
   const textRefs = useRef<HTMLDivElement[]>([])
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const container = divRef.current;
-      const path = pathRef.current;
-      if (!container || !path) return;
+    let ctx: gsap.Context | null = null
 
-      // ---- TUNABLES ----
-      const STEP_DUR = 1.8; // timeline time units per step (affects pacing)
-      const MOTION_DUR = 1.8; // how long icon moves along path (in timeline units)
-      const SCROLL_PIXELS_PER_STEP = 900; // how many px of scroll map to each step
-      const totalSteps = processSteps.length;
-      const totalScroll = SCROLL_PIXELS_PER_STEP * totalSteps; // used for pin end
+    const buildAnimation = () => {
+      if (ctx) ctx.revert();
 
-      // Reset / initial styles
-      gsap.set(iconRefs.current, { opacity: 0, xPercent: 0, yPercent: 0 });
-      processSteps.forEach((_, i) => {
-        if (i === 0) {
-          // faint hint for first text before its icon reaches center
-          gsap.set(textRefs.current[i], { opacity: 0.25, y: 24 });
-        } else {
-          gsap.set(textRefs.current[i], { opacity: 0, y: 24 });
-        }
-      });
+      ctx = gsap.context(() => {
+        const container = divRef.current;
+        const path = pathRef.current;
+        if (!container || !path) return;
 
-      // Section subtle fade-in when entering
-      gsap.from(container, {
-        opacity: 0,
-        duration: 0.6,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: container,
-          start: "top bottom-=80",
-          end: "top center",
-          scrub: true,
-        },
-      });
+        // ---- TUNABLES ----
+        const STEP_DUR = 1.8; // timeline time units per step (affects pacing)
+        const MOTION_DUR = 1.8; // how long icon moves along path (in timeline units)
+        const SCROLL_PIXELS_PER_STEP = 900; // how many px of scroll map to each step
+        const totalSteps = processSteps.length;
+        const totalScroll = SCROLL_PIXELS_PER_STEP * totalSteps; // used for pin end
 
-      // Main timeline mapped to scroll and pinned
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: container,
-          start: "top top",
-          end: `+=${totalScroll}`,
-          scrub: true,
-          pin: true,
-          anticipatePin: 1,
-        },
-      });
+        // Reset / initial styles
+        gsap.set(iconRefs.current, { opacity: 0, xPercent: 0, yPercent: 0 });
+        processSteps.forEach((_, i) => {
+          if (i === 0) {
+            // faint hint for first text before its icon reaches center
+            gsap.set(textRefs.current[i], { opacity: 0.25, y: 24 });
+          } else {
+            gsap.set(textRefs.current[i], { opacity: 0, y: 24 });
+          }
+        });
 
-      // Build timeline: each step gets a label at stepStart
-      processSteps.forEach((_, i) => {
-        const icon = iconRefs.current[i];
-        const text = textRefs.current[i];
-        if (!icon || !text) return;
-
-        const stepStart = i * STEP_DUR;
-        const stepLabel = `step${i}`;
-        tl.addLabel(stepLabel, stepStart);
-
-        // Ensure icon visible at start of its motion
-        tl.set(icon, { opacity: 1 }, stepLabel);
-
-        // ICON MOTION: move along entire path between 0->1, but we offset the start time so icons are spaced
-        tl.to(
-          icon,
-          {
-            motionPath: {
-              path,
-              align: path,
-              alignOrigin: [0.5, 0.5],
-              start: 0,
-              end: 1,
-            },
-            ease: "none",
-            duration: MOTION_DUR,
-            immediateRender: false,
+        // Section subtle fade-in when entering
+        gsap.from(container, {
+          opacity: 0,
+          duration: 0.6,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: container,
+            start: "top bottom-=80",
+            end: "top center",
+            scrub: true,
           },
-          stepLabel // start moving at label
-        );
+        });
 
-        // ---- TEXT BEHAVIOUR ----
-        // Text fades in sooner (as icon enters visible region)
-        const fadeInStart = stepStart + MOTION_DUR * 0.1; // start earlier
-        const fadeInDur = MOTION_DUR * 0.25;
-        // const holdEnd = stepStart + MOTION_DUR * 0.58; // hold until about 60%
-        const fadeOutStart = stepStart + MOTION_DUR * 0.7;
-        const fadeOutDur = MOTION_DUR * 0.25;
+        // Main timeline mapped to scroll and pinned
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: container,
+            start: "top top",
+            end: `+=${totalScroll}`,
+            scrub: true,
+            pin: true,
+            anticipatePin: 1,
+          },
+        });
 
-        // Fade in from bottom
-        tl.fromTo(
-          text,
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: fadeInDur, ease: "power2.out" },
-          fadeInStart
-        );
+        // Build timeline: each step gets a label at stepStart
+        processSteps.forEach((_, i) => {
+          const icon = iconRefs.current[i];
+          const text = textRefs.current[i];
+          if (!icon || !text) return;
 
-        // Hold full visibility until near the exit phase
-        // tl.to(text, { opacity: 1, y: 0, duration: holdEnd - (fadeInStart + fadeInDur) }, fadeInStart + fadeInDur);
+          const stepStart = i * STEP_DUR;
+          const stepLabel = `step${i}`;
+          tl.addLabel(stepLabel, stepStart);
 
-        // Fade out upward (not sideways)
-        if (i !== processSteps.length - 1) {
+          // Ensure icon visible at start of its motion
+          tl.set(icon, { opacity: 1 }, stepLabel);
+
+          // ICON MOTION: move along entire path between 0->1, but we offset the start time so icons are spaced
           tl.to(
-            text,
-            { opacity: 0, y: -30, duration: fadeOutDur, ease: "power2.inOut" },
-            fadeOutStart
+            icon,
+            {
+              motionPath: {
+                path,
+                align: path,
+                alignOrigin: [0.5, 0.5],
+                start: 0,
+                end: 1,
+              },
+              ease: "none",
+              duration: MOTION_DUR,
+              immediateRender: false,
+            },
+            stepLabel // start moving at label
           );
-        } else {
-          // last stays visible
-          tl.to(text, { opacity: 1, y: 0, duration: 0.05 }, fadeOutStart);
-        }
-      });
 
-      // refresh to ensure sizes & pin spacer are calculated
-      ScrollTrigger.refresh();
-    }, containerRef);
+          // ---- TEXT BEHAVIOUR ----
+          // Text fades in sooner (as icon enters visible region)
+          const fadeInStart = stepStart + MOTION_DUR * 0.1; // start earlier
+          const fadeInDur = MOTION_DUR * 0.25;
+          // const holdEnd = stepStart + MOTION_DUR * 0.58; // hold until about 60%
+          const fadeOutStart = stepStart + MOTION_DUR * 0.7;
+          const fadeOutDur = MOTION_DUR * 0.25;
 
-    const handleResize = () => ScrollTrigger.refresh();
-    window.addEventListener("resize", handleResize)
+          // Fade in from bottom
+          tl.fromTo(
+            text,
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: fadeInDur, ease: "power2.out" },
+            fadeInStart
+          );
+
+          // Hold full visibility until near the exit phase
+          // tl.to(text, { opacity: 1, y: 0, duration: holdEnd - (fadeInStart + fadeInDur) }, fadeInStart + fadeInDur);
+
+          // Fade out upward (not sideways)
+          if (i !== processSteps.length - 1) {
+            tl.to(
+              text,
+              { opacity: 0, y: -30, duration: fadeOutDur, ease: "power2.inOut" },
+              fadeOutStart
+            );
+          } else {
+            // last stays visible
+            tl.to(text, { opacity: 1, y: 0, duration: 0.05 }, fadeOutStart);
+          }
+        });
+
+        // refresh to ensure sizes & pin spacer are calculated
+        ScrollTrigger.refresh();
+      }, divRef);
+    };
+
+    buildAnimation();
+
+    const resizeObserver = new ResizeObserver(() => {
+      buildAnimation();
+    })
+
+    if (divRef.current) {
+      resizeObserver.observe(divRef.current)
+    }
+
+    window.addEventListener("resize", buildAnimation)
 
     return () => {
-      window.removeEventListener("resize", handleResize)
-      ctx.revert();
+      window.removeEventListener("resize", buildAnimation)
+      resizeObserver.disconnect();
+      if (ctx) ctx.revert()
     }
   }, []);
 
@@ -848,7 +864,7 @@ export default function Home() {
         </div>
 
         {/* TEXTS (below curve, responsive widths) */}
-        <div className="absolute top-4/5 w-full flex items-start justify-center">
+        <div className="absolute w-full flex items-start justify-center">
           {processSteps.map((step, i) => (
             <div
               key={i}
