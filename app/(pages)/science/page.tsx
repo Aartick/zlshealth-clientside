@@ -232,6 +232,18 @@ export default function Page() {
 
   const closeModal = () => setSelectedCard(null)
 
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeModal()
+    }
+
+    document.addEventListener("keydown", handleEscape)
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape)
+    }
+  }, [])
+
   return (
     <div className="bg-[#191717]">
       <div
@@ -633,9 +645,7 @@ export default function Page() {
           {/* ---------- PANEL 6 ---------- */}
           <section className="panel relative flex flex-col 2xl:justify-around md:w-screen md:h-screen mt-20 md:mt-0 space-y-8 md:space-y-2.5 2xl:space-y-0 py-2.5 md:pr-20 2xl:w-[1536px]">
             {/* UPPER ROW */}
-            <div className={`flex flex-col md:flex-row gap-8 md:gap-0 md:items-center 2xl:h-1/2
-              ${selectedCard !== null && "blur-[2px]"}
-              `}>
+            <div className="flex flex-col md:flex-row gap-8 md:gap-0 md:items-center 2xl:h-1/2">
               <div className="flex-1 px-8 md:px-0 space-y-3">
                 <p className="text-2xl sm:text-3xl w-[400px]">
                   Ready to{" "}
@@ -659,13 +669,10 @@ export default function Page() {
                   }
                 />
               </div>
-
             </div>
 
             {/* ====== FLOATING CARDS ====== */}
-            <div className={`flex flex-col gap-8 md:gap-10 md:flex-row items-center 2xl:h-1/2
-              ${selectedCard !== null && "blur-[2px]"}
-              `}>
+            <div className="flex flex-col gap-8 md:gap-10 md:flex-row items-center 2xl:h-1/2">
               <div className="flex-1 flex flex-col gap-8 md:gap-2 2xl:gap-12 h-full items-center md:items-end px-10">
                 <Card
                   text="Multi-Pathway Disease Targeting"
@@ -705,57 +712,57 @@ export default function Page() {
                 </div>
               </div>
             </div>
-
-            <AnimatePresence>
-              {selectedCard && (
-                <>
-                  {/* Overlay */}
-                  <motion.div
-                    className="absolute inset-0 z-40 -mt-6"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={closeModal}
-                  >
-                    <motion.div
-                      className="absolute inset-0 flex items-center justify-center z-50 p-6"
-                      initial={{ opacity: 0, scale: 0.85 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.85 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <div
-                        className="bg-white max-w-5xl w-full h-[60vh] overflow-hidden flex flex-col sm:flex-row gap-8 shadow-2xl"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {/* TEXT ON LEFT */}
-                        <div className="flex-1 flex flex-col justify-center space-y-10 p-8">
-                          <h2 className="text-2xl text-[#093C16] font-semibold">
-                            {cardDetails[selectedCard].title}
-                          </h2>
-                          <p className="text-[#544848] leading-relaxed text-lg">
-                            {cardDetails[selectedCard].description}
-                          </p>
-                        </div>
-
-                        {/* IMAGE ON RIGHT */}
-                        <div className="flex-1 flex items-center justify-center">
-                          <div className="relative h-full w-full">
-                            <Image
-                              src={cardDetails[selectedCard].image}
-                              alt={cardDetails[selectedCard].title}
-                              fill
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  </motion.div>
-                </>
-              )}
-            </AnimatePresence>
           </section>
         </div>
+
+        <AnimatePresence>
+          {selectedCard && (
+            <>
+              {/* Overlay */}
+              <motion.div
+                className="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-40"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={closeModal}
+              >
+                <motion.div
+                  className="fixed inset-0 flex items-center justify-center z-50 p-6 mt-20"
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.85 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div
+                    className="bg-white max-w-5xl w-full h-[60vh] overflow-hidden flex flex-col sm:flex-row gap-8 shadow-2xl"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {/* TEXT ON LEFT */}
+                    <div className="flex-1 flex flex-col justify-center space-y-10 p-8">
+                      <h2 className="text-2xl text-[#093C16] font-semibold">
+                        {cardDetails[selectedCard].title}
+                      </h2>
+                      <p className="text-[#544848] leading-relaxed text-lg">
+                        {cardDetails[selectedCard].description}
+                      </p>
+                    </div>
+
+                    {/* IMAGE ON RIGHT */}
+                    <div className="flex-1 flex items-center justify-center">
+                      <div className="relative h-full w-full">
+                        <Image
+                          src={cardDetails[selectedCard].image}
+                          alt={cardDetails[selectedCard].title}
+                          fill
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

@@ -15,13 +15,20 @@ function HumanBodyModel() {
   useEffect(() => {
     if (!modelRef.current) return;
 
-    // Normalize model orientation
     modelRef.current.rotation.set(0, 4.6, 0);
 
-    // Animate rotation based on scroll
-    const ctx = gsap.context(() => {
-      const rotationTween = gsap.to(modelRef.current!.rotation, {
-        y: `+=${150 * (Math.PI / 180)}`, // revolution less then 180
+    let rotationTween: gsap.core.Tween | null = null;
+
+    const createAnimation = () => {
+      // Kill previous tween if exists
+      if (rotationTween) {
+        rotationTween.scrollTrigger?.kill();
+        rotationTween.kill();
+      }
+
+      // Build new tween
+      rotationTween = gsap.to(modelRef.current!.rotation, {
+        y: `+=${150 * (Math.PI / 180)}`,
         ease: "none",
         scrollTrigger: {
           trigger: "#human-model-container",
@@ -31,22 +38,24 @@ function HumanBodyModel() {
         },
       });
 
-      const handleResize = () => {
-        if (modelRef.current) {
-          rotationTween.scrollTrigger?.refresh()
-        }
-      }
+      ScrollTrigger.refresh();
+    };
 
-      window.addEventListener("resize", handleResize)
-    });
+    createAnimation();
 
-    ScrollTrigger.refresh();
+    const handleResize = () => {
+      createAnimation();
+    };
+
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener("resize", () => { })
-      ctx.revert();
-    }
+      window.removeEventListener("resize", handleResize);
+      rotationTween?.scrollTrigger?.kill();
+      rotationTween?.kill();
+    };
   }, []);
+
 
   return <primitive ref={modelRef} object={scene} scale={2} position={[0, -1.6, 0]} />;
 }
