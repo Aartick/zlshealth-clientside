@@ -77,7 +77,7 @@ function Product({ product }: ProductProps) {
                     className="border-[3px] border-[#e3e3e3] rounded-[10px] sm:rounded-[20px]"
                 />
                 {/* Best Seller badge */}
-                <div className="absolute top-5 left-[3px] inline-block">
+                {product.bestSeller && (<div className="absolute top-5 left-[3px] inline-block">
                     <div
                         className="bg-[#71BF45] text-white text-xs font-bold px-3 py-2"
                         style={{
@@ -87,7 +87,7 @@ function Product({ product }: ProductProps) {
                     >
                         Best Seller
                     </div>
-                </div>
+                </div>)}
 
                 {/* Wishlist (favorite) icon */}
                 <div className="absolute top-3 right-3">
@@ -105,11 +105,15 @@ function Product({ product }: ProductProps) {
 
             {/* Price row with discount info */}
             <p className="font-extrabold text-base sm:text-xl text-[#093C16]">
-                ₹ {discountedPrice}{" "}
-                <span className="font-normal text-xs line-through text-[#848484]">
-                    ₹ {product.price}
-                </span>{" "}
-                <span className="font-medium text-xs text-[#71BF45]">({product.discount}% off)</span>
+                ₹{discountedPrice}{" "}
+                {product.discount !== 0 && (
+                    <>
+                        <span className="font-normal text-xs line-through text-[#848484]">
+                            ₹{product.price}
+                        </span>{" "}
+                        <span className="font-medium text-xs text-[#71BF45]">({product.discount}% off)</span>
+                    </>
+                )}
             </p>
 
             {/* Add to cart button */}
