@@ -221,12 +221,7 @@ export default function Home() {
   const textRefs = useRef<HTMLDivElement[]>([])
 
   useEffect(() => {
-    let ctx: gsap.Context | null = null
-
-    const buildAnimation = () => {
-      if (ctx) ctx.revert();
-
-      ctx = gsap.context(() => {
+      const ctx = gsap.context(() => {
         const container = divRef.current;
         const path = pathRef.current;
         if (!container || !path) return;
@@ -340,24 +335,13 @@ export default function Home() {
         // refresh to ensure sizes & pin spacer are calculated
         ScrollTrigger.refresh();
       }, divRef);
-    };
-
-    buildAnimation();
-
-    const resizeObserver = new ResizeObserver(() => {
-      buildAnimation();
-    })
-
-    if (divRef.current) {
-      resizeObserver.observe(divRef.current)
-    }
-
-    window.addEventListener("resize", buildAnimation)
+    
+      const handleResize = () => ScrollTrigger.refresh();
+      window.addEventListener("resize", handleResize)
 
     return () => {
-      window.removeEventListener("resize", buildAnimation)
-      resizeObserver.disconnect();
-      if (ctx) ctx.revert()
+      window.removeEventListener("resize", handleResize)
+      ctx.revert()
     }
   }, []);
 

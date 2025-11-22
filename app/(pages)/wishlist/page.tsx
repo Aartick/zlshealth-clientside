@@ -11,6 +11,7 @@ import Link from 'next/link'
 import React from 'react'
 import { FiHeart } from 'react-icons/fi'
 import { RxCross1 } from 'react-icons/rx'
+import { SlArrowDown } from 'react-icons/sl'
 
 function Page() {
     // Check if user is logged in
@@ -25,7 +26,7 @@ function Page() {
     const isWishlistEmpty = wishlist.length === 0
 
     return (
-        <div className="max-w-screen-2xl mx-auto flex items-center justify-center py-10">
+        <div className="container mx-auto flex items-center justify-center px-2.5 py-10">
             <div className="p-2.5 border border-[#e3e3e3] rounded-[20px] transition-all duration-500 ease-out opacity-0 translate-y-2 animate-fadeInCart">
 
                 {/* HEADERS */}
@@ -56,7 +57,7 @@ function Page() {
                             <div className="border border-[#e3e3e3] mx-3" />
 
                             {/* CART PRODUCTS */}
-                            <div className="grid grid-cols-3 items-start py-2.5">
+                            <div className="grid grid-cols-2 gap-10 items-start py-2.5">
                                 <div className="flex gap-3">
                                     {/* SERIAL NO. */}
                                     <p>{idx + 1}.</p>
@@ -74,26 +75,25 @@ function Page() {
                                     {/* PRODUCT DETAILS */}
                                     <div className="flex flex-col justify-between font-medium">
                                         <div>
-                                            <p className='text-sm'>{product?.name}</p>
+                                            <Link
+                                                href={`/productDescription/${product._id}`}
+                                                className='text-sm'
+                                            >
+                                                {product?.name}
+                                            </Link>
                                             <p className='text-xs'>{product?.about}</p>
                                         </div>
 
-                                        <div className="flex items-center gap-[5px] text-xs">
-                                            <p className='text-[#093C16]'>Read More</p>
-                                        </div>
+                                        <Link
+                                            href={`/productDescription/${product._id}`}
+                                            className="flex items-center gap-[5px] text-xs text-[#093C16]"
+                                        >
+                                            <p>
+                                                Read More
+                                            </p>
+                                            <SlArrowDown />
+                                        </Link>
                                     </div>
-                                </div>
-
-                                <div className="flex justify-center">
-                                    <select
-                                        id="quantity"
-                                        value={product?.quantity}
-                                        className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
-                                    >
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                    </select>
                                 </div>
 
                                 <div className="flex flex-col justify-between h-full">

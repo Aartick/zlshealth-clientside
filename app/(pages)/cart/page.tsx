@@ -626,7 +626,8 @@ function Page() {
                                                                     {/* Product details */}
                                                                     <div className="flex flex-col justify-between font-medium">
                                                                         <div>
-                                                                            <Link href={`/productDescription/${product?._id}`}
+                                                                            <Link
+                                                                                href={`/productDescription/${product?._id}`}
                                                                                 className='text-sm'
                                                                             >
                                                                                 {product?.name}
@@ -634,10 +635,12 @@ function Page() {
                                                                             <p className='text-xs'>{product?.about}</p>
                                                                         </div>
 
-                                                                        <div className="flex items-center gap-[5px] text-xs text-[#093C16]">
+                                                                        <Link
+                                                                            href={`/productDescription/${product?._id}`}
+                                                                            className="flex items-center gap-[5px] text-xs text-[#093C16]">
                                                                             <p>Read More</p>
                                                                             <SlArrowDown />
-                                                                        </div>
+                                                                        </Link>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -732,14 +735,21 @@ function Page() {
                                                                     {/* PRODUCT DETAILS */}
                                                                     <div className="flex flex-col justify-between font-medium">
                                                                         <div>
-                                                                            <p className='text-sm'>{product?.name}</p>
+                                                                            <Link
+                                                                                href={`/productDescription/${product?._id}`}
+                                                                                className='text-sm'
+                                                                            >
+                                                                                {product?.name}
+                                                                            </Link>
                                                                             <p className='text-xs'>{product?.about}</p>
                                                                         </div>
 
-                                                                        <div className="flex items-center gap-[5px] text-xs text-[#093C16]">
+                                                                        <Link
+                                                                            href={`/productDescription/${product?._id}`}
+                                                                            className="flex items-center gap-[5px] text-xs text-[#093C16]">
                                                                             <p>Read More</p>
                                                                             <SlArrowDown />
-                                                                        </div>
+                                                                        </Link>
                                                                     </div>
                                                                 </div>
                                                             </div>

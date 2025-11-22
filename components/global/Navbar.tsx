@@ -633,7 +633,7 @@ function Navbar() {
 
                             {/* ShopLink dropdown menu */}
                             <div
-                                className={`absolute top-[100%] -left-[100px] sm:-left-[230px] lg:-left-[490px] transition-all duration-300 ease-in-out ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
+                                className={`absolute top-[100%] -left-[100px] sm:-left-[100px] md:-left-[200px] lg:-left-[380px] xl:-left-[540px]  transition-all duration-300 ease-in-out ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
                                     } z-50`}
                             >
                                 <ShopLink />
