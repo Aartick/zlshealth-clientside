@@ -30,6 +30,51 @@ import ProductDescriptionSkeleton from '@/components/ProductDescriptionSkeleton'
 import { initialProduct, product } from '@/interfaces/products';
 import { axiosClient } from '@/utils/axiosClient';
 import ProductDetailsSkeleton from '@/components/ProductDetailsSkeleton';
+import CommentText from '@/components/CommentText';
+
+export interface IDistribution {
+    rating: number;
+    count: number;
+    percent: number;
+}
+
+export interface IUser {
+    _id: string;
+    fullName?: string;
+}
+
+export interface IRandomReview {
+    _id: string;
+    rating: number;
+    comment: string;
+    user: IUser;
+}
+
+export interface IReviewResponse {
+    randomReview: IRandomReview | null;
+    totalReviews: number;
+    distribution: IDistribution[];
+}
+
+export const initialReviewData: IReviewResponse = {
+    randomReview: {
+        _id: "",
+        rating: 0,
+        comment: "",
+        user: {
+            _id: "",
+            fullName: ""
+        },
+    },
+    totalReviews: 0,
+    distribution: [
+        { rating: 5, count: 0, percent: 0 },
+        { rating: 4, count: 0, percent: 0 },
+        { rating: 3, count: 0, percent: 0 },
+        { rating: 2, count: 0, percent: 0 },
+        { rating: 1, count: 0, percent: 0 },
+    ],
+};
 
 function Page() {
     // State to hold product details
@@ -37,6 +82,9 @@ function Page() {
     // Store selecte image
     const [selectedImage, setSelectedImage] = useState(product.descriptionImg.url)
     const [loading, setLoading] = useState(true)
+
+    // State to hold product rating data
+    const [reviewData, setReviewData] = useState<IReviewResponse>(initialReviewData);
 
     // State to hold similar products array
     const [similarProducts, setSimilarProducts] = useState<product[]>([])
@@ -70,9 +118,20 @@ function Page() {
         }
     }
 
+    // Fetch product review details 
+    const getReview = async () => {
+        try {
+            const review = await axiosClient.get(`/api/products/review?id=${params.id}`)
+            setReviewData(review.data.result)
+        } catch {
+
+        }
+    }
+
     // On mount get product details and similar products
     useEffect(() => {
         getDetails()
+        getReview()
         getSimilarProducts()
     }, [params.id])
 
@@ -318,20 +377,20 @@ function Page() {
                             {/* Overall rating and review count */}
                             <div className='border-r-[3px] border-[#e3e3e3] p-2.5 space-y-5'>
                                 <div className="flex items-center gap-[5px]">
-                                    <p className='font-semibold text-[32px]'>4.8</p>
+                                    <p className='font-semibold text-[32px]'>{product.averageRating}</p>
                                     <IoStarSharp className='text-xl text-[#71BF45]' />
                                 </div>
-                                <p className="text-[#848484] text-nowrap">(120+ Reviews)</p>
+                                <p className="text-[#848484] text-nowrap">
+                                    ({product.numReviews > 120
+                                        ? `${product.numReviews}+`
+                                        : product.numReviews}{" "}
+                                    {product.numReviews > 9
+                                        ? "Reviews" : "Review"})
+                                </p>
                             </div>
                             {/* Ratings breakdown by stars */}
                             <div className="py-2.5 space-y-2.5">
-                                {[
-                                    { rating: 5, count: 98, percent: 75 },
-                                    { rating: 4, count: 18, percent: 50 },
-                                    { rating: 3, count: 4, percent: 25 },
-                                    { rating: 2, count: 0, percent: 0 },
-                                    { rating: 1, count: 0, percent: 0 },
-                                ].map((item, index) => (
+                                {reviewData.distribution.map((item, index) => (
                                     <div key={index} className="flex items-center gap-[5px]">
                                         <p className="text-[#848484] text-xs w-2 text-right">{item.rating}</p>
                                         <IoStarSharp className="text-[10px] text-[#71BF45]" />
@@ -349,7 +408,7 @@ function Page() {
                     </div>
 
                     {/* Customer photos */}
-                    <div className='space-y-3'>
+                    {/* <div className='space-y-3'>
                         <p className="font-medium text-sm text-[#093C16]">Customer Photos (8)</p>
                         <div className="flex items-center gap-3">
                             <Image
@@ -381,26 +440,30 @@ function Page() {
                                 alt='reviewPhotos'
                             />
                         </div>
-                    </div>
+                    </div> */}
                 </section>
 
                 {/* Review preview */}
                 <section className="space-y-5 lg:pl-40">
-                    <div className="flex justify-between items-center">
-                        <p className='font-medium text-sm text-[#093C16]'>Review (8)</p>
+                    <div className="flex justify-between w-full items-center">
+                        <p className='font-medium text-sm text-[#093C16]'>
+                            {product.numReviews > 9
+                                ? "Reviews" : "Review"} {" "}
+                            ({product.numReviews > 120
+                                ? `${product.numReviews}+`
+                                : product.numReviews})
+                        </p>
                         <Link href="/productDescription" className='flex items-center gap-[5px] text-xs'>
                             <p className='underline decoration-solid text-[#093C16]'>View all reviews</p>
                             <MdKeyboardArrowRight />
                         </Link>
                     </div>
                     <div className="space-y-1.5 text-xs">
-                        <p className='font-medium'>Natural relief that works so well!</p>
-                        <p>I&apos;ve been using Diavinco for almost three months now, and the difference has been remarkable. My fasting sugar levels have dropped, my energy feels steadier throughout the day, and even my evening fatigue has reduced a lot. What, I really like is that it&apos;s herbal, so I&apos;m not worried about long-term side effects...
-                            <span className='text-[#017BD2]'>see more.</span>
-                        </p>
+                        <CommentText text={reviewData.randomReview?.comment!} />
                         <div className="flex items-center pr-2.5 ">
-                            <p className="border-r-2 pr-2.5 font-medium text-xs text-[#71BF45]">Bhanu Priya</p>
-                            <p className="pl-2.5 font-medium text-xs text-[#848484]">Yoga Instructor, Hyderabad</p>
+                            <p className="pr-2.5 font-medium text-xs text-[#71BF45]">
+                                {reviewData.randomReview?.user.fullName}
+                            </p>
                         </div>
                     </div>
                 </section>

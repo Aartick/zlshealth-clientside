@@ -90,15 +90,17 @@ export async function GET(req: NextRequest) {
         paymentStatus: matchedStatus?.paymentStatus,
         paymentMethod: matchedStatus?.paymentMethod,
         orderDate: data.createdAt,
-        products: data.products.map((pro: OrderProduct) => ({
-          _id: pro.productId._id,
-          imgUrl: pro.productId.productImg.url,
-          name: pro.productId.name,
-          price: pro.productId.price,
-          about: pro.productId.about,
-          quantity: pro.quantity,
-          totalAmount: pro.totalAmount,
-        })),
+        products: data.products
+          .filter((pro: OrderProduct) => pro.productId !== null)
+          .map((pro: OrderProduct) => ({
+            _id: pro.productId._id,
+            imgUrl: pro.productId.productImg.url,
+            name: pro.productId.name,
+            price: pro.productId.price,
+            about: pro.productId.about,
+            quantity: pro.quantity,
+            totalAmount: pro.totalAmount,
+          })),
       };
     });
 
