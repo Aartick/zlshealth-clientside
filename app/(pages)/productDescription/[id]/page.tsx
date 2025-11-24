@@ -32,31 +32,31 @@ import { axiosClient } from '@/utils/axiosClient';
 import ProductDetailsSkeleton from '@/components/ProductDetailsSkeleton';
 import CommentText from '@/components/CommentText';
 
-export interface IDistribution {
+interface IDistribution {
     rating: number;
     count: number;
     percent: number;
 }
 
-export interface IUser {
+interface IUser {
     _id: string;
     fullName?: string;
 }
 
-export interface IRandomReview {
+interface IRandomReview {
     _id: string;
     rating: number;
     comment: string;
     user: IUser;
 }
 
-export interface IReviewResponse {
-    randomReview: IRandomReview | null;
+interface IReviewResponse {
+    randomReview: IRandomReview;
     totalReviews: number;
     distribution: IDistribution[];
 }
 
-export const initialReviewData: IReviewResponse = {
+const initialReviewData: IReviewResponse = {
     randomReview: {
         _id: "",
         rating: 0,
@@ -368,7 +368,7 @@ function Page() {
             {/* ====== Ratings And Customer Photos Section ====== */}
             <div className="p-6 flex flex-col gap-4 lg:gap-0 lg:flex-row lg:items-center">
                 {/* Ratings Section */}
-                <section className='space-y-5 lg:pr-[270px] lg:border-r-4 border-[#E3E3E3]'>
+                <section className='lg:flex-1 space-y-5 lg:pr-[270px] lg:border-r-4 border-[#E3E3E3]'>
                     {/* Reviews */}
                     <div className='space-y-3'>
                         <p className="font-medium text-sm text-[#093C16]">Ratings</p>
@@ -444,7 +444,7 @@ function Page() {
                 </section>
 
                 {/* Review preview */}
-                <section className="space-y-5 lg:pl-40">
+                <section className="lg:flex-1 space-y-5 lg:pl-40">
                     <div className="flex justify-between w-full items-center">
                         <p className='font-medium text-sm text-[#093C16]'>
                             {product.numReviews > 9
@@ -459,7 +459,7 @@ function Page() {
                         </Link>
                     </div>
                     <div className="space-y-1.5 text-xs">
-                        <CommentText text={reviewData.randomReview?.comment!} />
+                        <CommentText text={reviewData.randomReview.comment} />
                         <div className="flex items-center pr-2.5 ">
                             <p className="pr-2.5 font-medium text-xs text-[#71BF45]">
                                 {reviewData.randomReview?.user.fullName}
