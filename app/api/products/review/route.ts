@@ -40,7 +40,7 @@ async function updateProductRating(productId: string) {
  * @returns
  */
 
-interface MongoError extends Error{
+interface MongoError extends Error {
   code?: number;
 }
 
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Create a new review document
-    const review = await Review.create({
+    await Review.create({
       user: _id,
       product: productId,
       rating,
@@ -79,14 +79,89 @@ export async function POST(req: NextRequest) {
     // Update product's average rating and review count
     await updateProductRating(productId);
 
-    return success(201, review);
+    return success(201, "Review added successfully");
   } catch (e: unknown) {
     // Handle duplicate review (user already reviewed this product)
-    const err = e as MongoError
+    const err = e as MongoError;
     if (err.code === 11000) {
       return error(400, "You have already reviewed this product.");
     }
     return error(500, "Something went wrong.");
+  }
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) return error(400, "Product ID is required");
+
+    const productObjectId = new mongoose.Types.ObjectId(id);
+
+    // Fetch one random review
+    const randomReviewPipeline = [
+      { $match: { product: productObjectId } },
+      { $sample: { size: 1 } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $project: {
+          rating: 1,
+          comment: 1,
+          createdAt: 1,
+          "user._id": 1,
+          "user.fullName": 1,
+        },
+      },
+    ];
+
+    const [randomReview] = await Review.aggregate(randomReviewPipeline);
+
+    // Rating stats pipeline
+    const ratingStats = await Review.aggregate([
+      { $match: { product: productObjectId } },
+      {
+        $group: {
+          _id: "$rating", // group by rating 1-5
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: -1 } }, // Sort by rating (5 → 1)
+    ]);
+
+    // Get total reviews
+    const totalReviews = ratingStats.reduce((acc, r) => acc + r.count, 0);
+
+    // Build full structure (1-5 even if no count)
+    const distribution = [5, 4, 3, 2, 1].map((rating) => {
+      const found = ratingStats.find((r) => r._id === rating);
+      const count = found?.count || 0;
+      const percent =
+        totalReviews === 0 ? 0 : Math.round((count / totalReviews) * 100);
+
+      return {
+        rating,
+        count,
+        percent,
+      };
+    });
+
+    return success(200, {
+      randomReview: randomReview,
+      totalReviews,
+      distribution,
+    });
+  } catch (e) {
+    console.log(e);
+    return error(500, "Failed to fetch review data");
   }
 }
 

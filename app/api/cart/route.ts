@@ -72,21 +72,24 @@ export async function POST(req: NextRequest) {
     const updatedCart = await cart.populate("products.productId");
 
     // Map cart products to response format
-    const responseWrapper = updatedCart.products.map((pro: CartProduct) => {
-      const product = pro.productId as ProductDoc;
-      return {
-        _id: product._id,
-        category: product.category,
-        benefits: product.benefits,
-        productTypes: product.productTypes,
-        name: product.name,
-        img: product.productImg.url,
-        price: product.price,
-        quantity: pro.quantity,
-        discount: product.discount,
-        about: product.about,
-      };
-    });
+    const responseWrapper = updatedCart.products
+      .filter((pro: CartProduct) => pro.productId !== null)
+      .map((pro: CartProduct) => {
+        const product = pro.productId as ProductDoc;
+
+        return {
+          _id: product._id,
+          category: product.category,
+          benefits: product.benefits,
+          productTypes: product.productTypes,
+          name: product.name,
+          img: product.productImg.url,
+          price: product.price,
+          quantity: pro.quantity,
+          discount: product.discount,
+          about: product.about,
+        };
+      });
 
     return success(201, responseWrapper);
   } catch (e) {
@@ -118,22 +121,24 @@ export async function GET(req: NextRequest) {
     }
 
     // Map cart products to response format
-    const responseWrapper = cart.products.map((pro: CartProduct) => {
-      const product = pro.productId as ProductDoc;
+    const responseWrapper = cart.products
+      .filter((pro: CartProduct) => pro.productId !== null)
+      .map((pro: CartProduct) => {
+        const product = pro.productId as ProductDoc;
 
-      return {
-        _id: product._id,
-        category: product.category,
-        benefits: product.benefits,
-        productTypes: product.productTypes,
-        name: product.name,
-        img: product.productImg.url,
-        price: product.price,
-        quantity: pro.quantity,
-        about: product.about,
-        discount: product.discount,
-      };
-    });
+        return {
+          _id: product._id,
+          category: product.category,
+          benefits: product.benefits,
+          productTypes: product.productTypes,
+          name: product.name,
+          img: product.productImg.url,
+          price: product.price,
+          quantity: pro.quantity,
+          about: product.about,
+          discount: product.discount,
+        };
+      });
 
     return success(201, responseWrapper);
   } catch (e) {

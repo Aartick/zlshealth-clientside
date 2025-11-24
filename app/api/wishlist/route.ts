@@ -69,8 +69,9 @@ export async function POST(req: NextRequest) {
     const updatedWishlist = await wishlist.populate("products.productId");
 
     // Map wishlist products to response format
-    const responseWrapper = updatedWishlist.products.map(
-      (pro: WishlistProduct) => {
+    const responseWrapper = updatedWishlist.products
+      .filter((pro: WishlistProduct) => pro.productId !== null)
+      .map((pro: WishlistProduct) => {
         const product = pro.productId as ProductDoc;
         return {
           _id: product._id,
@@ -81,8 +82,7 @@ export async function POST(req: NextRequest) {
           discount: product.discount,
           about: product.about,
         };
-      }
-    );
+      });
 
     return success(201, responseWrapper);
   } catch (e) {
@@ -135,8 +135,9 @@ export async function PUT(req: NextRequest) {
     const updatedWishlist = await wishlist.populate("products.productId");
 
     // Map wishlist products to response format
-    const responseWrapper = updatedWishlist.products.map(
-      (pro: WishlistProduct) => {
+    const responseWrapper = updatedWishlist.products
+      .filter((pro: WishlistProduct) => pro.productId !== null)
+      .map((pro: WishlistProduct) => {
         const product = pro.productId as ProductDoc;
         return {
           _id: product._id,
@@ -147,8 +148,7 @@ export async function PUT(req: NextRequest) {
           about: product.about,
           quantity: product.quantity,
         };
-      }
-    );
+      });
 
     return success(200, responseWrapper);
   } catch (e) {
@@ -166,7 +166,7 @@ export async function PUT(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     await dbConnect();
-    
+
     // Verify JWT token and extract customer ID
     const { valid, response, _id } = await verifyAccessToken(req);
     if (!valid) return response!;
@@ -181,18 +181,20 @@ export async function GET(req: NextRequest) {
     }
 
     // Map wishlist products to response format
-    const responseWrapper = wishlist?.products.map((pro: WishlistProduct) => {
-      const product = pro.productId as ProductDoc;
-      return {
-        _id: product._id,
-        name: product.name,
-        img: product.productImg.url,
-        price: product.price,
-        discount: product.discount,
-        about: product.about,
-        quantity: product.quantity,
-      };
-    });
+    const responseWrapper = wishlist?.products
+      .filter((pro: WishlistProduct) => pro.productId !== null)
+      .map((pro: WishlistProduct) => {
+        const product = pro.productId as ProductDoc;
+        return {
+          _id: product._id,
+          name: product.name,
+          img: product.productImg.url,
+          price: product.price,
+          discount: product.discount,
+          about: product.about,
+          quantity: product.quantity,
+        };
+      });
 
     return success(201, responseWrapper);
   } catch (e) {

@@ -244,7 +244,7 @@ function ShopLink() {
             </div>
 
             {/* ====== THIRD COLUMN: Featured shop image ====== */}
-            <div className='hidden lg:block relative w-[350px] h-[490px]'>
+            <div className='hidden xl:block relative w-[250px] h-[400px] 2xl:w-[350px] 2xl:h-[490px]'>
                 <Image
                     src="/shopLink.jpg"
                     alt='img'

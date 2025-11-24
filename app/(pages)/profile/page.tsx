@@ -52,6 +52,7 @@ import { removeMyInfo } from '@/lib/features/appConfigSlice'
 import { resetCart } from '@/lib/features/cartSlice'
 import { resetWishlist } from '@/lib/features/wishlistSlice'
 import { useRouter, useSearchParams } from 'next/navigation'
+import ReviewForm from '@/components/ReviewForm'
 
 function Page() {
     // ================ Scroll Events ================
@@ -222,6 +223,10 @@ function Page() {
     // ================ Sidebar Logics ================
     const [sidebarOpen, setSidebarOpen] = useState(false)
 
+    // ================ Review Logics ================
+    const [openReview, setOpenReview] = useState(false);
+    const [reviewProductId, setReviewProductId] = useState("")
+
     return (
         <div className='max-w-screen-2xl mx-auto relative flex gap-8 px-2 py-4 md:p-8 h-screen'>
             {/* ================ Sidebar Container ================ */}
@@ -349,6 +354,12 @@ function Page() {
             {/* ================ MAIN CONTENT ================ */}
             <div className="flex-4 space-y-4 border border-[#f4f4f4] rounded-[36px] p-2.5 md:p-[30px] overflow-y-scroll scrollbar-hide">
 
+                {openReview && (
+                    <ReviewForm productId={reviewProductId} onClose={() => {
+                        setOpenReview(false)
+                        setReviewProductId("")
+                    }} />
+                )}
 
                 {/* CARDS SECTION (Profile, Orders & Returns, Legal) */}
                 <div className="flex w-full overflow-x-scroll scrollbar-hide items-center gap-3">
@@ -915,75 +926,97 @@ function Page() {
                                             </p>
                                         </div>
 
+                                        {/* Products */}
                                         <div className="py-2.5 space-y-3">
-                                            {/* Products */}
-                                            {order.products.map((product, idx) => (
-                                                <div key={product._id}>
-                                                    {/* Border */}
-                                                    <div className="border border-[#e3e3e3] mx-3" />
+                                            {/* If NO products */}
+                                            {order.products.length === 0 ? (
+                                                <p className="text-center text-gray-600 italic">
+                                                    This product might be deleted or is not available now!
+                                                </p>
+                                            ) : (
+                                                /* If products exist - map them */
+                                                order.products.map((product, idx) => (
+                                                    <div key={product._id}>
+                                                        {/* Border */}
+                                                        <div className="border border-[#e3e3e3] mx-3" />
 
-                                                    {/* Cart Products */}
-                                                    <div className="grid grid-cols-3 items-start py-2.5">
-                                                        <div className="flex gap-3">
-                                                            {/* Serial N0. */}
-                                                            <p>{idx + 1}.</p>
+                                                        {/* Cart Products */}
+                                                        <div className="grid grid-cols-3 items-start py-2.5">
+                                                            <div className="flex gap-3">
+                                                                {/* Serial N0. */}
+                                                                <p>{idx + 1}.</p>
 
-                                                            <div className="flex flex-col md:flex-row gap-3">
-                                                                {/* Product Image*/}
-                                                                <div className="relative w-[40px] h-[40px] md:w-[96px] md:h-[93px]">
-                                                                    <Image
-                                                                        src={product.imgUrl}
-                                                                        alt={product.name}
-                                                                        fill
-                                                                        className='rounded-[10px] border-2 border-[#71BF45] object-cover'
-                                                                    />
-                                                                </div>
-
-                                                                {/* Product details */}
-                                                                <div className="flex flex-col justify-between font-medium">
-                                                                    <div>
-                                                                        <p className='text-sm'>{product.name}</p>
-                                                                        <p className='text-xs font-medium text-[#848484]'>{product.about}</p>
+                                                                <div className="flex flex-col md:flex-row gap-3">
+                                                                    {/* Product Image*/}
+                                                                    <div className="relative w-[40px] h-[40px] md:w-[96px] md:h-[93px]">
+                                                                        <Image
+                                                                            src={product.imgUrl}
+                                                                            alt={product.name}
+                                                                            fill
+                                                                            className='rounded-[10px] border-2 border-[#71BF45] object-cover'
+                                                                        />
                                                                     </div>
 
-                                                                    <Link
-                                                                        href={`/productDescription/${product._id}`}
-                                                                        className="flex items-center gap-[5px] text-xs text-[#093C16]">
-                                                                        <p>Read More</p>
-                                                                        <SlArrowDown />
-                                                                    </Link>
+                                                                    {/* Product details */}
+                                                                    <div className="flex flex-col justify-between font-medium">
+                                                                        <div>
+                                                                            <p className='text-sm'>{product.name}</p>
+                                                                            <p className='text-xs font-medium text-[#848484]'>{product.about}</p>
+                                                                        </div>
+
+                                                                        <Link
+                                                                            href={`/productDescription/${product._id}`}
+                                                                            className="flex items-center gap-[5px] text-xs text-[#093C16]">
+                                                                            <p>Read More</p>
+                                                                            <SlArrowDown />
+                                                                        </Link>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
 
-                                                        {/* Product quantity */}
-                                                        <div className="flex flex-col items-center h-full justify-between">
-                                                            <select
-                                                                id="quantity"
-                                                                value={product.quantity}
-                                                                className="w-[49px] md:w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
-                                                            >
-                                                                <option value="1">1</option>
-                                                                <option value="2">2</option>
-                                                                <option value="3">3</option>
-                                                            </select>
+                                                            {/* Product quantity */}
+                                                            <div className="flex flex-col items-center h-full justify-between">
+                                                                {order.orderStatus.toLowerCase() === "delivered" ? (
+                                                                    <>
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                setOpenReview(true)
+                                                                                setReviewProductId(product._id)
+                                                                            }}
+                                                                            className='bg-[#71BF45] text-white rounded-[5px] py-[5px] px-5 focus:outline-none cursor-pointer'
+                                                                        >Add Review</button>
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <select
+                                                                            id="quantity"
+                                                                            value={product.quantity}
+                                                                            className="w-[49px] md:w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
+                                                                        >
+                                                                            <option value="1">1</option>
+                                                                            <option value="2">2</option>
+                                                                            <option value="3">3</option>
+                                                                        </select>
 
-                                                            <p className='text-[#093c16]/90'>{order.paymentMethod.charAt(0).toUpperCase() + order.paymentMethod.slice(1)}</p>
-                                                        </div>
-
-                                                        {/* Product Price */}
-                                                        <div className="flex flex-col items h-full px-5 justify-between">
-                                                            <div className="flex justify-between items-center w-full">
-                                                                <p className="text-base font-medium text-[#093C16]">₹{product.totalAmount}</p>
-                                                                <Link href={`/productDescription/${product._id}`}>
-                                                                    <MdKeyboardArrowRight className="cursor-pointer text-xl" />
-                                                                </Link>
+                                                                        <p className='text-[#093c16]/90'>{order.paymentMethod.charAt(0).toUpperCase() + order.paymentMethod.slice(1)}</p>
+                                                                    </>
+                                                                )}
                                                             </div>
-                                                            <p className='text-[#093c16]/90'>{order.paymentStatus}</p>
+
+                                                            {/* Product Price */}
+                                                            <div className="flex flex-col items h-full px-5 justify-between">
+                                                                <div className="flex justify-between items-center w-full">
+                                                                    <p className="text-base font-medium text-[#093C16]">₹{product.totalAmount}</p>
+                                                                    <Link href={`/productDescription/${product._id}`}>
+                                                                        <MdKeyboardArrowRight className="cursor-pointer text-xl" />
+                                                                    </Link>
+                                                                </div>
+                                                                <p className='text-[#093c16]/90'>{order.paymentStatus}</p>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))
+                                            )}
                                         </div>
                                     </div>
                                 ))
@@ -1010,73 +1043,96 @@ function Page() {
                                             </p>
                                         </div>
 
+                                        {/* Products */}
                                         <div className="py-2.5 space-y-3">
-                                            {/* Sample Products */}
-                                            {order.products.map((product, idx) => (
-                                                <div key={product._id}>
-                                                    {/* Border */}
-                                                    <div className="border border-[#e3e3e3] mx-3" />
+                                            {/* If NO products */}
+                                            {order.products.length === 0 ? (
+                                                <p className="text-center text-gray-600 italic">
+                                                    This product might be deleted or is not available now!
+                                                </p>
+                                            ) : (
+                                                /* If products exist - map them */
+                                                order.products.map((product, idx) => (
+                                                    <div key={product._id}>
+                                                        {/* Border */}
+                                                        <div className="border border-[#e3e3e3] mx-3" />
 
-                                                    {/* Cart Products */}
-                                                    <div className="grid grid-cols-3 items-start py-2.5">
-                                                        <div className="flex gap-3">
-                                                            {/* Serial N0. */}
-                                                            <p>{idx + 1}.</p>
+                                                        {/* Cart Products */}
+                                                        <div className="grid grid-cols-3 items-start py-2.5">
+                                                            <div className="flex gap-3">
+                                                                {/* Serial N0. */}
+                                                                <p>{idx + 1}.</p>
 
-                                                            {/* Product Image*/}
-                                                            <div className="relative w-[96px] h-[93px]">
-                                                                <Image
-                                                                    src={product.imgUrl}
-                                                                    alt={product.name}
-                                                                    fill
-                                                                    className='rounded-[10px] border-2 border-[#71BF45] object-cover'
-                                                                />
-                                                            </div>
-
-                                                            {/* Product details */}
-                                                            <div className="flex flex-col justify-between font-medium">
-                                                                <div>
-                                                                    <p className='text-sm'>{product.name}</p>
-                                                                    <p className='text-xs font-medium text-[#848484]'>{product.about}</p>
+                                                                {/* Product Image*/}
+                                                                <div className="relative w-[96px] h-[93px]">
+                                                                    <Image
+                                                                        src={product.imgUrl}
+                                                                        alt={product.name}
+                                                                        fill
+                                                                        className='rounded-[10px] border-2 border-[#71BF45] object-cover'
+                                                                    />
                                                                 </div>
 
-                                                                <Link
-                                                                    href={`/productDescription/${product._id}`}
-                                                                    className="flex items-center gap-[5px] text-xs text-[#093C16]">
-                                                                    <p>Read More</p>
-                                                                    <SlArrowDown />
-                                                                </Link>
+                                                                {/* Product details */}
+                                                                <div className="flex flex-col justify-between font-medium">
+                                                                    <div>
+                                                                        <p className='text-sm'>{product.name}</p>
+                                                                        <p className='text-xs font-medium text-[#848484]'>{product.about}</p>
+                                                                    </div>
+
+                                                                    <Link
+                                                                        href={`/productDescription/${product._id}`}
+                                                                        className="flex items-center gap-[5px] text-xs text-[#093C16]">
+                                                                        <p>Read More</p>
+                                                                        <SlArrowDown />
+                                                                    </Link>
+                                                                </div>
                                                             </div>
-                                                        </div>
 
-                                                        {/* Product quantity */}
-                                                        <div className="flex flex-col items-center h-full justify-between">
-                                                            <select
-                                                                id="quantity"
-                                                                value={product.quantity}
-                                                                className="w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
-                                                            >
-                                                                <option value="1">1</option>
-                                                                <option value="2">2</option>
-                                                                <option value="3">3</option>
-                                                            </select>
+                                                            {/* Product quantity */}
+                                                            <div className="flex flex-col items-center h-full justify-between">
+                                                                {order.orderStatus.toLowerCase() === "delivered" ? (
+                                                                    <>
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                setOpenReview(true)
+                                                                                setReviewProductId(product._id)
+                                                                            }}
+                                                                            className='bg-[#71BF45] text-white rounded-[5px] py-[5px] px-5 focus:outline-none cursor-pointer'
+                                                                        >Add Review</button>
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        {/* Product Quantity */}
+                                                                        <select
+                                                                            id="quantity"
+                                                                            value={product.quantity}
+                                                                            className="w-[49px] md:w-[84px] h-fit border border-[#e3e3e3] rounded-[5px] p-[5px] focus:outline-none"
+                                                                        >
+                                                                            <option value="1">1</option>
+                                                                            <option value="2">2</option>
+                                                                            <option value="3">3</option>
+                                                                        </select>
 
-                                                            <p className='text-[#093c16]/90'>{order.paymentMethod.charAt(0).toUpperCase() + order.paymentMethod.slice(1)}</p>
-                                                        </div>
-
-                                                        {/* Product Price */}
-                                                        <div className="flex flex-col items h-full px-5 justify-between">
-                                                            <div className="flex justify-between items-center w-full">
-                                                                <p className="text-base font-medium text-[#093C16]">₹{product.totalAmount}</p>
-                                                                <Link href={`/productDescription/${product._id}`}>
-                                                                    <MdKeyboardArrowRight className="cursor-pointer text-xl" />
-                                                                </Link>
+                                                                        <p className='text-[#093c16]/90'>{order.paymentMethod.charAt(0).toUpperCase() + order.paymentMethod.slice(1)}</p>
+                                                                    </>
+                                                                )}
                                                             </div>
-                                                            <p className='text-[#093c16]/90'>{order.paymentStatus}</p>
+
+                                                            {/* Product Price */}
+                                                            <div className="flex flex-col items h-full px-5 justify-between">
+                                                                <div className="flex justify-between items-center w-full">
+                                                                    <p className="text-base font-medium text-[#093C16]">₹{product.totalAmount}</p>
+                                                                    <Link href={`/productDescription/${product._id}`}>
+                                                                        <MdKeyboardArrowRight className="cursor-pointer text-xl" />
+                                                                    </Link>
+                                                                </div>
+                                                                <p className='text-[#093c16]/90'>{order.paymentStatus}</p>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))
+                                            )}
                                         </div>
                                     </div>
                                 ))

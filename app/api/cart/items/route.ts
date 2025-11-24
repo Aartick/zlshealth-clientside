@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
 
     return success(200, "Cart merged successfully.");
   } catch (e) {
-    console.log(e);
+    console.log("Error while merging cart: ", e);
     return error(500, "Something went wrong.");
   }
 }
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   try {
-    await dbConnect()
+    await dbConnect();
     // Verify JWT and extract user ID
     const { valid, response, _id } = await verifyAccessToken(req);
     if (!valid) return response!;
@@ -122,18 +122,20 @@ export async function PUT(req: NextRequest) {
     const updatedCart = await cart.populate("products.productId");
 
     // Map cart products to response format
-    const responseWrapper = updatedCart.products.map((pro: CartProduct) => {
-      const product = pro.productId as ProductDoc;
-      return {
-        _id: product._id,
-        name: product.name,
-        img: product.productImg.url,
-        price: product.price,
-        quantity: pro.quantity,
-        about: product.about,
-        discount: product.discount,
-      };
-    });
+    const responseWrapper = updatedCart.products
+      .filter((pro: CartProduct) => pro.productId !== null)
+      .map((pro: CartProduct) => {
+        const product = pro.productId as ProductDoc;
+        return {
+          _id: product._id,
+          name: product.name,
+          img: product.productImg.url,
+          price: product.price,
+          quantity: pro.quantity,
+          about: product.about,
+          discount: product.discount,
+        };
+      });
 
     return success(200, responseWrapper);
   } catch (e) {
@@ -150,7 +152,7 @@ export async function PUT(req: NextRequest) {
  */
 export async function DELETE(req: NextRequest) {
   try {
-    await dbConnect()
+    await dbConnect();
     const { searchParams } = new URL(req.url);
     const productId = searchParams.get("productId");
 

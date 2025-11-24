@@ -39,6 +39,8 @@ export interface product {
   suitableFor: string;
   safetyNote: string;
   bestSeller: boolean;
+  numReviews: number;
+  averageRating: number
 }
 
 // Initial product state for loading
@@ -80,4 +82,6 @@ export const initialProduct = {
   suitableFor: "",
   safetyNote: "",
   bestSeller: false,
+  numReviews: 0,
+  averageRating: 0
 };

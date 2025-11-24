@@ -2,7 +2,7 @@
  * Products Page
  * 
  * This component displays a list of products with advanced filtering options.
- * Users can filter products by category, product type, price range, and benefits/concerns.
+ * Users can filter products by category, product type, price range, and benefits.
  * The page fetches filter data and products from the backend, applies filters, 
  * and shows loading skeletons while data is loading.
  * Products are displayed in a responsive grid, and users can sort the results.
@@ -483,9 +483,9 @@ function Page() {
                             </div>
                         </div>
 
-                        {/* BENEFITS/CONCERNS FILTER */}
+                        {/* BENEFITS FILTER */}
                         <div className="border border-[#e3e3e3] rounded-xl p-5 space-y-5">
-                            <h3 className='font-medium text-xl'>Benefits / Conc</h3>
+                            <h3 className='font-medium text-xl'>Benefits</h3>
                             <div className="space-y-5">
                                 {loadingBenefits
                                     ? Array.from({ length: 5 }).map((_, i) => (
