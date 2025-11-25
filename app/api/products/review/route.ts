@@ -155,7 +155,18 @@ export async function GET(req: NextRequest) {
     });
 
     return success(200, {
-      randomReview: randomReview,
+      randomReview:
+        randomReview === undefined
+          ? {
+              _id: "",
+              rating: 0,
+              comment: "",
+              user: {
+                _id: "",
+                fullName: "",
+              },
+            }
+          : randomReview,
       totalReviews,
       distribution,
     });
