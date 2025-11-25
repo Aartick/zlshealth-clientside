@@ -146,6 +146,10 @@ function Page() {
         getCategories()
         getProductTypes()
         getBenefits()
+
+        if (productTypeQuery || benefitQuery) {
+            setFilterBarOpen(true)
+        }
     }, [categoryQuery, productTypeQuery, benefitQuery])
 
     // Fetch products whenever filters change

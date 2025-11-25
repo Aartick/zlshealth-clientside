@@ -71,6 +71,7 @@ export async function POST(req: NextRequest) {
       productDetails.push({
         productId: product._id,
         name: product.name,
+        sku: product.sku,
         quantity: item.quantity,
         totalAmount,
       });
@@ -107,7 +108,7 @@ export async function POST(req: NextRequest) {
           shipping_is_billing: 1,
           order_items: productDetails.map((product) => ({
             name: product.name,
-            sku: `SKU${Math.floor(100 + Math.random() * 900)}`,
+            sku: product.sku,
             units: product.quantity,
             selling_price: (product.totalAmount / product.quantity).toFixed(2),
           })),

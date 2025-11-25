@@ -74,6 +74,11 @@ export interface IProduct extends Document {
   faqs: mongoose.Types.ObjectId; // Reference to FAQs
   averageRating: number; // Average rating
   numReviews: number; // Number of reviews
+  sku: string; // The sku id of the product.
+  length: number; // Length of the product (in cms, must be more then 0.5)
+  breadth: number; // Breadth of the product (in cms, must be more then 0.5)
+  height: number; // Height of the product (in cms, must be more then 0.5)
+  weight: number; // Weight of the product (in kgs, must be more then 0)
 }
 
 // Mongoose schema for Product
@@ -204,6 +209,26 @@ const productSchema: Schema<IProduct> = new Schema(
     numReviews: {
       type: Number,
       default: 0, // Default number of reviews is 0
+    },
+    sku: {
+      type: String,
+      required: true,
+    },
+    length: {
+      type: Number,
+      required: true,
+    },
+    breadth: {
+      type: Number,
+      required: true,
+    },
+    height: {
+      type: Number,
+      required: true,
+    },
+    weight: {
+      type: Number,
+      required: true,
     },
   },
   {

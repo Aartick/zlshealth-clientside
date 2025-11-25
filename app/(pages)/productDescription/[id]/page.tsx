@@ -26,11 +26,12 @@ import Product from '@/components/Product';
 import CartButton from '@/components/CartButton';
 import WishlistButton from '@/components/WishlistButton';
 import ProductDescriptionSkeleton from '@/components/ProductDescriptionSkeleton';
+import ProductDetailsSkeleton from '@/components/ProductDetailsSkeleton';
+import CommentText from '@/components/CommentText';
 
 import { initialProduct, product } from '@/interfaces/products';
 import { axiosClient } from '@/utils/axiosClient';
-import ProductDetailsSkeleton from '@/components/ProductDetailsSkeleton';
-import CommentText from '@/components/CommentText';
+import { useAppSelector } from '@/lib/hooks';
 
 interface IDistribution {
     rating: number;
@@ -94,6 +95,11 @@ function Page() {
 
     // Calculate discounted price
     const discountedPrice = (product.price - (product.price * product.discount / 100)).toFixed(2);
+
+    // Get cart items from Redux store
+    const cart = useAppSelector((state) => state.cartSlice.cart)
+    // Get cart item details for quantity display
+    const cartItem = cart.find((prod) => prod._id === product._id)
 
     // Fetch similar products
     const getSimilarProducts = async () => {
@@ -252,12 +258,11 @@ function Page() {
                                 <label htmlFor="quantity">
                                     Quantity
                                 </label>
-                                <select name="quantity" id="quantity" className='border border-[#e3e3e3] py-[5px] pr-[5px] pl-2.5 rounded-[5px] w-full'>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                </select>
+                                <p
+                                    className='border border-[#e3e3e3] py-[5px] px-2.5 text-center rounded-[5px] w-full'
+                                >
+                                    {cartItem?.quantity || 1}
+                                </p>
                             </div>
 
                             {/* Expiry information */}
@@ -445,27 +450,34 @@ function Page() {
 
                 {/* Review preview */}
                 <section className="lg:flex-1 space-y-5 lg:pl-40">
-                    <div className="flex justify-between w-full items-center">
-                        <p className='font-medium text-sm text-[#093C16]'>
-                            {product.numReviews > 9
-                                ? "Reviews" : "Review"} {" "}
-                            ({product.numReviews > 120
-                                ? `${product.numReviews}+`
-                                : product.numReviews})
-                        </p>
-                        <Link href="/productDescription" className='flex items-center gap-[5px] text-xs'>
-                            <p className='underline decoration-solid text-[#093C16]'>View all reviews</p>
-                            <MdKeyboardArrowRight />
-                        </Link>
-                    </div>
-                    <div className="space-y-1.5 text-xs">
-                        <CommentText text={reviewData.randomReview.comment} />
-                        <div className="flex items-center pr-2.5 ">
-                            <p className="pr-2.5 font-medium text-xs text-[#71BF45]">
-                                {reviewData.randomReview?.user.fullName}
+                    {reviewData.randomReview.comment ? (
+                        <>
+                            <div className="flex justify-between w-full items-center">
+                                <p className='font-medium text-sm text-[#093C16]'>
+                                    {product.numReviews > 9 ? "Reviews" : "Review"} {" "}
+                                    ({product.numReviews > 120 ? `${product.numReviews}+` : product.numReviews})
+                                </p>
+                                <Link href="/productDescription" className='flex items-center gap-[5px] text-xs'>
+                                    <p className='underline decoration-solid text-[#093C16]'>View all reviews</p>
+                                    <MdKeyboardArrowRight />
+                                </Link>
+                            </div>
+                            <div className="space-y-1.5 text-xs">
+                                <CommentText text={reviewData.randomReview.comment} />
+                                <div className="flex items-center pr-2.5 ">
+                                    <p className="pr-2.5 font-medium text-xs text-[#71BF45]">
+                                        {reviewData.randomReview.user.fullName}
+                                    </p>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center text-center gap-2">
+                            <p className="text-[#848484] font-semibold">
+                                No Reviews Yet!
                             </p>
                         </div>
-                    </div>
+                    )}
                 </section>
             </div>
 

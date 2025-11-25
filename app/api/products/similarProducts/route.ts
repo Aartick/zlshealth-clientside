@@ -103,7 +103,10 @@ export async function GET(req: NextRequest) {
         },
         {
           // Sort products by highest relevance first
-          $sort: { relevance: -1 },
+          $sort: {
+            bestSeller: -1,
+            relevance: -1,
+          },
         },
         {
           // Limit the number of returned products
@@ -187,6 +190,13 @@ export async function GET(req: NextRequest) {
         { $match: filter },
         { $sample: { size: limit } }, // randomly pick 'limit' number of products
       ]);
+
+      // Sort after fetching -> bestSeller products appear first
+      products.sort((a, b) => {
+        if (a.bestSeller && !b.bestSeller) return -1;
+        if (!a.bestSeller && b.bestSeller) return 1;
+        return 0;
+      });
     }
 
     // Return the list of products
