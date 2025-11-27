@@ -92,6 +92,7 @@ function Page() {
 
     // Get product ID from URL params
     const params = useParams()
+    const productId = typeof params.id === "string" ? params.id : ""
 
     // Calculate discounted price
     const discountedPrice = (product.price - (product.price * product.discount / 100)).toFixed(2);
@@ -368,7 +369,7 @@ function Page() {
 
             {/* ================ FAQ's, Customer Reviews And Similar Products ================ */}
 
-            <FAQ />
+            <FAQ productId={productId} />
 
             {/* ====== Ratings And Customer Photos Section ====== */}
             <div className="p-6 flex flex-col gap-4 lg:gap-0 lg:flex-row lg:items-center">
