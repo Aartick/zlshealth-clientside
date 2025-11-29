@@ -41,7 +41,7 @@ export interface IProduct extends Document {
   category: mongoose.Types.ObjectId; // Reference to Category
   productTypes: mongoose.Types.ObjectId[]; // Array of ProductType references
   benefits: mongoose.Types.ObjectId[]; // Array of Benefit references
-  healthConditions: String[]; // Array of health conditions
+  healthConditions: mongoose.Types.ObjectId[]; // Array of health conditions
   // Different image fields with public_id and url for each unique images
   descriptionImg: {
     public_id: string;
@@ -71,7 +71,6 @@ export interface IProduct extends Document {
   appliedFor: string; // Product benefits
   suitableFor: string; // Age specific
   safetyNote: string; // Describes products safety usage
-  faqs: mongoose.Types.ObjectId; // Reference to FAQs
   averageRating: number; // Average rating
   numReviews: number; // Number of reviews
   sku: string; // The sku id of the product.
@@ -105,7 +104,8 @@ const productSchema: Schema<IProduct> = new Schema(
     ],
     healthConditions: [
       {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "HealthConditions",
       },
     ],
     descriptionImg: {
@@ -197,10 +197,6 @@ const productSchema: Schema<IProduct> = new Schema(
     safetyNote: {
       type: String,
       required: true,
-    },
-    faqs: {
-      type: Schema.Types.ObjectId,
-      ref: "Faqs", // Reference to FAQ's model
     },
     averageRating: {
       type: Number,
