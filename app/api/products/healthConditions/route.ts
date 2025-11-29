@@ -1,4 +1,5 @@
 import dbConnect from "@/dbConnect/dbConnect";
+import HealthConditions from "@/models/HealthCondition";
 import Product from "@/models/Product";
 import { error, success } from "@/utils/responseWrapper";
 import { NextRequest } from "next/server";
@@ -14,8 +15,10 @@ export async function GET(req: NextRequest) {
 
   await dbConnect();
 
+  const rand = await HealthConditions.find();
+
   if (healthCondition === "Digestive") {
-    healthCondition = "Digestive & Gut Health";
+    healthCondition = rand[0]?._id;
   }
 
   try {
@@ -23,13 +26,18 @@ export async function GET(req: NextRequest) {
       healthConditions: { $in: [healthCondition] },
     };
 
-    let products;
+    let products = [];
 
-    if (limit) {
-      // If limit is provided, (true or number), send up to 4 products
-      products = await Product.find(query).limit(4).lean();
-    } else {
-      products = await Product.find(query).lean();
+    try {
+      // Try performing the query
+      const baseQuery = Product.find(query);
+
+      products = limit
+        ? await baseQuery.limit(4).lean()
+        : await baseQuery.lean();
+    } catch (mongoErr) {
+      console.log("MongoDB Query Error → returning empty array:", mongoErr);
+      return success(200, []);
     }
 
     return success(200, products);

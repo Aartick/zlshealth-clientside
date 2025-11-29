@@ -195,38 +195,38 @@ export default function Page() {
       title: "Multi-Pathway Disease Targeting",
       description:
         "Pioneered formulation design that targets multiple pathways of disease progression for long-term resolution.",
-      image: "/science/science.jpg",
+      image: "/science/MultiPathwayDiseaseTargeting.jpg",
     },
     "Immune-Mediated Disorder Focus": {
       title: "Immune-Mediated Disorder Focus",
       description:
         "Specialized application of immunological knowledge for complex immune-mediated chronic disorders.",
-      image: "/science/science.jpg",
+      image: "/science/ImmuneMediatedDisorderFocus.jpg",
     },
     "Phospholipids & Charged Nanoemulsion": {
       title: "Phospholipids & Charged Nanoemulsion",
       description: "Integration of phospholipids and charged nanoemulsion technology alongside nanoparticles.",
-      image: "/science/science.jpg"
+      image: "/science/PhospholipidsAndChargedNanoemulsion.jpeg"
     },
     "Herbal Molecule Enhancement": {
       title: "Herbal Molecule Enhancement",
       description: "Specific focus on making \"tough herbal molecules\" reach cellular levels with higher efficacy",
-      image: "/science/science.jpg"
+      image: "/science/HerbalMoleculeEnhancement.png"
     },
     "Responsive Smart Release": {
       title: "Responsive Smart Release",
       description: "BioCage's intelligent dissociation at cells for optimal mineral release.",
-      image: "/science/science.jpg"
+      image: "/science/ResponsiveSmartRelease.jpg"
     },
     "Electrochemical Balance": {
       title: "Electrochemical Balance",
       description: "Unique ability to maintain cellular electrochemical balance during nutrient transport.",
-      image: "/science/science.jpg"
+      image: "/science/ElectrochemicalBalance.jpeg"
     },
     "Synergistic Nutrient Utilization": {
       title: "Synergistic Nutrient Utilization",
       description: "Enhancement of vitamins, coenzymes, and hormones alongside minerals.",
-      image: "/science/science.jpg"
+      image: "/science/SynergisticNutrientUtilization.jpg"
     }
   }
 
@@ -687,9 +687,9 @@ export default function Page() {
                   }
                 />
                 <Card
-                  text="Multi-Pathway Disease Targeting"
+                  text="Electrochemical Balance"
                   onClick={() =>
-                    setSelectedCard("Multi-Pathway Disease Targeting")}
+                    setSelectedCard("Electrochemical Balance")}
                 />
               </div>
 
