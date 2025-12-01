@@ -19,6 +19,8 @@ import mongoose, { Document, Schema } from "mongoose";
 // Interface for a Benefit document
 interface IBenefits extends Document {
   name: string;
+  icon: string;
+  description: string;
 }
 
 // Mongoose schema for Benefit
@@ -27,6 +29,15 @@ const benefitsSchema: Schema<IBenefits> = new Schema({
     type: String, // Benefit name
     required: true, // Must be provided
     unique: true, // Must be unique
+  },
+  icon: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+    trim: true,
   },
 });
 
