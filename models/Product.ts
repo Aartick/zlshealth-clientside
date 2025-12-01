@@ -163,12 +163,10 @@ const productSchema: Schema<IProduct> = new Schema(
     },
     discount: {
       type: Number,
-      required: true, // Discount is required
       default: 0,
     },
     description: {
       type: String,
-      required: true, // Description is required
     },
     stock: {
       type: Number,
@@ -180,23 +178,18 @@ const productSchema: Schema<IProduct> = new Schema(
     },
     form: {
       type: String,
-      required: true,
     },
     packSize: {
       type: String,
-      required: true,
     },
     appliedFor: {
       type: String,
-      required: true,
     },
     suitableFor: {
       type: String,
-      required: true,
     },
     safetyNote: {
       type: String,
-      required: true,
     },
     averageRating: {
       type: Number,

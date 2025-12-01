@@ -27,6 +27,7 @@ const productTypeSchema: Schema<IproductType> = new Schema({
     type: String,     // Product type name
     required: true,   // Must be provided
     unique: true,     // Must be unique
+    trim: true,
   },
 });
 

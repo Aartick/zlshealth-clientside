@@ -55,7 +55,7 @@ function Page() {
     // State for price range values
     const [values, setValues] = useState<number[]>([MIN, MAX]);
     // State for loading and storing categories
-    const [, setLoadingCategories] = useState(true)
+    const [loadingCategories, setLoadingCategories] = useState(true)
     const [categories, setCategories] = useState<filters[]>([])
     // State for loading and storing product types
     const [loadingProductTypes, setLoadingProductTypes] = useState(true)
@@ -156,6 +156,8 @@ function Page() {
     useEffect(() => {
         const getProducts = async () => {
             try {
+                if (loadingCategories) return;
+                if (!selectedCategory) return;
                 setLoadingProducts(true)
                 const queryParams = new URLSearchParams();
 
@@ -311,20 +313,40 @@ function Page() {
                         <div className="space-y-4 lg:p-4 w-full">
                             <p className="font-medium">Category</p>
 
-                            <select
-                                className='lg:hidden w-full py-2 px-3 rounded-lg border border-[#e3e3e3] focus:outline-none'
-                                value={selectedCategory}
-                                onChange={(e) => setSelectedCategory(e.target.value)}
-                            >
-                                {categories.map((category) => (
-                                    <option key={category._id} value={category._id}>
-                                        {category.name}
-                                    </option>
-                                ))}
-                            </select>
+                            {
+                                loadingCategories ? (
+                                    <div className="lg:hidden w-full">
+                                        <div className="w-full h-9 rounded-lg bg-gray-200 animate-pulse"></div>
+                                    </div>
+                                ) : (
+                                    <select
+                                        className='lg:hidden w-full py-2 px-3 rounded-lg border border-[#e3e3e3] focus:outline-none'
+                                        value={selectedCategory}
+                                        onChange={(e) => setSelectedCategory(e.target.value)}
+                                    >
+                                        {categories.map((category) => (
+                                            <option key={category._id} value={category._id}>
+                                                {category.name}
+                                            </option>
+                                        ))}
+                                    </select>
+
+                                )
+                            }
+
 
                             <div className="hidden lg:grid grid-cols-3 gap-4">
-                                {categories.map((category) => (
+                                {loadingCategories ? (
+                                    Array.from({ length: 6 }).map((_, i) => (
+                                        <div key={i} className="flex items-center gap-2.5">
+                                            {/* Fake checkbox */}
+                                            <div className="w-4 h-4 bg-gray-300 rounded-sm animate-pulse"></div>
+
+                                            {/* Fake label */}
+                                            <div className="h-3 w-24 bg-gray-200 rounded animate-pulse"></div>
+                                        </div>
+                                    ))
+                                ) : categories.map((category) => (
                                     <div key={category._id} className="flex items-center gap-2.5">
                                         <input
                                             type="checkbox"

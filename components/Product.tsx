@@ -32,36 +32,8 @@ interface ProductProps {
 }
 
 function Product({ product }: ProductProps) {
-    // Hardcoded rating value for display
-    // const rating = 3.7
-
     // Calculate discounted price
     const discountedPrice = (product.price - (product.price * product.discount / 100)).toFixed(2);
-
-    // Render star rating (full, half, empty)
-    // const renderStars = () => {
-    //     return Array.from({ length: 5 }, (_, index) => {
-    //         const starNumber = index + 1;
-    //         if (rating >= starNumber) {
-    //             // Full star
-    //             return <IoStarSharp key={index} className="text-[#71BF45]" />;
-    //         } else if (rating >= starNumber - 0.5) {
-    //             // Half star
-    //             return (
-    //                 <span key={index} className="relative inline-block">
-    //                     <IoStarSharp className="text-gray-300" />
-    //                     <IoStarSharp
-    //                         className="text-[#71BF45] absolute top-0 left-0 overflow-hidden"
-    //                         style={{ clipPath: "inset(0 50% 0 0)" }}
-    //                     />
-    //                 </span>
-    //             );
-    //         } else {
-    //             // Empty star
-    //             return <IoStarSharp key={index} className="text-gray-300" />;
-    //         }
-    //     });
-    // };
 
     return (
         // Product card container

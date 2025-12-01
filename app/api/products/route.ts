@@ -172,7 +172,6 @@ export async function GET(req: NextRequest) {
       // Find all the products according to filter ID's
       const products = await Product.find(filter)
         .populate("category")
-        .populate("faqs");
 
       return success(200, products);
     } else if (type === "productId") {
@@ -186,7 +185,6 @@ export async function GET(req: NextRequest) {
       // Find the product details by ID
       const product = await Product.findById(id)
         .populate("category")
-        .populate("faqs");
 
       if (!product) {
         return error(404, "Product not found.");
