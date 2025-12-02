@@ -68,6 +68,9 @@ function Page() {
     const [products, setProducts] = useState<product[]>([])
     // State for filtered products based on price range
     const [filteredProducts, setFilteredProducts] = useState<product[]>([])
+    // State for error handling
+    const [error, setError] = useState<string | null>(null);
+    const [retryCount, setRetryCount] = useState(0);
 
     const searchParams = useSearchParams();
     const categoryQuery = searchParams.get("category");
@@ -109,11 +112,12 @@ function Page() {
 
     // Fetch products whenever filters change
     useEffect(() => {
-        const getProducts = async () => {
+        const getProducts = async (attempt = 0) => {
             try {
                 if (loadingFilters) return;
                 if (!selectedCategory) return;
                 setLoadingProducts(true)
+                setError(null);
                 const queryParams = new URLSearchParams();
 
                 // Add selected filters to query params
@@ -133,17 +137,40 @@ function Page() {
                     });
                 }
 
-                // Fetch products from backend
+                // Fetch products from backend with timeout handling
                 const response = await axiosClient.get(
-                    `/api/products?type=all&${queryParams.toString()}`
+                    `/api/products?type=all&${queryParams.toString()}`,
+                    { timeout: 30000 } // 30 second timeout
                 );
 
                 // Handle pagination response format
                 const result = response.data.result;
                 const productsData = result.products || result; // Support both new and old format
                 setProducts(productsData);
-            } catch { }
-            setLoadingProducts(false)
+                setRetryCount(0); // Reset retry count on success
+            } catch (err: unknown) {
+                const error = err as { code?: string; message?: string };
+                const isTimeout = error.code === 'ECONNABORTED' || error.message?.includes('timeout');
+                const maxRetries = 2;
+
+                if (isTimeout && attempt < maxRetries) {
+                    // Retry on timeout
+                    console.log(`Request timed out, retrying... (${attempt + 1}/${maxRetries})`);
+                    setRetryCount(attempt + 1);
+                    setTimeout(() => getProducts(attempt + 1), 1000); // Retry after 1 second
+                    return;
+                }
+
+                // Set error message
+                if (isTimeout) {
+                    setError("Loading is taking longer than usual. Please refresh the page or try again later.");
+                } else {
+                    setError("Failed to load products. Please try again.");
+                }
+                console.error("Error fetching products:", err);
+            } finally {
+                setLoadingProducts(false);
+            }
         };
 
         getProducts();
@@ -395,7 +422,27 @@ function Page() {
 
                     {/* Products Section */}
                     <div className="overflow-y-scroll scrollbar-hide">
-                        {loadingProducts ? (
+                        {error ? (
+                            <div className="flex flex-col items-center justify-center p-8 space-y-4">
+                                <div className="text-center space-y-2">
+                                    <h3 className="text-xl font-semibold text-red-600">Error Loading Products</h3>
+                                    <p className="text-gray-600">{error}</p>
+                                    {retryCount > 0 && (
+                                        <p className="text-sm text-gray-500">Retry attempt: {retryCount}/2</p>
+                                    )}
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        setError(null);
+                                        setRetryCount(0);
+                                        window.location.reload();
+                                    }}
+                                    className="px-6 py-2 bg-[#71BF45] text-white rounded-lg hover:bg-[#5da838] transition-colors"
+                                >
+                                    Retry
+                                </button>
+                            </div>
+                        ) : loadingProducts ? (
                             <div className={`p-4 grid ${filterBarOpen ? "grid-cols-2 lg:grid-cols-3" : "grid-cols-2 lg:grid-cols-4"} gap-2.5 md:gap-5`}>
                                 {Array.from({ length: 9 }).map((_, i) => (
                                     <ProductSkeleton key={i} />

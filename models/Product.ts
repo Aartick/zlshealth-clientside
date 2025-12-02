@@ -225,6 +225,14 @@ const productSchema: Schema<IProduct> = new Schema(
   }
 );
 
+// Add indexes for better query performance
+productSchema.index({ category: 1 }); // Single field index for category filtering
+productSchema.index({ productTypes: 1 }); // Index for product types array
+productSchema.index({ benefits: 1 }); // Index for benefits array
+productSchema.index({ category: 1, productTypes: 1 }); // Compound index for common query patterns
+productSchema.index({ category: 1, benefits: 1 }); // Compound index for category + benefits
+productSchema.index({ price: 1 }); // Index for price range queries
+
 // Create or reuse Product model
 const Product =
   mongoose.models.Product || mongoose.model<IProduct>("Product", productSchema);

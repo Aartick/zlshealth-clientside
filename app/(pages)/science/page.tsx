@@ -322,34 +322,34 @@ export default function Page() {
           style={{ touchAction: isDragEnabled ? "pan-y" : "auto" }}
         >
           {/* ---------- PANEL 1 ---------- */}
-          <section className="panel flex items-center justify-center px-8 py-5">
+          <section className="panel flex items-center justify-center px-4 sm:px-8 py-5">
             <div className="flex flex-col md:flex-row justify-between h-full items-center w-full lg:w-screen">
               {/* FIRST PART */}
-              <div className="flex flex-col justify-around pb-10 h-screen">
+              <div className="flex flex-col justify-around pb-10 md:h-screen space-y-8 md:space-y-0">
                 <div>
-                  <h5 className="font-light text-xl sm:text-2xl text-white">
+                  <h5 className="font-light text-lg sm:text-xl md:text-2xl text-white">
                     Why Zealous Health is Different
                   </h5>
-                  <h1 className="font-semibold text-3xl sm:text-4xl text-white tracking-tighter text-nowrap">
+                  <h1 className="font-semibold text-2xl sm:text-3xl md:text-4xl text-white tracking-tighter">
                     Science Meets Ancient Wisdom
                   </h1>
                 </div>
 
-                <p className="sm:text-lg text-[#D8DED5] w-96 sm:w-full md:w-[700px]">
+                <p className="text-sm sm:text-base md:text-lg text-[#D8DED5] max-w-full md:w-[700px]">
                   Ever wonder why you take vitamins but don&apos;t feel the difference?
                   Most supplements are poorly absorbed — your body only uses about
                   10–20% of what you swallow while the rest is just expensive pee.
                 </p>
 
                 <div>
-                  <h5 className="font-light text-xl sm:text-2xl text-white">
+                  <h5 className="font-light text-lg sm:text-xl md:text-2xl text-white">
                     Our Game-Changing Solution
                   </h5>
-                  <div className="flex items-center gap-4">
-                    <h1 className="font-semibold text-2xl sm:text-4xl text-white text-nowrap">
+                  <div className="flex items-center gap-2 sm:gap-4">
+                    <h1 className="font-semibold text-xl sm:text-2xl md:text-4xl text-white">
                       Nano-Tech Meets Nature
                     </h1>
-                    <div className="w-[75px] sm:w-[137px] border border-white" />
+                    <div className="w-[50px] sm:w-[75px] md:w-[137px] border border-white" />
                   </div>
                 </div>
               </div>
@@ -357,7 +357,7 @@ export default function Page() {
               {/* SECOND PART */}
               <div
                 id="human-model-container"
-                className="w-full h-screen"
+                className="w-full h-[400px] md:h-screen"
                 style={{ perspective: "1000px" }}
               >
                 <HumanModel />
@@ -435,7 +435,7 @@ export default function Page() {
 
             <video
               ref={videoRef}
-              className="h-auto w-full max-w-[400px] mx-auto md:h-[750px] md:w-screen md:max-w-none 2xl:w-[1536px] md:-my-40 md:mx-0 sm:my-8 md:sm:my-14 md:md:my-0 object-cover"
+              className="h-auto w-full max-w-[400px] mx-auto my-8 md:h-screen md:w-screen md:max-w-none 2xl:w-[1536px] md:my-0 object-contain"
               playsInline
               loop
             >
@@ -673,14 +673,14 @@ export default function Page() {
           <section className="panel relative flex flex-col md:justify-center 2xl:justify-around md:w-screen md:h-screen mt-20 md:mt-0 space-y-12 md:space-y-8 2xl:space-y-16 py-8 md:py-12 md:pr-20 2xl:w-[1536px]">
             {/* UPPER ROW */}
             <div className="flex flex-col md:flex-row gap-8 md:gap-0 md:items-center 2xl:h-auto">
-              <div className="flex-1 px-8 md:px-0 space-y-3">
-                <p className="text-2xl sm:text-3xl w-[400px]">
+              <div className="flex-1 px-4 sm:px-8 md:px-0 space-y-3">
+                <p className="text-xl sm:text-2xl md:text-3xl max-w-full md:w-[400px]">
                   Ready to{" "}
                   <span className="font-semibold">
                     experience what absorption should feel like?
                   </span>
                 </p>
-                <p className="text-[#D8DED5] sm:text-lg">
+                <p className="text-[#D8DED5] text-sm sm:text-base md:text-lg">
                   We&apos;ve cracked the code on making supplements
                   actually work. By combining ancient herbal wisdom with space-age nanotechnology,
                   we deliver nutrients your body can actually user -
