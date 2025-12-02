@@ -92,10 +92,12 @@ export async function POST(req: NextRequest) {
         _id: user._id,
       });
 
-      // Store refresh token in HttpOnly cookie
+      // Store refresh token in HttpOnly cookie with CSRF protection
       (await cookies()).set("jwt", refreshToken, {
         httpOnly: true,
         secure: true,
+        sameSite: "strict",
+        path: "/",
       });
 
       // Return access token to client
@@ -152,6 +154,8 @@ export async function GET(req: NextRequest) {
       (await cookieStore).set("jwt", "", {
         httpOnly: true,
         secure: true,
+        sameSite: "strict",
+        path: "/",
         expires: new Date(0), // Expire the cookie immediately
       });
 
@@ -159,7 +163,7 @@ export async function GET(req: NextRequest) {
       return success(200, "Logged out successfully");
     }
   } catch (e) {
-    console.log(e);
+    console.error("Error in authentication:", e);
     // Handle unexpected errors
     return error(500, "Something went wrong.");
   }

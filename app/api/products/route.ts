@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
 
     return success(201, "Product created successfully.");
   } catch (e) {
-    console.log(e);
+    console.error("Error creating product:", e);
     return error(500, "Something went wrong.");
   }
 }
@@ -137,6 +137,17 @@ export async function GET(req: NextRequest) {
       const category = searchParams.get("category");
       const productTypes = searchParams.getAll("productTypes");
       const benefits = searchParams.getAll("benefits");
+
+      // Pagination parameters
+      const page = parseInt(searchParams.get("page") || "1");
+      const limit = parseInt(searchParams.get("limit") || "20");
+
+      // Validate pagination parameters
+      if (page < 1 || limit < 1 || limit > 100) {
+        return error(400, "Invalid pagination parameters. Page must be >= 1 and limit must be between 1 and 100.");
+      }
+
+      const skip = (page - 1) * limit;
 
       const filter: Record<string, unknown> = {};
 
@@ -169,10 +180,25 @@ export async function GET(req: NextRequest) {
         }
       }
 
-      // Find all the products according to filter ID's
-      const products = await Product.find(filter).populate("category");
+      // Get total count for pagination metadata
+      const totalProducts = await Product.countDocuments(filter);
 
-      return success(200, products);
+      // Find products with pagination
+      const products = await Product.find(filter)
+        .populate("category")
+        .skip(skip)
+        .limit(limit);
+
+      // Return products with pagination metadata
+      return success(200, {
+        products,
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(totalProducts / limit),
+          totalProducts,
+          limit,
+        },
+      });
     } else if (type === "productId") {
       const { searchParams } = new URL(req.url);
       const id = searchParams.get("id");
@@ -191,7 +217,7 @@ export async function GET(req: NextRequest) {
       return success(200, product);
     }
   } catch (e) {
-    console.log(e);
+    console.error("Error fetching products:", e);
     return error(500, "Something went wrong.");
   }
 }
@@ -235,7 +261,7 @@ export async function PUT(req: NextRequest) {
 
     return success(200, "Product updated successfully");
   } catch (e) {
-    console.log(e);
+    console.error("Error updating product:", e);
     return error(500, "Something went wrong.");
   }
 }
@@ -276,7 +302,7 @@ export async function DELETE(req: NextRequest) {
 
     return success(200, "Product deleted successfully.");
   } catch (e) {
-    console.log(e);
+    console.error("Error deleting product:", e);
     return error(500, "Something went wrong.");
   }
 }

@@ -1,5 +1,6 @@
 import dbConnect from "@/dbConnect/dbConnect";
 import Wishlist from "@/models/Wishlist";
+import Product from "@/models/Product";
 import { verifyAccessToken } from "@/utils/authMiddleware";
 import { error, success } from "@/utils/responseWrapper";
 import mongoose, { Types } from "mongoose";
@@ -36,6 +37,9 @@ export async function POST(req: NextRequest) {
     }
 
     await dbConnect();
+
+    // Ensure Product model is registered
+    Product;
 
     // Verify JWT token and extract customer ID
     const { valid, response, _id } = await verifyAccessToken(req);
@@ -86,7 +90,7 @@ export async function POST(req: NextRequest) {
 
     return success(201, responseWrapper);
   } catch (e) {
-    console.log(e);
+    console.error("Error adding to wishlist:", e);
     return error(500, "Something went wrong while adding to wishlist");
   }
 }
@@ -106,6 +110,9 @@ export async function PUT(req: NextRequest) {
     }
 
     await dbConnect();
+
+    // Ensure Product model is registered
+    Product;
 
     // Verify JWT token and extract customer ID
     const { valid, response, _id } = await verifyAccessToken(req);
@@ -152,7 +159,7 @@ export async function PUT(req: NextRequest) {
 
     return success(200, responseWrapper);
   } catch (e) {
-    console.log(e);
+    console.error("Error removing from wishlist:", e);
     return error(500, "Something went wrong while removing form wishlist");
   }
 }
@@ -166,6 +173,9 @@ export async function PUT(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     await dbConnect();
+
+    // Ensure Product model is registered
+    Product;
 
     // Verify JWT token and extract customer ID
     const { valid, response, _id } = await verifyAccessToken(req);

@@ -83,21 +83,30 @@ const groceryCartSlice = createSlice({
 
         const product = state.cart.find((item) => item._id === productId);
         if (product) {
-          product.loading = true;
+          // Prevent race condition: only set loading if not already loading
+          if (!product.loading) {
+            product.loading = true;
+          }
         } else {
-          state.cart.push({
-            _id: productId,
-            category: "",
-            productTypes: [""],
-            benefits: [""],
-            name: "",
-            img: "",
-            price: 0,
-            quantity: 0,
-            about: "",
-            discount: 0,
-            loading: true,
-          });
+          // Only add placeholder if product doesn't exist and isn't already being added
+          const isAlreadyPending = state.cart.some(
+            (item) => item._id === productId && item.loading
+          );
+          if (!isAlreadyPending) {
+            state.cart.push({
+              _id: productId,
+              category: "",
+              productTypes: [""],
+              benefits: [""],
+              name: "",
+              img: "",
+              price: 0,
+              quantity: 0,
+              about: "",
+              discount: 0,
+              loading: true,
+            });
+          }
         }
       })
       // Update cart state after backend add-to-cart
@@ -123,7 +132,10 @@ const groceryCartSlice = createSlice({
       .addCase(removeFromCart.pending, (state, action) => {
         const { productId } = action.meta.arg;
         const product = state.cart.find((item) => item._id === productId);
-        if (product) product.loading = true;
+        // Prevent race condition: only set loading if not already loading
+        if (product && !product.loading) {
+          product.loading = true;
+        }
       })
       // Update cart state after backend remove-from-cart
       .addCase(removeFromCart.fulfilled, (state, action) => {

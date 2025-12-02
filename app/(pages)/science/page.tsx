@@ -84,11 +84,22 @@ export default function Page() {
   const cursorRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
+  const [dragConstraints, setDragConstraints] = useState({ left: 0, right: 0 });
+  const [isDragEnabled, setIsDragEnabled] = useState(false);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
     const section = sectionRef.current;
 
+    // Calculate drag constraints for mobile
+    const updateDragConstraints = () => {
+      if (container) {
+        const totalWidth = container.scrollWidth;
+        const viewportWidth = window.innerWidth;
+        const maxDrag = -(totalWidth - viewportWidth);
+        setDragConstraints({ left: maxDrag, right: 0 });
+      }
+    };
 
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
@@ -97,6 +108,9 @@ export default function Page() {
         // Horizontal scroll animation for desktop
         const totalWidth = container?.scrollWidth || 0;
         const viewportWidth = window.innerWidth;
+
+        // Disable drag on desktop
+        setIsDragEnabled(false);
 
         gsap.to(container, {
           x: () => -(totalWidth - viewportWidth),
@@ -114,13 +128,19 @@ export default function Page() {
       });
 
       mm.add("(max-width: 768px)", () => {
-        // Mobile: Normal vertical scroll
+        // Mobile: Normal vertical scroll with drag enabled
         gsap.set(container, { clearProps: "all" });
         ScrollTrigger.getAll().forEach((t) => t.kill());
+        updateDragConstraints();
+        setIsDragEnabled(true);
       });
 
       return () => mm.revert();
     });
+
+    // Update constraints on resize
+    window.addEventListener("resize", updateDragConstraints);
+    updateDragConstraints();
 
     // Mouse-follow glowing gradient
     const glow = glowRef.current;
@@ -150,9 +170,8 @@ export default function Page() {
     return () => {
       ctx.revert();
       window.removeEventListener("mousemove", moveGlow);
-      window.removeEventListener("mousemove", moveCursor)
-      // window.removeEventListener("resize", setupAnimation);
-      // ScrollTrigger.getAll().forEach((t) => t.kill())
+      window.removeEventListener("mousemove", moveCursor);
+      window.removeEventListener("resize", updateDragConstraints);
     };
   }, []);
 
@@ -293,7 +312,15 @@ export default function Page() {
         />
 
         {/* Horizontal scroll container */}
-        <div ref={scrollContainerRef} className="flex flex-col md:flex-row md:h-screen w-full md:w-max relative z-10 pt-10 md:pt-0">
+        <motion.div
+          ref={scrollContainerRef}
+          className="flex flex-col md:flex-row md:h-screen w-full md:w-max relative z-10 pt-10 md:pt-0"
+          drag={isDragEnabled ? "x" : false}
+          dragConstraints={dragConstraints}
+          dragElastic={0.1}
+          dragTransition={{ bounceStiffness: 300, bounceDamping: 30 }}
+          style={{ touchAction: isDragEnabled ? "pan-y" : "auto" }}
+        >
           {/* ---------- PANEL 1 ---------- */}
           <section className="panel flex items-center justify-center px-8 py-5">
             <div className="flex flex-col md:flex-row justify-between h-full items-center w-full lg:w-screen">
@@ -408,7 +435,7 @@ export default function Page() {
 
             <video
               ref={videoRef}
-              className="h-[750px] w-screen 2xl:w-[1536px] -my-40 sm:my-14 md:my-0 sm:h-full"
+              className="h-auto w-full max-w-[400px] mx-auto md:h-[750px] md:w-screen md:max-w-none 2xl:w-[1536px] md:-my-40 md:mx-0 sm:my-8 md:sm:my-14 md:md:my-0 object-cover"
               playsInline
               loop
             >
@@ -633,7 +660,7 @@ export default function Page() {
                         src={step.image}
                         fill
                         alt={step.title}
-                        className="rounded-[32px]"
+                        className="rounded-[32px] object-cover"
                       />
                     </div>
                   </div>
@@ -643,9 +670,9 @@ export default function Page() {
           </section>
 
           {/* ---------- PANEL 6 ---------- */}
-          <section className="panel relative flex flex-col 2xl:justify-around md:w-screen md:h-screen mt-20 md:mt-0 space-y-8 md:space-y-2.5 2xl:space-y-0 py-2.5 md:pr-20 2xl:w-[1536px]">
+          <section className="panel relative flex flex-col md:justify-center 2xl:justify-around md:w-screen md:h-screen mt-20 md:mt-0 space-y-12 md:space-y-8 2xl:space-y-16 py-8 md:py-12 md:pr-20 2xl:w-[1536px]">
             {/* UPPER ROW */}
-            <div className="flex flex-col md:flex-row gap-8 md:gap-0 md:items-center 2xl:h-1/2">
+            <div className="flex flex-col md:flex-row gap-8 md:gap-0 md:items-center 2xl:h-auto">
               <div className="flex-1 px-8 md:px-0 space-y-3">
                 <p className="text-2xl sm:text-3xl w-[400px]">
                   Ready to{" "}
@@ -672,7 +699,7 @@ export default function Page() {
             </div>
 
             {/* ====== FLOATING CARDS ====== */}
-            <div className="flex flex-col gap-8 md:gap-10 md:flex-row items-center 2xl:h-1/2">
+            <div className="flex flex-col gap-8 md:gap-10 md:flex-row items-center 2xl:h-auto">
               <div className="flex-1 flex flex-col gap-8 md:gap-2 2xl:gap-12 h-full items-center md:items-end px-10">
                 <Card
                   text="Multi-Pathway Disease Targeting"
@@ -713,7 +740,7 @@ export default function Page() {
               </div>
             </div>
           </section>
-        </div>
+        </motion.div>
 
         <AnimatePresence>
           {selectedCard && (
@@ -748,12 +775,13 @@ export default function Page() {
                     </div>
 
                     {/* IMAGE ON RIGHT */}
-                    <div className="flex-1 flex items-center justify-center">
+                    <div className="flex-1 flex items-center justify-center overflow-hidden">
                       <div className="relative h-full w-full">
                         <Image
                           src={cardDetails[selectedCard].image}
                           alt={cardDetails[selectedCard].title}
                           fill
+                          className="object-contain"
                         />
                       </div>
                     </div>

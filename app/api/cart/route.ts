@@ -4,6 +4,7 @@ import { verifyAccessToken } from "@/utils/authMiddleware";
 import { error, success } from "@/utils/responseWrapper";
 import { Types } from "mongoose";
 import { NextRequest } from "next/server";
+import mongoose from "mongoose";
 
 interface ProductDoc {
   _id: Types.ObjectId;
@@ -32,8 +33,19 @@ export async function POST(req: NextRequest) {
   try {
     const { productId, quantity } = await req.json();
 
+    // Validate required fields
     if (!productId || !quantity) {
       return error(400, "All fields are required.");
+    }
+
+    // Validate productId is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return error(400, "Invalid product ID.");
+    }
+
+    // Validate quantity is a positive number
+    if (typeof quantity !== "number" || quantity <= 0 || !Number.isInteger(quantity)) {
+      return error(400, "Quantity must be a positive integer.");
     }
 
     await dbConnect();
