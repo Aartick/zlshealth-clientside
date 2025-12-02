@@ -44,7 +44,7 @@ const tableData = [
   {
     col1: "Does your body actually use it?",
     col2: "Only 10-30% absorbed. You are literally peeing out 70% of what you paid for",
-    col3: "Your cells absorb 5-10x more-precision nano-delivery ensures nutrients reach target organs"
+    col3: "Your cells absorb 5-10x more-precision nano-delivery ensures nutrients reach target organs."
   },
   {
     col1: "Will you actually feel different?",
