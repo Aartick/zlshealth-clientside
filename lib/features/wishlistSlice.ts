@@ -77,12 +77,21 @@ const wishlistSlice = createSlice({
 
         const product = state.products.find((item) => item._id === productId);
         if (product) {
-          product.loading = true;
+          // Prevent race condition: only set loading if not already loading
+          if (!product.loading) {
+            product.loading = true;
+          }
         } else {
-          state.products.push({
-            _id: productId,
-            loading: true,
-          } as productType);
+          // Only add placeholder if product doesn't exist and isn't already being added
+          const isAlreadyPending = state.products.some(
+            (item) => item._id === productId && item.loading
+          );
+          if (!isAlreadyPending) {
+            state.products.push({
+              _id: productId,
+              loading: true,
+            } as productType);
+          }
         }
       })
       // Update wishlist state after backend add-to-wishlist

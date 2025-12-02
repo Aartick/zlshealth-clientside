@@ -5,6 +5,7 @@ import { error, success } from "@/utils/responseWrapper";
 import axios from "axios";
 import { Types } from "mongoose";
 import { NextRequest } from "next/server";
+import dbConnect from "@/dbConnect/dbConnect";
 
 /**
  * @route GET /api/orders
@@ -30,6 +31,8 @@ interface OrderProduct {
 }
 
 export async function GET(req: NextRequest) {
+  await dbConnect();
+
   try {
     // Verify JWT token
     const { valid, response, _id } = await verifyAccessToken(req);
@@ -106,7 +109,7 @@ export async function GET(req: NextRequest) {
 
     return success(200, responseWrapper);
   } catch (e) {
-    console.log(e);
+    console.error("Error fetching orders:", e);
     return error(500, "Something went wrong.");
   }
 }
@@ -120,6 +123,8 @@ export async function GET(req: NextRequest) {
  */
 
 export async function PUT(req: NextRequest) {
+  await dbConnect();
+
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
@@ -160,7 +165,7 @@ export async function PUT(req: NextRequest) {
 
     return success(statusCode, message);
   } catch (e) {
-    console.log(e);
+    console.error("Error canceling order:", e);
     return error(500, "Something went wrong.");
   }
 }

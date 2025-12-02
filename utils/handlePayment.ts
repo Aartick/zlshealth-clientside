@@ -46,7 +46,7 @@ const initPay = (
   return new Promise((resolve) => {
     const { id, amount, currency } = data;
     const options = {
-      key: "rzp_test_O8dTUyd5P0J4XU",
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
       amount,
       currency,
       name: "Zealous Health",

@@ -9,8 +9,10 @@ import Product from "@/models/Product";
 import User from "@/models/User";
 import { formatAddress } from "@/utils/formatAddress";
 import axios from "axios";
+import dbConnect from "@/dbConnect/dbConnect";
 
 export async function POST(req: NextRequest) {
+  await dbConnect();
   try {
     // Verify JWT token
     const { valid, response, _id } = await verifyAccessToken(req);
@@ -165,7 +167,7 @@ export async function POST(req: NextRequest) {
 
     return success(200, orderSummary);
   } catch (e) {
-    console.log(e);
+    console.error("Error in payment verification:", e);
     return error(500, "Something went wrong.");
   }
 }

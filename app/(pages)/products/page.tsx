@@ -79,7 +79,9 @@ function Page() {
 
     useEffect(() => {
         if (!categoryQuery) {
-            setSelectedCategory(categories[0]._id)
+            if (categories.length > 0) {
+                setSelectedCategory(categories[0]._id)
+            }
         }
         else if (categoryQuery) {
             const matched = categories.find(
@@ -136,7 +138,10 @@ function Page() {
                     `/api/products?type=all&${queryParams.toString()}`
                 );
 
-                setProducts(response.data.result);
+                // Handle pagination response format
+                const result = response.data.result;
+                const productsData = result.products || result; // Support both new and old format
+                setProducts(productsData);
             } catch { }
             setLoadingProducts(false)
         };

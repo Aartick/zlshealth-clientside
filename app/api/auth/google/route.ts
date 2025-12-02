@@ -60,16 +60,18 @@ export async function POST(req: NextRequest) {
       _id: existUser._id,
     });
 
-    // Set refresh token cookie (HttpOnly so JS can't read it)
+    // Set refresh token cookie (HttpOnly so JS can't read it) with CSRF protection
     (await cookies()).set("jwt", refreshToken, {
       httpOnly: true,
       secure: true, // keep true in prod (HTTPS)
+      sameSite: "strict",
+      path: "/",
     });
 
     // Return access token to client (store in memory/localStorage on client)
     return success(201, { accessToken });
   } catch (e) {
-    console.log(e); 
+    console.error("Error in Google authentication:", e);
     return error(500, "Something went wrong.");
   }
 }

@@ -60,6 +60,15 @@ export const addToCart = createAsyncThunk(
     } catch {
       return [];
     }
+  },
+  {
+    // Prevent race condition: skip if same product is already being added
+    condition: ({ productId }, { getState }) => {
+      const state = getState() as RootState;
+      const product = state.cartSlice?.cart.find((item) => item._id === productId);
+      // Only proceed if product is not already loading
+      return !product?.loading;
+    },
   }
 );
 
@@ -77,6 +86,15 @@ export const removeFromCart = createAsyncThunk(
     } catch {
       return [];
     }
+  },
+  {
+    // Prevent race condition: skip if same product is already being removed
+    condition: ({ productId }, { getState }) => {
+      const state = getState() as RootState;
+      const product = state.cartSlice?.cart.find((item) => item._id === productId);
+      // Only proceed if product is not already loading
+      return !product?.loading;
+    },
   }
 );
 

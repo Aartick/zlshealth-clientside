@@ -36,7 +36,7 @@ function ProductCard({ product }: ProductProps) {
                     src={product.productImg.url}
                     fill
                     alt={product.name}
-                    className="rounded-[10px] sm:rounded-[14px]"
+                    className="rounded-[10px] sm:rounded-[14px] object-cover"
                 />
                 {/* Wishlist (favorite) icon */}
                 <div className="flex items-center justify-between w-full absolute top-3 px-3">

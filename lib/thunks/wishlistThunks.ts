@@ -58,6 +58,15 @@ export const addToWishlist = createAsyncThunk(
       // On error, return empty array
       return [];
     }
+  },
+  {
+    // Prevent race condition: skip if same product is already being added
+    condition: ({ productId }, { getState }) => {
+      const state = getState() as RootState;
+      const product = state.wishlistSlice?.products.find((item) => item._id === productId);
+      // Only proceed if product is not already loading
+      return !product?.loading;
+    },
   }
 );
 
@@ -74,6 +83,15 @@ export const removeFromWishlist = createAsyncThunk(
       // On error, return empty array
       return [];
     }
+  },
+  {
+    // Prevent race condition: skip if same product is already being removed
+    condition: ({ productId }, { getState }) => {
+      const state = getState() as RootState;
+      const product = state.wishlistSlice?.products.find((item) => item._id === productId);
+      // Only proceed if product is not already loading
+      return !product?.loading;
+    },
   }
 );
 

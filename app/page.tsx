@@ -87,31 +87,66 @@ export default function Home() {
   
   // ================ HEALTH CONDITIONS LOGIC ================
   const [healthConditions, setHealthConditions] = useState<healthCondition[]>([])
-  const [activeBtn, setActiveBtn] = useState("Digestive")
+  const [activeBtn, setActiveBtn] = useState<string>("")
   const [products, setProducts] = useState<product[]>([])
   const [loadingProducts, setLoadingProducts] = useState(false);
+  const [loadingHealthConditions, setLoadingHealthConditions] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
 
+  // Fetch products when activeBtn changes (but only if activeBtn is set)
   useEffect(() => {
+    if (!activeBtn) return; // Don't fetch if no health condition is selected
+
     const getProducts = async () => {
       setLoadingProducts(true)
 
       try {
         const response = await axiosClient.get(`/api/products/healthConditions?healthCondition=${activeBtn}&limit=true`)
         setProducts(response.data.result)
-      } catch { }
+        setRetryCount(0) // Reset retry count on success
+      } catch (error) {
+        console.error("Error fetching products:", error)
 
-      setLoadingProducts(false)
+        // Retry logic: retry up to 2 times
+        if (retryCount < 2) {
+          console.log(`Retrying product fetch... Attempt ${retryCount + 1}`)
+          setRetryCount(prev => prev + 1)
+          setTimeout(() => {
+            // Trigger re-fetch by toggling a dependency
+          }, 1000 * (retryCount + 1)) // Exponential backoff: 1s, 2s
+        }
+      } finally {
+        setLoadingProducts(false)
+      }
     }
     getProducts()
-  }, [activeBtn])
+  }, [activeBtn, retryCount])
 
+  // Fetch health conditions first on mount
   useEffect(() => {
     const getHealthBenefits = async () => {
+      setLoadingHealthConditions(true)
+
       try {
         const res = await axiosClient.get("/api/healthConditions")
-        setHealthConditions(res.data.result)
-        setActiveBtn(res.data.result[0]?._id)
-      } catch { }
+
+        if (res.data.result && res.data.result.length > 0) {
+          setHealthConditions(res.data.result)
+          setActiveBtn(res.data.result[0]._id) // This will trigger product fetch
+        } else {
+          console.error("No health conditions found in database")
+        }
+      } catch (error) {
+        console.error("Error fetching health conditions:", error)
+
+        // Retry after 2 seconds if failed
+        setTimeout(() => {
+          console.log("Retrying health conditions fetch...")
+          getHealthBenefits()
+        }, 2000)
+      } finally {
+        setLoadingHealthConditions(false)
+      }
     }
 
     getHealthBenefits()
@@ -436,8 +471,23 @@ export default function Home() {
 
       {/* PRODUCTS FILTERS */}
       <section className="max-w-screen-2xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 px-10 text-xs md:text-base">
-        <button
-          onClick={() => setActiveBtn(healthConditions[0]?._id)}
+        {loadingHealthConditions ? (
+          <>
+            {Array.from({ length: 5 }).map((_, idx) => (
+              <div
+                key={idx}
+                className="flex items-center gap-[15px] p-1.5 rounded-[8px] border border-[#e0e0e0] animate-pulse"
+              >
+                <div className="w-[52px] h-[52px] bg-gray-200 rounded-[6px]" />
+                <div className="flex-1 h-4 bg-gray-200 rounded" />
+              </div>
+            ))}
+          </>
+        ) : (
+          <>
+            <button
+              onClick={() => setActiveBtn(healthConditions[0]?._id)}
+              disabled={!healthConditions[0]?._id}
           className={`
             flex items-center gap-[15px] 
             p-1.5 rounded-[8px] border 
@@ -470,9 +520,10 @@ export default function Home() {
 
         <button
           onClick={() => setActiveBtn(healthConditions[1]?._id)}
+          disabled={!healthConditions[1]?._id}
           className={`
-            flex items-center gap-[15px] 
-            p-1.5 rounded-[8px] border 
+            flex items-center gap-[15px]
+            p-1.5 rounded-[8px] border
             ${activeBtn === healthConditions[1]?._id
               ? "border-[#093C16]"
               : "border-[#e0e0e0]"}
@@ -500,9 +551,10 @@ export default function Home() {
 
         <button
           onClick={() => setActiveBtn(healthConditions[2]?._id)}
+          disabled={!healthConditions[2]?._id}
           className={`
-            flex items-center gap-[15px] 
-            p-1.5 rounded-[8px] border 
+            flex items-center gap-[15px]
+            p-1.5 rounded-[8px] border
             ${activeBtn === healthConditions[2]?._id
               ? "border-[#093C16]"
               : "border-[#e0e0e0]"}
@@ -523,9 +575,10 @@ export default function Home() {
 
         <button
           onClick={() => setActiveBtn(healthConditions[3]?._id)}
+          disabled={!healthConditions[3]?._id}
           className={`
-            flex items-center gap-[15px] 
-            p-1.5 rounded-[8px] border 
+            flex items-center gap-[15px]
+            p-1.5 rounded-[8px] border
             ${activeBtn === healthConditions[3]?._id
               ? "border-[#093C16]"
               : "border-[#e0e0e0]"}
@@ -551,9 +604,10 @@ export default function Home() {
 
         <button
           onClick={() => setActiveBtn(healthConditions[4]?._id)}
+          disabled={!healthConditions[4]?._id}
           className={`
-            flex items-center gap-[15px] 
-            p-1.5 rounded-[8px] border 
+            flex items-center gap-[15px]
+            p-1.5 rounded-[8px] border
             ${activeBtn === healthConditions[4]?._id
               ? "border-[#093C16]"
               : "border-[#e0e0e0]"}
@@ -579,6 +633,8 @@ export default function Home() {
 
           <p>{healthConditions[4]?.name || "Skin Care Routine"}</p>
         </button>
+          </>
+        )}
       </section>
 
       {/* PRODUCTS */}

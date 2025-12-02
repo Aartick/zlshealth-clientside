@@ -46,7 +46,7 @@ function Product({ product }: ProductProps) {
                     src={product.productImg.url}
                     fill
                     alt={product.name}
-                    className="border-[3px] border-[#e3e3e3] rounded-[10px] sm:rounded-[20px]"
+                    className="border-[3px] border-[#e3e3e3] rounded-[10px] sm:rounded-[20px] object-cover"
                 />
                 {/* Best Seller badge */}
                 {product.bestSeller && (<div className="absolute top-5 left-[3px] inline-block">
