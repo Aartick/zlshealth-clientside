@@ -211,7 +211,7 @@ function Page() {
                                     </div>
 
                                     {/* Selected product image */}
-                                    <div className="md:flex-2 relative w-full h-[300px] sm:h-[350px] md:w-[400px] lg:w-[525px] lg:h-[492px]">
+                                    <div className="md:flex-2 relative w-full h-[400px] sm:h-[450px] md:w-[400px] md:h-[500px] lg:w-[525px] lg:h-[600px]">
                                         {/* Wishlist Heart Button */}
                                         <div className="absolute top-3 right-3 z-10">
                                             <WishlistButton product={product} />

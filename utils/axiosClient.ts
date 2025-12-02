@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
  */
 export const axiosClient = axios.create({
   withCredentials: true, // Ensures cookies are sent with requests
+  timeout: 30000, // 30 second timeout for requests
 });
 
 /**

@@ -6,6 +6,7 @@ import { verifyAccessToken } from "@/utils/authMiddleware";
 import { error, success } from "@/utils/responseWrapper";
 import mongoose from "mongoose";
 import { NextRequest } from "next/server";
+import dbConnect from "@/dbConnect/dbConnect";
 
 /**
  * @description - Create a new product.
@@ -133,6 +134,8 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    await dbConnect();
+
     if (type === "all") {
       const category = searchParams.get("category");
       const productTypes = searchParams.getAll("productTypes");
@@ -180,14 +183,16 @@ export async function GET(req: NextRequest) {
         }
       }
 
-      // Get total count for pagination metadata
-      const totalProducts = await Product.countDocuments(filter);
-
-      // Find products with pagination
-      const products = await Product.find(filter)
-        .populate("category")
-        .skip(skip)
-        .limit(limit);
+      // Run count and find in parallel for better performance
+      const [totalProducts, products] = await Promise.all([
+        Product.countDocuments(filter),
+        Product.find(filter)
+          .populate("category", "name") // Only select name field from category
+          .select("name productImg price discount about stock") // Select only needed fields
+          .skip(skip)
+          .limit(limit)
+          .lean() // Return plain JavaScript objects for better performance
+      ]);
 
       // Return products with pagination metadata
       return success(200, {
@@ -208,7 +213,9 @@ export async function GET(req: NextRequest) {
       }
 
       // Find the product details by ID
-      const product = await Product.findById(id).populate("category");
+      const product = await Product.findById(id)
+        .populate("category")
+        .lean();
 
       if (!product) {
         return error(404, "Product not found.");

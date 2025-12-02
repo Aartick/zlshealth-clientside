@@ -13,7 +13,6 @@
 // Import required modules and components
 import { IoLocationOutline, IoSearchOutline } from "react-icons/io5";
 import { IoIosArrowDown } from "react-icons/io";
-import { VscSettings } from "react-icons/vsc";
 import { BsCart2, BsSuitHeart } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
 import { MdKeyboardArrowDown } from "react-icons/md";
@@ -303,10 +302,6 @@ function Navbar() {
                     <div ref={desktopSearchRef} className="hidden lg:flex-1 lg:flex flex-col relative z-50">
                         <div className="flex justify-between items-center border-[0.5px] border-[#71BF45] rounded-[50px] py-2 px-2.5">
                             <div className="flex items-center gap-2.5 relative w-full">
-                                <label htmlFor='search' className="p-1 rounded-[27px] bg-[#71bf45] text-[#ffffff]">
-                                    <IoSearchOutline size={15} />
-                                </label>
-
                                 <div className="relative w-full">
                                     {/* Search input */}
                                     <input
@@ -335,52 +330,79 @@ function Navbar() {
                                         </div>
                                     )}
                                 </div>
-                            </div>
 
-                            {/* Filter Logo */}
-                            <div className="text-[#848484] border-l border-[#848484] pl-1">
-                                <VscSettings size={24} />
+                                <label htmlFor='search' className="p-1 rounded-[27px] bg-[#71bf45] text-[#ffffff]">
+                                    <IoSearchOutline size={15} />
+                                </label>
                             </div>
                         </div>
 
                         {/* Search Results */}
                         {showResults && inputValue && searchResults.length > 0 && (
                             <div
-                                className="absolute top-[105%] left-0 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-80 overflow-y-auto scrollbar-hide z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
+                                className="absolute top-[105%] left-0 w-full bg-white/95 backdrop-blur-xl border-2 border-[#71BF45]/30 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.15)] max-h-96 overflow-y-auto scrollbar-hide z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
                             >
-                                {searchResults.map((product) => (
-                                    <Link
-                                        href={`/productDescription/${product._id}`}
-                                        onClick={() => {
-                                            setShowResults(false);
-                                            setInputValue("");
-                                        }}
-                                        key={product._id}
-                                        className="flex items-center gap-3 p-2 hover:bg-gray-100 cursor-pointer transition-colors duration-150"
-                                    >
-                                        <div className="relative w-10 h-10">
-                                            <Image
-                                                src={product.productImg?.url}
-                                                alt={product.name}
-                                                fill
-                                                className="object-cover rounded-md"
-                                            />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-medium text-[#71BF45]">{product.name}</p>
-                                            <p className="text-xs text-gray-500">{product.about.slice(0, 45)}...</p>
-                                        </div>
-                                    </Link>
-                                ))}
+                                {searchResults.map((product) => {
+                                    const discountedPrice = (product.price - (product.price * product.discount / 100)).toFixed(2);
+                                    return (
+                                        <Link
+                                            href={`/productDescription/${product._id}`}
+                                            onClick={() => {
+                                                setShowResults(false);
+                                                setInputValue("");
+                                            }}
+                                            key={product._id}
+                                            className="flex items-center gap-4 p-3 border-b border-gray-200/50 last:border-b-0 hover:bg-white/80 cursor-pointer transition-all duration-200 group backdrop-blur-sm"
+                                        >
+                                            <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 border-gray-200 group-hover:border-[#71BF45]/40 transition-colors duration-200 shadow-sm">
+                                                <Image
+                                                    src={product.productImg?.url}
+                                                    alt={product.name}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-semibold text-[#093C16] group-hover:text-[#71BF45] transition-colors duration-200 truncate">
+                                                    {product.name}
+                                                </p>
+                                                <p className="text-xs text-gray-600 line-clamp-1 mt-0.5">
+                                                    {product.about}
+                                                </p>
+                                                <div className="flex items-center gap-2 mt-1.5">
+                                                    <span className="text-sm font-bold text-[#093C16]">
+                                                        ₹{discountedPrice}
+                                                    </span>
+                                                    {product.discount > 0 && (
+                                                        <>
+                                                            <span className="text-xs text-gray-500 line-through">
+                                                                ₹{product.price}
+                                                            </span>
+                                                            <span className="text-xs font-medium text-[#71BF45] bg-[#71BF45]/15 px-1.5 py-0.5 rounded">
+                                                                {product.discount}% off
+                                                            </span>
+                                                        </>
+                                                    )}
+                                                </div>
+                                                {product.category?.name && (
+                                                    <span className="inline-block text-xs text-gray-500 mt-1">
+                                                        in {product.category.name}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </Link>
+                                    );
+                                })}
                             </div>
                         )}
 
                         {/* No products found message */}
                         {showResults && inputValue && searchResults.length === 0 && (
                             <div
-                                className="absolute top-[105%] left-0 w-full bg-white border border-gray-200 rounded-2xl shadow-lg p-3 text-sm text-gray-500 z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
+                                className="absolute top-[105%] left-0 w-full bg-white/95 backdrop-blur-xl border-2 border-[#71BF45]/30 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.15)] p-4 text-center z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
                             >
-                                No products found.
+                                <p className="text-sm text-gray-600">No products found for &quot;{inputValue}&quot;</p>
+                                <p className="text-xs text-gray-500 mt-1">Try searching with different keywords</p>
                             </div>
                         )}
                     </div>
@@ -489,10 +511,6 @@ function Navbar() {
                 <div ref={mobileSearchRef} className="mt-2 lg:hidden relative">
                     <div className="w-full flex justify-between items-center border-[0.5px] border-[#71BF45] rounded-[50px] py-2 px-2.5">
                         <div className="flex items-center gap-2.5 relative w-full">
-                            <label htmlFor='search' className="p-1 rounded-[27px] bg-[#71bf45] text-[#ffffff]">
-                                <IoSearchOutline size={15} />
-                            </label>
-
                             <div className="relative w-full">
                                 {/* Search input */}
                                 <input
@@ -521,52 +539,79 @@ function Navbar() {
                                     </div>
                                 )}
                             </div>
-                        </div>
 
-                        {/* Filter Logo */}
-                        <div className="text-[#848484] border-l border-[#848484] pl-1">
-                            <VscSettings size={24} />
+                            <label htmlFor='search' className="p-1 rounded-[27px] bg-[#71bf45] text-[#ffffff]">
+                                <IoSearchOutline size={15} />
+                            </label>
                         </div>
                     </div>
 
                     {/* Search Results */}
                     {showResults && inputValue && searchResults.length > 0 && (
                         <div
-                            className="absolute top-[105%] left-0 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-80 overflow-y-auto scrollbar-hide z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
+                            className="absolute top-[105%] left-0 w-full bg-white/95 backdrop-blur-xl border-2 border-[#71BF45]/30 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.15)] max-h-96 overflow-y-auto scrollbar-hide z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
                         >
-                            {searchResults.map((product) => (
-                                <Link
-                                    href={`/productDescription/${product._id}`}
-                                    onClick={() => {
-                                        setShowResults(false);
-                                        setInputValue("");
-                                    }}
-                                    key={product._id}
-                                    className="flex items-center gap-3 p-2 hover:bg-gray-100 cursor-pointer transition-colors duration-150"
-                                >
-                                    <div className="relative w-10 h-10">
-                                        <Image
-                                            src={product.productImg?.url}
-                                            alt={product.name}
-                                            fill
-                                            className="object-cover rounded-md"
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-medium text-[#71BF45]">{product.name}</p>
-                                        <p className="text-xs text-gray-500">{product.about.slice(0, 45)}...</p>
-                                    </div>
-                                </Link>
-                            ))}
+                            {searchResults.map((product) => {
+                                const discountedPrice = (product.price - (product.price * product.discount / 100)).toFixed(2);
+                                return (
+                                    <Link
+                                        href={`/productDescription/${product._id}`}
+                                        onClick={() => {
+                                            setShowResults(false);
+                                            setInputValue("");
+                                        }}
+                                        key={product._id}
+                                        className="flex items-center gap-4 p-3 border-b border-gray-200/50 last:border-b-0 hover:bg-white/80 cursor-pointer transition-all duration-200 group backdrop-blur-sm"
+                                    >
+                                        <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 border-gray-200 group-hover:border-[#71BF45]/40 transition-colors duration-200 shadow-sm">
+                                            <Image
+                                                src={product.productImg?.url}
+                                                alt={product.name}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-semibold text-[#093C16] group-hover:text-[#71BF45] transition-colors duration-200 truncate">
+                                                {product.name}
+                                            </p>
+                                            <p className="text-xs text-gray-600 line-clamp-1 mt-0.5">
+                                                {product.about}
+                                            </p>
+                                            <div className="flex items-center gap-2 mt-1.5">
+                                                <span className="text-sm font-bold text-[#093C16]">
+                                                    ₹{discountedPrice}
+                                                </span>
+                                                {product.discount > 0 && (
+                                                    <>
+                                                        <span className="text-xs text-gray-500 line-through">
+                                                            ₹{product.price}
+                                                        </span>
+                                                        <span className="text-xs font-medium text-[#71BF45] bg-[#71BF45]/15 px-1.5 py-0.5 rounded">
+                                                            {product.discount}% off
+                                                        </span>
+                                                    </>
+                                                )}
+                                            </div>
+                                            {product.category?.name && (
+                                                <span className="inline-block text-xs text-gray-500 mt-1">
+                                                    in {product.category.name}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </Link>
+                                );
+                            })}
                         </div>
                     )}
 
                     {/* No products found message */}
                     {showResults && inputValue && searchResults.length === 0 && (
                         <div
-                            className="absolute top-[105%] left-0 w-full bg-white border border-gray-200 rounded-2xl shadow-lg p-3 text-sm text-gray-500 z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
+                            className="absolute top-[105%] left-0 w-full bg-white/95 backdrop-blur-xl border-2 border-[#71BF45]/30 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.15)] p-4 text-center z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
                         >
-                            No products found.
+                            <p className="text-sm text-gray-600">No products found for &quot;{inputValue}&quot;</p>
+                            <p className="text-xs text-gray-500 mt-1">Try searching with different keywords</p>
                         </div>
                     )}
                 </div>
