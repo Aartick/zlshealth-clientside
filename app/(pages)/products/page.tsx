@@ -15,7 +15,7 @@ import Product from '@/components/Product'
 import ProductSkeleton from '@/components/ProductSkeleton'
 import { axiosClient } from '@/utils/axiosClient'
 import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Range } from 'react-range'
 import { CiFilter } from "react-icons/ci";
 import { MdKeyboardArrowDown } from 'react-icons/md'
@@ -24,12 +24,10 @@ import { product } from '@/interfaces/products'
 import { RxCross1 } from 'react-icons/rx'
 import NoProductsComponent from '@/components/NoProductsComponent'
 import { useSearchParams } from 'next/navigation'
-
-// Filters interface for categories, product types, and benefits
-interface filters {
-    _id: string,
-    name: string,
-}
+import { useAppSelector } from '@/lib/hooks'
+import { filters } from '@/interfaces/filters'
+import { RiArrowDropDownLine } from 'react-icons/ri'
+import { ChevronDown } from 'lucide-react'
 
 const placeholderTexts = [
     "Stress Relief Syrup",
@@ -42,8 +40,8 @@ const placeholderTexts = [
 function Page() {
     // Constants for price range slider
     const STEP = 10;
-    const MIN = 300;
-    const MAX = 1500;
+    const MIN = 50;
+    const MAX = 5000;
 
     const [filterBarOpen, setFilterBarOpen] = useState(false)
     // State for search input value
@@ -54,20 +52,17 @@ function Page() {
     const [isAnimating,] = useState(false);
     // State for price range values
     const [values, setValues] = useState<number[]>([MIN, MAX]);
-    // State for loading and storing categories
-    const [loadingCategories, setLoadingCategories] = useState(true)
-    const [categories, setCategories] = useState<filters[]>([])
-    // State for loading and storing product types
-    const [loadingProductTypes, setLoadingProductTypes] = useState(true)
-    const [productTypes, setProductTypes] = useState<filters[]>([])
-    // State for loading and storing benefits
-    const [loadingBenefits, setLoadingBenefits] = useState(true)
-    const [benefits, setBenefits] = useState<filters[]>([])
+
+    const categories = useAppSelector((state) => state.filtersSlice.categories)
+    const benefits = useAppSelector((state) => state.filtersSlice.benefits)
+    const productTypes = useAppSelector((state) => state.filtersSlice.productTypes)
+    const loadingFilters = useAppSelector((state) => state.filtersSlice.loading)
 
     // State for selected filters
-    const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]?._id)
+    const [selectedCategory, setSelectedCategory] = useState<string>("")
     const [selectedProductTypes, setSelectedProductTypes] = useState<string[]>([])
     const [selectedBenefits, setSelectedBenefits] = useState<string[]>([])
+
     // State for loading and storing products
     const [loadingProducts, setLoadingProducts] = useState(true);
     const [products, setProducts] = useState<product[]>([])
@@ -82,71 +77,29 @@ function Page() {
         : [];
     const benefitQuery = searchParams.get("benefits")
 
-    // Fetch categories, product types, and benefits on mount
     useEffect(() => {
-        const getCategories = async () => {
-            try {
-                setLoadingCategories(true)
-                const response = await axiosClient.get('/api/categories')
-                const fetchedCategories = response.data.result;
-                setCategories(fetchedCategories)
-
-                if (categoryQuery) {
-                    const matched = fetchedCategories.find(
-                        (c: filters) => c.name.toLowerCase() === categoryQuery.toLowerCase()
+        if (!categoryQuery) {
+            setSelectedCategory(categories[0]._id)
+        }
+        else if (categoryQuery) {
+            const matched = categories.find(
+                (c: filters) => c.name.toLowerCase() === categoryQuery.toLowerCase()
+            )
+            if (matched) setSelectedCategory(matched._id)
+        } else if (benefitQuery) {
+            const matched = benefits.find(
+                (b: filters) => b.name.toLowerCase() === benefitQuery.toLowerCase()
+            )
+            if (matched) setSelectedBenefits([matched._id])
+        } else if (productTypeNames.length > 0) {
+            const matched = productTypes
+                .filter((p: filters) =>
+                    productTypeNames.some(
+                        (name) => p.name.toLowerCase() === name.toLowerCase()
                     )
-                    if (matched) setSelectedCategory(matched._id)
-                }
-                // Set default selected category if not set
-                else if (fetchedCategories.length > 0 && !selectedCategory) {
-                    setSelectedCategory(fetchedCategories[0]._id)
-                }
-            } catch { }
-            setLoadingCategories(false)
+                ).map((p: filters) => p._id)
+            if (matched) setSelectedProductTypes(matched)
         }
-
-        const getProductTypes = async () => {
-            try {
-                setLoadingProductTypes(true)
-                const response = await axiosClient.get("/api/productTypes")
-                const fetchedProductTypes = response.data.result;
-                setProductTypes(fetchedProductTypes)
-
-                if (productTypeNames.length > 0) {
-                    const matched = fetchedProductTypes
-                        .filter((p: filters) =>
-                            productTypeNames.some(
-                                (name) => p.name.toLowerCase() === name.toLowerCase()
-                            )
-                        ).map((p: filters) => p._id)
-                    if (matched) setSelectedProductTypes(matched)
-                    // toggleSelection(matched._id, setSelectedProductTypes)
-                }
-            } catch { }
-            setLoadingProductTypes(false)
-        }
-
-        const getBenefits = async () => {
-            try {
-                setLoadingBenefits(true)
-                const response = await axiosClient.get("/api/benefits")
-                const fetchedBenefits = response.data.result;
-                setBenefits(fetchedBenefits)
-
-                if (benefitQuery) {
-                    const matched = fetchedBenefits.find(
-                        (b: filters) => b.name.toLowerCase() === benefitQuery.toLowerCase()
-                    )
-                    if (matched) setSelectedBenefits([matched._id])
-                }
-            } catch { }
-            setLoadingBenefits(false)
-        }
-
-        getCategories()
-        getProductTypes()
-        getBenefits()
-
         if (productTypeQuery || benefitQuery) {
             setFilterBarOpen(true)
         }
@@ -156,18 +109,26 @@ function Page() {
     useEffect(() => {
         const getProducts = async () => {
             try {
-                if (loadingCategories) return;
+                if (loadingFilters) return;
                 if (!selectedCategory) return;
                 setLoadingProducts(true)
                 const queryParams = new URLSearchParams();
 
                 // Add selected filters to query params
                 if (selectedCategory) queryParams.append("category", selectedCategory);
+
+                // Append each product type ID separately
                 if (selectedProductTypes.length > 0) {
-                    queryParams.append("productTypes", selectedProductTypes.join(","));
+                    selectedProductTypes.forEach((id) => {
+                        queryParams.append("productTypes", id)
+                    })
                 }
+
+                // Append each benefits ID separately
                 if (selectedBenefits.length > 0) {
-                    queryParams.append("benefits", selectedBenefits.join(","));
+                    selectedBenefits.forEach((id) => {
+                        queryParams.append("benefits", id)
+                    });
                 }
 
                 // Fetch products from backend
@@ -190,31 +151,36 @@ function Page() {
         );
     };
 
-    // Filter products by price range whenever price or products change
     useEffect(() => {
-        const [min, max] = values;
-        const filtered = products.filter(
-            (p) => p.price >= min && p.price <= max
-        );
-        setFilteredProducts(filtered);
-    }, [values, products]);
-
-    // Filter products when search changes
-    useEffect(() => {
-        if (inputValue.trim() === "") {
-            setFilteredProducts(products)
-        } else {
-            const lowerSearch = inputValue.toLowerCase();
-            const filtered = filteredProducts.filter(
-                (p) =>
-                    p.name.toLowerCase().includes(lowerSearch) ||
-                    p.category.name.toLowerCase().includes(lowerSearch)
+        if (!inputValue.trim()) {
+            // If no search, filteredProducts = products filtered by price
+            const [min, max] = values;
+            const filtered = products.filter(
+                (p) => p.price >= min && p.price <= max
             );
-            setFilteredProducts(filtered)
+            setFilteredProducts(filtered);
+            return;
         }
-    }, [inputValue, filteredProducts])
 
-    // Skeleton loader for filter checkboxes
+        // If searching, apply search ON TOP of price
+        const lower = inputValue.toLowerCase();
+        const [min, max] = values;
+
+        const result = products.filter(
+            (p) =>
+                p.price >= min &&
+                p.price <= max &&
+                (p.name.toLowerCase().includes(lower) ||
+                    p.category.name.toLowerCase().includes(lower))
+        );
+
+        setFilteredProducts(result);
+
+    }, [inputValue, values, products]);
+
+
+
+    // ============ Skeleton loader for filter checkboxes ============
     function SkeletonCheckboxRow() {
         return (
             <div className="flex items-center gap-2.5 animate-pulse">
@@ -223,6 +189,45 @@ function Page() {
             </div>
         );
     }
+
+    // ================ Category slider logic ================
+    const [isCategoryOpen, setIsCategoryOpen] = useState(true);
+    const categoryContentRef = useRef<HTMLDivElement | null>(null);
+    const [categoryMaxHeight, setCategoryMaxHeight] = useState<string>("0px");
+
+    // measure content height and set max-height value
+    useLayoutEffect(() => {
+        const setMeasuredHeight = () => {
+            const el = categoryContentRef.current;
+            if (!el) return;
+            // get real content height
+            const height = el.scrollHeight;
+            setCategoryMaxHeight(`${height}px`);
+        };
+
+        setMeasuredHeight();
+
+        // watch for resizes/dynamic content changes
+        const ro = new ResizeObserver(() => {
+            setMeasuredHeight();
+        });
+        if (categoryContentRef.current) ro.observe(categoryContentRef.current);
+
+        // also update on window resize
+        window.addEventListener("resize", setMeasuredHeight);
+
+        return () => {
+            ro.disconnect();
+            window.removeEventListener("resize", setMeasuredHeight);
+        };
+    }, [categories, loadingFilters]);
+
+    const containerStyle: React.CSSProperties = {
+        maxHeight: isCategoryOpen ? categoryMaxHeight : "0px",
+        overflow: "hidden",
+        transition: "max-height 400ms ease, opacity 300ms ease",
+        opacity: isCategoryOpen ? 1 : 0,
+    };
 
     return (
         <div className='pt-4 max-w-screen-2xl mx-auto '>
@@ -311,10 +316,22 @@ function Page() {
                         </div>
 
                         <div className="space-y-4 lg:p-4 w-full">
-                            <p className="font-medium">Category</p>
+                            <div
+                                className="flex items-center cursor-pointer w-fit"
+                                onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+                            >
+                                <p className="font-medium">Category</p>
+                                <span
+                                    className={`hidden lg:block transform transition-transform duration-300 
+                                        ${isCategoryOpen ? "rotate-0" : "-rotate-180"}`}
+                                >
+                                    <ChevronDown size={20} />
+                                </span>
+                            </div>
 
+                            {/* MOBILE VERSION */}
                             {
-                                loadingCategories ? (
+                                loadingFilters ? (
                                     <div className="lg:hidden w-full">
                                         <div className="w-full h-9 rounded-lg bg-gray-200 animate-pulse"></div>
                                     </div>
@@ -334,31 +351,39 @@ function Page() {
                                 )
                             }
 
+                            {/* DESKTOP VERSION */}
+                            <div
+                                style={containerStyle}
+                                className={`hidden lg:block ${!isCategoryOpen && "-mb-8"}`}
+                                aria-hidden={!isCategoryOpen}
+                            >
+                                <div
+                                    ref={categoryContentRef}
+                                    className="hidden lg:grid grid-cols-3 gap-4">
+                                    {loadingFilters ? (
+                                        Array.from({ length: 6 }).map((_, i) => (
+                                            <div key={i} className="flex items-center gap-2.5">
+                                                {/* Fake checkbox */}
+                                                <div className="w-4 h-4 bg-gray-300 rounded-sm animate-pulse"></div>
 
-                            <div className="hidden lg:grid grid-cols-3 gap-4">
-                                {loadingCategories ? (
-                                    Array.from({ length: 6 }).map((_, i) => (
-                                        <div key={i} className="flex items-center gap-2.5">
-                                            {/* Fake checkbox */}
-                                            <div className="w-4 h-4 bg-gray-300 rounded-sm animate-pulse"></div>
-
-                                            {/* Fake label */}
-                                            <div className="h-3 w-24 bg-gray-200 rounded animate-pulse"></div>
+                                                {/* Fake label */}
+                                                <div className="h-3 w-24 bg-gray-200 rounded animate-pulse"></div>
+                                            </div>
+                                        ))
+                                    ) : categories.map((category) => (
+                                        <div key={category._id} className="flex items-center gap-2.5">
+                                            <input
+                                                type="checkbox"
+                                                id={category._id}
+                                                checked={selectedCategory === category._id}
+                                                onChange={() =>
+                                                    setSelectedCategory(category._id)
+                                                }
+                                            />
+                                            <label htmlFor={category._id} className='text-[#848484]'>{category.name}</label>
                                         </div>
-                                    ))
-                                ) : categories.map((category) => (
-                                    <div key={category._id} className="flex items-center gap-2.5">
-                                        <input
-                                            type="checkbox"
-                                            id={category._id}
-                                            checked={selectedCategory === category._id}
-                                            onChange={() =>
-                                                setSelectedCategory(category._id)
-                                            }
-                                        />
-                                        <label htmlFor={category._id} className='text-[#848484]'>{category.name}</label>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -413,7 +438,7 @@ function Page() {
                         <div className="border border-[#e3e3e3] rounded-xl p-5 space-y-5">
                             <h3 className='font-medium text-xl'>Product Type</h3>
                             <div className="space-y-5">
-                                {loadingProductTypes
+                                {loadingFilters
                                     ? Array.from({ length: 4 }).map((_, i) => (
                                         <SkeletonCheckboxRow key={i} />
                                     ))
@@ -513,7 +538,7 @@ function Page() {
                         <div className="border border-[#e3e3e3] rounded-xl p-5 space-y-5">
                             <h3 className='font-medium text-xl'>Benefits</h3>
                             <div className="space-y-5">
-                                {loadingBenefits
+                                {loadingFilters
                                     ? Array.from({ length: 5 }).map((_, i) => (
                                         <SkeletonCheckboxRow key={i} />
                                     ))

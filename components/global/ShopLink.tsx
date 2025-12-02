@@ -9,48 +9,20 @@
 
 "use client"
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import Link from 'next/link';
 import Image from 'next/image';
-import { axiosClient } from '@/utils/axiosClient';
-
-// Filters interface for categories, product types, and benefits
-interface filters {
-    _id: string,
-    type: string,
-    label: string,
-    name: string,
-    icon: string,
-    description: string
-}
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { getAllFilters } from '@/lib/thunks/filtersThunks';
 
 function ShopLink() {
-    const [categories, setCategories] = useState<filters[]>([])
-    const [benefitsFirstCol, setBenefitsFirstCol] = useState<filters[]>([])
-    const [benefitsSecondCol, setBenefitsSecondCol] = useState<filters[]>([])
+    const dispatch = useAppDispatch()
+
+    const allCategories = useAppSelector((state) => state.filtersSlice.categories)
+    const allBenefits = useAppSelector((state) => state.filtersSlice.benefits)
 
     useEffect(() => {
-        const getCategory = async () => {
-            try {
-                const res = await axiosClient.get("/api/categories")
-                const allCategories = res.data.result;
-                setCategories(allCategories.slice(0, 4))
-            } catch { }
-        }
-
-        const getBenefits = async () => {
-            try {
-                const res = await axiosClient.get("/api/benefits")
-                const allBenefits = res.data.result;
-                setBenefitsFirstCol(allBenefits.slice(0, 4))
-                setBenefitsSecondCol(allBenefits.slice(4, 8))
-            } catch {
-
-            }
-        }
-
-        getCategory();
-        getBenefits()
+        dispatch(getAllFilters())
     }, [])
 
     return (
@@ -67,7 +39,7 @@ function ShopLink() {
                 <div className="lg:space-y-1">
                     <div className="space-y-1.5 lg:space-y-3">
                         {/* Render each category item */}
-                        {categories.map((item, idx) => (
+                        {allCategories.slice(0, 4).map((item, idx) => (
                             <Link
                                 key={idx}
                                 href={`/products?category=${encodeURIComponent(item.name)}`}
@@ -109,7 +81,7 @@ function ShopLink() {
                     <div className="lg:space-y-1">
                         <div className="space-y-1.5 lg:space-y-3">
                             {/* Render each need item */}
-                            {benefitsFirstCol.map((item, idx) => (
+                            {allBenefits.slice(0, 4).map((item, idx) => (
                                 <Link
                                     key={idx}
                                     href={`/products?benefits=${encodeURIComponent(item.name)}`}
@@ -141,7 +113,7 @@ function ShopLink() {
                     <div className="-mt-5 lg:mt-0 lg:space-y-3">
                         <div className="space-1.5 lg:space-y-3">
                             {/* Render each additional need item */}
-                            {benefitsSecondCol.map((item, idx) => (
+                            {allBenefits.slice(4, 8).map((item, idx) => (
                                 <Link
                                     key={idx}
                                     href={`/products?benefits=${encodeURIComponent(item.name)}`}

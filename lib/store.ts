@@ -11,13 +11,24 @@
 
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import appConfigSlice from "./features/appConfigSlice";
+import filtersSlice from "./features/filtersSlice";
 import cartSlice from "./features/cartSlice";
 import wishlistSlice from "./features/wishlistSlice";
 import storage from "redux-persist/lib/storage";
-import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER  } from "redux-persist";
+import {
+  persistReducer,
+  persistStore,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
 
 const rootReducer = combineReducers({
   appConfig: appConfigSlice, // App configuration state
+  filtersSlice,
   cartSlice, // Shopping cart state
   wishlistSlice, // Wishlist state
 });
