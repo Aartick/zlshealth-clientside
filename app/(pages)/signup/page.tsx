@@ -11,7 +11,6 @@
 "use client"
 
 // Import required modules and components
-import { googleLogIn } from '@/app/actions';
 import { axiosClient } from '@/utils/axiosClient';
 import Image from 'next/image'
 import Link from 'next/link'
@@ -89,12 +88,6 @@ function Page() {
         finally {
             setLoading(false)
         }
-    }
-
-    // Handles Google signup button click
-    const handleGoogleLogin = async () => {
-        toast.success("By continuing you'll be agree to Zealous's Terms of Condition and Privacy Policy.")
-        googleLogIn("google", "/")
     }
 
     return (
@@ -175,14 +168,6 @@ function Page() {
                         </div>
                     </div>
                 </form>
-
-                {/* Google signup button */}
-                <button
-                    disabled={loading}
-                    onClick={handleGoogleLogin}
-                    className={`flex items-center justify-center gap-2.5 px-3 py-[11px] border-2 border-[#71BF45] rounded-lg drop-shadow-[0_2px_12px_rgba(63,137,249,0.08)] w-full ${loading ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}>
-                    <p className="text-base font-semibold">Continue With Google</p>
-                </button>
             </div>
 
             {/* SECOND COLUMN: Signup image, hidden on mobile */}

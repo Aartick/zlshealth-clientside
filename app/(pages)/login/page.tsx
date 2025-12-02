@@ -12,11 +12,9 @@
 "use client"
 
 // Import required modules and components
-import { googleLogIn } from '@/app/actions';
 import { useAppDispatch } from '@/lib/hooks';
 import { mergeGuestCart } from '@/lib/thunks/cartThunks';
 import { mergeGuestWishlist } from '@/lib/thunks/wishlistThunks';
-// import { auth } from '@/app/auth';
 import { axiosClient } from '@/utils/axiosClient';
 import { KEY_ACCESS_TOKEN, setItem } from '@/utils/localStorageManager';
 import Image from 'next/image'
@@ -74,18 +72,13 @@ function Page() {
             // Merge guest cart and guest wishlist to db 
             dispatch(mergeGuestCart());
             dispatch(mergeGuestWishlist())
-            
+
             // Redirect user to the specified URL
             router.push(redirectUrl)
         } catch { }
         finally {
             setLoading(false)
         }
-    }
-
-    // Handles Google login button click
-    const handleGoogleLogin = async () => {
-        googleLogIn("google", redirectUrl)
     }
 
     return (
@@ -154,15 +147,6 @@ function Page() {
                         </div>
                     </div>
                 </form>
-
-                {/* Google login button */}
-                <button
-                    disabled={loading}
-                    onClick={handleGoogleLogin}
-                    className={`flex items-center justify-center gap-2.5 px-3 py-[11px] border-2 border-[#71BF45] rounded-lg drop-shadow-[0_2px_12px_rgba(63,137,249,0.08)] w-full ${loading ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}`}
-                >
-                    <p className="text-base font-semibold">Continue With Google</p>
-                </button>
             </div>
 
             {/* SECOND COLUMN: Login image, hidden on mobile */}

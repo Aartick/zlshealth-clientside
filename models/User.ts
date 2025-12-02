@@ -11,7 +11,6 @@
  *
  * Schema:
  * - firstName, lastName, displayName: Basic profile fields.
- * - googleId: For Google authentication.
  * - email: Unique, validated email address, required for all users.
  * - password: Hashed password (excluded by default from queries).
  * - hasAgreedToPrivacyPolicy: Boolean flag for compliance (required).
@@ -44,7 +43,6 @@ export interface IAddress {
 
 // Interface for a User document
 export interface IUser extends Document {
-  googleId?: string; // Google authentication ID
   password?: string; // User password (hashed, excluded by default in queries)
   hasAgreedToPrivacyPolicy: boolean; // Privacy policy agreement
   img: {
@@ -110,7 +108,6 @@ const AddressSchema = new Schema<IAddress>({
 // Mongoose schema for User
 const userSchema: Schema<IUser> = new Schema(
   {
-    googleId: String, // Google OAuth ID for SSO login
     email: {
       type: String,
       required: [true, "Email is required"], // Email must be provided
