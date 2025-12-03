@@ -34,7 +34,7 @@ function Page() {
               src="/blogs/1.jpg"
               alt="blog-1"
               fill
-              className='rounded-xl'
+              className='rounded-xl object-cover'
             />
           </div>
 
@@ -61,7 +61,7 @@ function Page() {
             src="/blogs/1.jpg"
             alt="blog-1"
             fill
-            className='rounded-xl'
+            className='rounded-xl object-cover'
           />
         </div>
       </div>
@@ -175,7 +175,7 @@ function Page() {
                 src="/blogs/2.jpg"
                 alt='blog-2'
                 fill
-                className='rounded-[20px]'
+                className='rounded-[20px] object-cover'
               />
             </div>
           </div>
@@ -256,7 +256,7 @@ function Page() {
               src="/blogs/3.jpg"
               fill
               alt='blog-3'
-              className='rounded-[10px] md:rounded-[20px]'
+              className='rounded-[10px] md:rounded-[20px] object-cover'
             />
           </div>
         </div>
@@ -270,12 +270,12 @@ function Page() {
 
         <div className="flex flex-col gap-5 md:flex-row md:gap-10 lg:gap-20">
           {/* IMAGE */}
-          <div className="md:flex-1 relative w-full md:w-[636px] h-[200px] sm:h-[300px] md:h-[277px]">
+          <div className="md:flex-1 relative w-full md:w-[636px] h-[250px] sm:h-[350px] md:h-[350px]">
             <Image
               src="/blogs/4.jpg"
               fill
               alt="4-img"
-              className='rounded-[10px] md:rounded-[20px]'
+              className='rounded-[10px] md:rounded-[20px] object-cover'
             />
           </div>
 

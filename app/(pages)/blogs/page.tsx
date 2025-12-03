@@ -13,7 +13,7 @@ function Page() {
             src="/aboutUs/1.jpg"
             alt='hero-img'
             fill
-            className='rounded-[20px]'
+            className='rounded-[20px] object-cover'
           />
 
           {/* Best Seller badge */}
