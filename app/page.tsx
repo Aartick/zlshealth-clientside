@@ -173,6 +173,9 @@ export default function Home() {
       // Get all <p> tags with class "para"
       const paras = gsap.utils.toArray(".para") as HTMLElement[];
 
+      // Detect if desktop (screen width >= 1024px)
+      const isDesktop = window.innerWidth >= 1024;
+
       // Step 1: Place all paragraphs on top of each other with GPU acceleration hints
       gsap.set(paras, {
         position: "absolute",
@@ -191,8 +194,8 @@ export default function Home() {
         scrollTrigger: {
           trigger: sectionRef.current, // element to watch
           start: "top top", // start when section hits top of viewport
-          end: () => `+=${paras.length * 350}`, // shorter scroll distance for snappier animation
-          scrub: true, // instant response to scroll, no delay
+          end: () => `+=${paras.length * (isDesktop ? 300 : 350)}`, // shorter on desktop for less lag
+          scrub: isDesktop ? 1 : true, // smooth scrubbing on desktop, instant on mobile
           pin: true, // pin this section while animating
           pinSpacing: true, // Ensure proper spacing for pinned element
           invalidateOnRefresh: true, // Recalculate on resize/orientation change
@@ -296,10 +299,13 @@ export default function Home() {
       const path = pathRef.current;
       if (!container || !path) return;
 
+      // Detect if desktop (screen width >= 1024px)
+      const isDesktop = window.innerWidth >= 1024;
+
       // ---- TUNABLES ----
       const STEP_DUR = 1.8; // timeline time units per step (affects pacing)
       const MOTION_DUR = 1.8; // how long icon moves along path (in timeline units)
-      const SCROLL_PIXELS_PER_STEP = 900; // how many px of scroll map to each step
+      const SCROLL_PIXELS_PER_STEP = isDesktop ? 700 : 900; // shorter on desktop for less lag
       const totalSteps = processSteps.length;
       const totalScroll = SCROLL_PIXELS_PER_STEP * totalSteps; // used for pin end
 
@@ -333,9 +339,11 @@ export default function Home() {
           trigger: container,
           start: "top top",
           end: `+=${totalScroll}`,
-          scrub: true,
+          scrub: isDesktop ? 1 : true, // smooth scrubbing on desktop, instant on mobile
           pin: true,
-          anticipatePin: 1,
+          anticipatePin: isDesktop ? 0 : 1, // remove anticipatePin on desktop to prevent jump
+          pinSpacing: true,
+          fastScrollEnd: isDesktop ? true : false,
         },
       });
 
@@ -826,7 +834,7 @@ export default function Home() {
         {/* STATS */}
         <div
           ref={containerRef}
-          className="relative z-20 w-full h-[120px] sm:h-[150px] md:h-[180px] lg:h-[200px] overflow-hidden"
+          className="relative z-20 w-full h-[100px] overflow-hidden"
         >
           {paragraphs.map((text, i) => {
             return (
