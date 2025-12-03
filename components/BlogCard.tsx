@@ -24,7 +24,7 @@ function BlogCard() {
                     src="/aboutUs/1.jpg"
                     alt='blog1-img'
                     fill
-                    className='rounded-2xl'
+                    className='rounded-2xl object-cover'
                 />
 
                 {/* "Most Read" Badge -> shown at the top of the image */}
