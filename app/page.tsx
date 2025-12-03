@@ -182,6 +182,8 @@ export default function Home() {
         yPercent: -50, // centers vertically
         whiteSpace: "nowrap", // ensures text stays in one line
         opacity: 1,
+        force3D: true, // Enable GPU acceleration
+        willChange: "transform" // Hint browser for optimization
       })
 
       // Step 2: Create the main GSAP timeline that runs as user scrolls
@@ -189,10 +191,13 @@ export default function Home() {
         scrollTrigger: {
           trigger: sectionRef.current, // element to watch
           start: "top top", // start when section hits top of viewport
-          end: () => `+=${paras.length * 1000}`, // total scroll distance
-          scrub: true, // link animation to scroll progress
+          end: () => `+=${paras.length * 350}`, // shorter scroll distance for snappier animation
+          scrub: true, // instant response to scroll, no delay
           pin: true, // pin this section while animating
-          anticipatePin: 1, // Reduced from 1 for smoother performance
+          pinSpacing: true, // Ensure proper spacing for pinned element
+          invalidateOnRefresh: true, // Recalculate on resize/orientation change
+          fastScrollEnd: true, // Better handling for fast momentum scrolling
+          preventOverlaps: true // Prevent overlapping with other scroll triggers
         }
       });
 
@@ -208,6 +213,8 @@ export default function Home() {
             span.textContent = char
           }
           span.style.display = "inline-block";
+          span.style.willChange = "transform"; // Optimize each letter
+          span.style.backfaceVisibility = "hidden"; // Force compositing layer
           span.style.transform = "translateY(100px)" // move down for entrance effect
           return span;
         }
@@ -218,7 +225,7 @@ export default function Home() {
         letters.forEach((l) => para.appendChild(l)) // append new spans
 
         if (i === 0) {
-          gsap.set(letters, { y: 0 })
+          gsap.set(letters, { y: 0, force3D: true })
         } else {
           // Fade in letter by letter quickly with GPU acceleration
           tl.to(
@@ -228,7 +235,7 @@ export default function Home() {
               stagger: 0.03, //small delay between each letter
               duration: 0.4, // fast fade
               ease: "power3.out",
-              // force3D: true // Enable GPU acceleration
+              force3D: true // Enable GPU acceleration
             },
             `step${i}` // label for syncing animations
           )
@@ -246,6 +253,7 @@ export default function Home() {
               stagger: 0.02,
               duration: 0.3,
               ease: "power3.in",
+              force3D: true // Enable GPU acceleration
             },
             `step${i}+=0.8`
           )
@@ -818,7 +826,7 @@ export default function Home() {
         {/* STATS */}
         <div
           ref={containerRef}
-          className="relative z-20 w-full h-[100px] overflow-hidden"
+          className="relative z-20 w-full h-[120px] sm:h-[150px] md:h-[180px] lg:h-[200px] overflow-hidden"
         >
           {paragraphs.map((text, i) => {
             return (
