@@ -347,7 +347,7 @@ export default function Home() {
         },
       });
 
-      // Build timeline: each step gets a label at stepStart
+      //Build timeline: each step gets a label at stepStart
       processSteps.forEach((_, i) => {
         const icon = iconRefs.current[i];
         const text = textRefs.current[i];
