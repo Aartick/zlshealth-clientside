@@ -76,16 +76,11 @@ axiosClient.interceptors.response.use(
 
         return axios(originalRequest);
       }
-      // Refresh failed -> clear tokens and redirect to login
+      // Refresh failed -> silently log out user without showing error or redirecting
       else {
-        toast.error("Session expired. Please log in.");
         removeItem(KEY_ACCESS_TOKEN);
-        const currentPath = window.location.pathname + window.location.search;
-
-        window.location.replace(
-          `/login?redirect=${encodeURIComponent(currentPath)}`
-        );
-        return Promise.reject(error);
+        // Silently fail - no toast, no redirect
+        return Promise.reject({ silent: true });
       }
     }
     // Reject other errors
