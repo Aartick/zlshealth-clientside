@@ -264,11 +264,11 @@ export default function Page() {
   }, [])
 
   return (
-    <div className="bg-[#191717]">
+    <div className="bg-[#191717] overflow-x-hidden md:overflow-x-clip -mt-24 sm:-mt-28 lg:-mt-36">
       <div
         ref={sectionRef}
-        className=" my-auto relative md:h-screen overflow-hidden text-white -mt-24 sm:-mt-28 lg:-mt-36 cursor-none"
-        style={{ backgroundColor: "#191717", paddingTop: "80px" }}
+        className=" my-auto relative md:h-screen overflow-hidden text-white cursor-none pt-28 sm:pt-32 md:pt-20"
+        style={{ backgroundColor: "#191717" }}
       >
         {/* Small white circular cursor */}
         <div
@@ -670,7 +670,7 @@ export default function Page() {
           </section>
 
           {/* ---------- PANEL 6 ---------- */}
-          <section className="panel relative flex flex-col md:justify-center 2xl:justify-around md:w-screen md:h-screen mt-20 md:mt-0 space-y-12 md:space-y-8 2xl:space-y-16 py-8 md:py-12 md:pr-20 2xl:w-[1536px]">
+          <section className="panel relative flex flex-col md:justify-center 2xl:justify-around w-full md:w-screen md:h-screen mt-20 md:mt-0 space-y-12 md:space-y-8 2xl:space-y-16 py-8 md:py-12 md:pr-20 2xl:w-[1536px]">
             {/* UPPER ROW */}
             <div className="flex flex-col md:flex-row gap-8 md:gap-0 md:items-center 2xl:h-auto">
               <div className="flex-1 px-4 sm:px-8 md:px-0 space-y-3">

@@ -67,7 +67,7 @@ export default function RootLayout({
                 {/* Render global navigation bar */}
                 <Navbar />
                 {/* Main content area with top padding for navbar */}
-                <div className="pt-24 sm:pt-28 lg:pt-36 bg-white text-black vertical-scrollbar-hide">
+                <div className="pt-24 sm:pt-28 lg:pt-36 bg-white text-black vertical-scrollbar-hide overflow-x-hidden">
                   {/* React Hot Toast container */}
                   <Toaster />
                   {/* Breadcrumbs records the user navigation paths. */}
