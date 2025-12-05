@@ -122,7 +122,7 @@ function HumanOrgansSvg() {
         const target = e.target as SVGElement;
 
         // Find the organ group by traversing up the DOM
-        let organGroup = target.closest('[data-organ]') as SVGGElement | null;
+        const organGroup = target.closest('[data-organ]') as SVGGElement | null;
 
         if (organGroup) {
             const organName = organGroup.getAttribute('data-organ');
