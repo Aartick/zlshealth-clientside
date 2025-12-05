@@ -125,11 +125,24 @@ function Navbar() {
     // States for sidebar and navigation links
     const [openSidebar, setOpenSidebar] = useState<boolean>(false)
     const [open, setOpen] = useState(false);
+    const [isDesktop, setIsDesktop] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null)
 
     const pathname = usePathname();
     const dispatch = useAppDispatch()
     const isUser = getItem(KEY_ACCESS_TOKEN) // Check if user is logged in
+
+    // Check if desktop on mount and resize
+    useEffect(() => {
+        const checkDesktop = () => {
+            setIsDesktop(window.innerWidth >= 768);
+        };
+
+        checkDesktop();
+        window.addEventListener('resize', checkDesktop);
+
+        return () => window.removeEventListener('resize', checkDesktop);
+    }, []);
 
     // Close dropdown when clicking outside and Escape(Esc) key
     useEffect(() => {
@@ -151,6 +164,13 @@ function Navbar() {
             document.removeEventListener("keydown", handleEscape)
         }
     }, [])
+
+    // Close shop dropdown when navigating to products page (desktop only)
+    useEffect(() => {
+        if (pathname === "/products" && isDesktop) {
+            setOpen(false);
+        }
+    }, [pathname, isDesktop])
 
 
     // ================ User Related Info. logics ================

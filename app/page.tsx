@@ -305,7 +305,7 @@ export default function Home() {
       // ---- TUNABLES ----
       const STEP_DUR = 1.8; // timeline time units per step (affects pacing)
       const MOTION_DUR = 1.8; // how long icon moves along path (in timeline units)
-      const SCROLL_PIXELS_PER_STEP = isDesktop ? 700 : 900; // shorter on desktop for less lag
+      const SCROLL_PIXELS_PER_STEP = isDesktop ? 300 : 500; // shorter for faster response
       const totalSteps = processSteps.length;
       const totalScroll = SCROLL_PIXELS_PER_STEP * totalSteps; // used for pin end
 
@@ -339,7 +339,7 @@ export default function Home() {
           trigger: container,
           start: "top top",
           end: `+=${totalScroll}`,
-          scrub: isDesktop ? 1 : true, // smooth scrubbing on desktop, instant on mobile
+          scrub: isDesktop ? 0.5 : 0.8, // faster response to scroll (lower = faster)
           pin: true,
           anticipatePin: isDesktop ? 0 : 1, // remove anticipatePin on desktop to prevent jump
           pinSpacing: true,

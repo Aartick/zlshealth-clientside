@@ -195,9 +195,7 @@ function HumanOrgansSvg() {
         <div className='relative flex items-center justify-center py-20 md:pt-10 md:px-72'>
             {/* HUMAN ORGANS SVG */}
             <svg
-                className='2xl:h-screen'
-                width="190"
-                height="420"
+                className='w-[190px] h-[420px] xl:w-[230px] xl:h-[510px] 2xl:h-screen 2xl:w-auto'
                 viewBox="0 0 190 627"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"

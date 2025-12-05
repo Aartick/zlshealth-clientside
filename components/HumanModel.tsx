@@ -57,7 +57,7 @@ function HumanBodyModel() {
   }, []);
 
 
-  return <primitive ref={modelRef} object={scene} scale={2} position={[0, -1.6, 0]} />;
+  return <primitive ref={modelRef} object={scene} scale={2} position={[-0.2, -1.6, 0]} />;
 }
 
 export default function HumanModel() {
