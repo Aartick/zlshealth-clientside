@@ -53,11 +53,15 @@ function Page() {
     const [isAnimating,] = useState(false);
     // State for price range values
     const [values, setValues] = useState<number[]>([MIN, MAX]);
+    // State to track if mobile
+    const [isMobile, setIsMobile] = useState(false);
 
     // Set initial filter bar state based on screen size
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth >= 768) {
+            const mobile = window.innerWidth < 768;
+            setIsMobile(mobile);
+            if (!mobile) {
                 setFilterBarOpen(true);
             } else {
                 setFilterBarOpen(false);
@@ -135,8 +139,11 @@ function Page() {
                 ).map((p: filters) => p._id)
             if (matched) setSelectedProductTypes(matched)
         }
+        // Only open filters by default on desktop when there are query parameters
         if (productTypeQuery || benefitQuery) {
-            setFilterBarOpen(true)
+            if (window.innerWidth >= 768) {
+                setFilterBarOpen(true)
+            }
         }
     }, [categoryQuery, productTypeQuery, benefitQuery])
 
@@ -376,10 +383,10 @@ function Page() {
                         <div className="lg:hidden">
                             <p className="font-medium text-sm mb-2">Category</p>
                             {loadingFilters ? (
-                                <div className="w-full h-10 rounded-lg bg-gray-200 animate-pulse"></div>
+                                <div className="w-full h-12 rounded-lg bg-gray-200 animate-pulse"></div>
                             ) : (
                                 <select
-                                    className='w-full py-2.5 px-3 rounded-lg border border-[#71BF45] bg-[#71BF4508] focus:outline-none text-sm'
+                                    className='w-full py-3.5 px-4 rounded-lg border-2 border-[#71BF45] bg-[#71BF4508] focus:outline-none text-base font-medium'
                                     value={selectedCategory}
                                     onChange={(e) => setSelectedCategory(e.target.value)}
                                 >
@@ -433,6 +440,8 @@ function Page() {
 
                         {/* DESKTOP: Original layout */}
                         <div className="hidden lg:flex flex-col gap-4 lg:flex-row items-center justify-between">
+                            
+
                             <div className="w-full lg:flex-1 flex justify-between lg:justify-end items-center gap-4">
                                 {/* FILTERS */}
                                 <label
@@ -621,9 +630,9 @@ function Page() {
                                             <input
                                                 type="checkbox"
                                                 id={`mobile-product-${product._id}`}
-                                                checked={(filterBarOpen && window.innerWidth < 768) ? tempProductTypes.includes(product._id) : selectedProductTypes.includes(product._id)}
+                                                checked={(filterBarOpen && isMobile) ? tempProductTypes.includes(product._id) : selectedProductTypes.includes(product._id)}
                                                 onChange={() =>
-                                                    toggleSelection(product._id, window.innerWidth < 768 ? setTempProductTypes : setSelectedProductTypes)
+                                                    toggleSelection(product._id, isMobile ? setTempProductTypes : setSelectedProductTypes)
                                                 }
                                             />
                                             <label htmlFor={`mobile-product-${product._id}`} className='text-[#848484] cursor-pointer'>
@@ -643,11 +652,11 @@ function Page() {
                                 step={STEP}
                                 min={MIN}
                                 max={MAX}
-                                values={window.innerWidth < 768 ? tempPriceRange : values}
-                                onChange={(vals) => window.innerWidth < 768 ? setTempPriceRange(vals) : setValues(vals)}
+                                values={isMobile ? tempPriceRange : values}
+                                onChange={(vals) => isMobile ? setTempPriceRange(vals) : setValues(vals)}
                                 renderTrack={({ props, children }) => {
                                     // Calculate slider fill percentages
-                                    const currentValues = window.innerWidth < 768 ? tempPriceRange : values;
+                                    const currentValues = isMobile ? tempPriceRange : values;
                                     const percentage1 = ((currentValues[0] - MIN) / (MAX - MIN)) * 100;
                                     const percentage2 = ((currentValues[1] - MIN) / (MAX - MIN)) * 100;
 
@@ -700,11 +709,11 @@ function Page() {
                             <div className="flex justify-between items-center">
                                 <div className="space-y-2">
                                     <p>From</p>
-                                    <p className='border border-[#e3e3e3] py-[5px] px-2.5 rounded-[5px]'>₹{window.innerWidth < 768 ? tempPriceRange[0] : values[0]}</p>
+                                    <p className='border border-[#e3e3e3] py-[5px] px-2.5 rounded-[5px]'>₹{isMobile ? tempPriceRange[0] : values[0]}</p>
                                 </div>
                                 <div className="space-y-2">
                                     <p>To</p>
-                                    <p className='border border-[#e3e3e3] py-[5px] px-2.5 rounded-[5px]'>₹{window.innerWidth < 768 ? tempPriceRange[1] : values[1]}</p>
+                                    <p className='border border-[#e3e3e3] py-[5px] px-2.5 rounded-[5px]'>₹{isMobile ? tempPriceRange[1] : values[1]}</p>
                                 </div>
                             </div>
                         </div>
@@ -722,9 +731,9 @@ function Page() {
                                             <input
                                                 type="checkbox"
                                                 id={`mobile-benefit-${benefit._id}`}
-                                                checked={(filterBarOpen && window.innerWidth < 768) ? tempBenefits.includes(benefit._id) : selectedBenefits.includes(benefit._id)}
+                                                checked={(filterBarOpen && isMobile) ? tempBenefits.includes(benefit._id) : selectedBenefits.includes(benefit._id)}
                                                 onChange={() =>
-                                                    toggleSelection(benefit._id, window.innerWidth < 768 ? setTempBenefits : setSelectedBenefits)
+                                                    toggleSelection(benefit._id, isMobile ? setTempBenefits : setSelectedBenefits)
                                                 }
                                             />
                                             <label htmlFor={`mobile-benefit-${benefit._id}`} className='text-[#848484] cursor-pointer'>{benefit.name}</label>

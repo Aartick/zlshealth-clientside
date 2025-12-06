@@ -326,30 +326,30 @@ export default function Page() {
             <div className="flex flex-col md:flex-row justify-between h-full items-center w-full lg:w-screen">
               {/* FIRST PART */}
               <div className="flex flex-col justify-around pb-10 md:h-screen space-y-8 md:space-y-0">
-                <div>
-                  <h5 className="font-light text-lg sm:text-xl md:text-2xl text-white">
+                <div className="space-y-1">
+                  <h5 className="font-light text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white">
                     Why Zealous Health is Different
                   </h5>
-                  <h1 className="font-semibold text-2xl sm:text-3xl md:text-4xl text-white tracking-tighter">
+                  <h1 className="font-semibold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white tracking-tighter">
                     Science Meets Ancient Wisdom
                   </h1>
                 </div>
 
-                <p className="text-sm sm:text-base md:text-lg text-[#D8DED5] max-w-full md:w-[700px]">
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-[#D8DED5] max-w-full md:w-[700px] lg:w-[850px]">
                   Ever wonder why you take vitamins but don&apos;t feel the difference?
                   Most supplements are poorly absorbed — your body only uses about
                   10–20% of what you swallow while the rest is just expensive pee.
                 </p>
 
-                <div>
-                  <h5 className="font-light text-lg sm:text-xl md:text-2xl text-white">
+                <div className="space-y-1">
+                  <h5 className="font-light text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white">
                     Our Game-Changing Solution
                   </h5>
                   <div className="flex items-center gap-2 sm:gap-4">
-                    <h1 className="font-semibold text-xl sm:text-2xl md:text-4xl text-white">
+                    <h1 className="font-semibold text-2xl sm:text-3xl md:text-5xl lg:text-6xl text-white">
                       Nano-Tech Meets Nature
                     </h1>
-                    <div className="w-[50px] sm:w-[75px] md:w-[137px] border border-white" />
+                    <div className="w-[50px] sm:w-[75px] md:w-[150px] lg:w-[180px] border border-white" />
                   </div>
                 </div>
               </div>
@@ -367,12 +367,12 @@ export default function Page() {
 
           {/* ---------- PANEL 2 ---------- */}
           <section className="panel flex flex-col md:flex-row md:gap-8 2xl:gap-16 text-white">
-            <div className="flex flex-col gap-10 md:gap-16 2xl:justify-around md:mt-14 2xl:mt-0 px-8 md:px-0">
-              <div className="space-y-2.5">
-                <h5 className="font-medium text-2xl sm:text-3xl text-white">
+            <div className="flex flex-col gap-6 md:gap-10 2xl:justify-around sm:mt-8 md:mt-10 2xl:mt-0 px-6 md:px-0">
+              <div className="space-y-2">
+                <h5 className="font-medium text-xl sm:text-2xl md:text-3xl text-white">
                   BIOCAGE Technology™
                 </h5>
-                <p className="font-light text-lg sm:text-2xl text-[#D8DED5]">
+                <p className="font-light text-base sm:text-lg md:text-2xl text-[#D8DED5]">
                   Think of it as a{" "}
                   <span className="font-normal italic">&quot;smart taxi&quot;</span> for your
                   nutrients
@@ -382,27 +382,27 @@ export default function Page() {
               {/* ====== FEATURES ====== */}
               <div>
                 {/* ====== HEADING ====== */}
-                <p className="text-2xl text-white mb-6">What makes it special?</p>
+                <p className="text-lg sm:text-xl md:text-2xl text-white mb-4 md:mb-6">What makes it special?</p>
 
                 {/* GRID LAYOUT FOR FEATURES */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:w-[600px]">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 md:w-[600px]">
 
-                  <div className="flex flex-col h-full md:flex-row md:col-span-2 items-center gap-4">
+                  <div className="flex flex-col h-full md:flex-row md:col-span-2 items-center gap-3 md:gap-4">
                     {/* Small Box 1: Nano-sized bodyguard */}
-                    <div className="p-3 rounded-[20px] flex flex-col justify-between bg-[#71BF45]">
-                      <h3 className="sm:text-lg font-bold mb-4 text-[#093C16]">Nano-sized bodyguards</h3>
-                      <p className="text-sm font-light text-white">
+                    <div className="p-2.5 md:p-3 rounded-[20px] flex flex-col justify-between bg-[#71BF45]">
+                      <h3 className="text-sm sm:text-base md:text-lg font-bold mb-3 md:mb-4 text-[#093C16]">Nano-sized bodyguards</h3>
+                      <p className="text-xs sm:text-sm font-light text-white">
                         That protect minerals on their journey through your body
                       </p>
                     </div>
 
                     {/* Small Box 2: Water-loving minerals */}
-                    <div className="flex flex-col justify-between bg-[#71BF45] border rounded-[20px] p-3">
+                    <div className="flex flex-col justify-between bg-[#71BF45] border rounded-[20px] p-2.5 md:p-3">
                       <div>
-                        <h3 className="sm:text-lg font-bold mb-4 text-[#093C16]">
+                        <h3 className="text-sm sm:text-base md:text-lg font-bold mb-3 md:mb-4 text-[#093C16]">
                           Water-loving minerals
                         </h3>
-                        <p className="text-sm font-light text-white">
+                        <p className="text-xs sm:text-sm font-light text-white">
                           that dissolve easily (no more chalky tablets!)
                         </p>
                       </div>
@@ -410,21 +410,21 @@ export default function Page() {
                   </div>
 
                   {/* Large Absorption Box (Spans 1 row, 1 column here, will re-position with flex below) */}
-                  <div className="row-span-2 p-3 rounded-[20px] bg-[#71BF45] flex flex-col justify-between">
+                  <div className="row-span-2 p-2.5 md:p-3 rounded-[20px] bg-[#71BF45] flex flex-col justify-between">
                     <div className="text-[#093C16]">
-                      <p className="text-4xl sm:text-5xl font-bold mb-2 leading-none">5X</p>
-                      <p className="font-semibold mb-4">Better<br />Absorption</p>
+                      <p className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 leading-none">5X</p>
+                      <p className="text-sm sm:text-base font-semibold mb-3 md:mb-4">Better<br />Absorption</p>
                     </div>
-                    <p className="text-white">
+                    <p className="text-xs sm:text-sm text-white">
                       Compared to regular supplements
                     </p>
                   </div>
 
                   {/* Smart Release System Box (Spans full width on small screens, below first two on medium) */}
-                  <div className="col-span-2 p-3 border border-[#5B5B5B] rounded-[20px] bg-[#71BF45] flex flex-col justify-between">
+                  <div className="col-span-2 p-2.5 md:p-3 border border-[#5B5B5B] rounded-[20px] bg-[#71BF45] flex flex-col justify-between">
                     <div>
-                      <h3 className="sm:text-lg font-bold mb-4 text-[#093C16]">Smart release system</h3>
-                      <p className="text-sm font-light text-[#093C16]">
+                      <h3 className="text-sm sm:text-base md:text-lg font-bold mb-3 md:mb-4 text-[#093C16]">Smart release system</h3>
+                      <p className="text-xs sm:text-sm font-light text-[#093C16]">
                         That knows exactly when to deliver nutrients to your cells
                       </p>
                     </div>
@@ -672,7 +672,7 @@ export default function Page() {
           {/* ---------- PANEL 6 ---------- */}
           <section className="panel relative flex flex-col md:justify-center 2xl:justify-around w-full md:w-screen md:h-screen mt-20 md:mt-0 space-y-12 md:space-y-8 2xl:space-y-16 py-8 md:py-12 md:pr-20 2xl:w-[1536px]">
             {/* UPPER ROW */}
-            <div className="flex flex-col md:flex-row gap-8 md:gap-0 md:items-center 2xl:h-auto">
+            <div className="flex flex-col md:flex-row gap-8 md:gap-0 md:items-center 2xl:h-auto md:ml-16 lg:ml-24">
               <div className="flex-1 px-4 sm:px-8 md:px-0 space-y-3">
                 <p className="text-xl sm:text-2xl md:text-3xl max-w-full md:w-[400px]">
                   Ready to{" "}
