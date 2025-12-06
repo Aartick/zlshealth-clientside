@@ -139,8 +139,11 @@ function Page() {
                 ).map((p: filters) => p._id)
             if (matched) setSelectedProductTypes(matched)
         }
+        // Only open filters by default on desktop when there are query parameters
         if (productTypeQuery || benefitQuery) {
-            setFilterBarOpen(true)
+            if (window.innerWidth >= 768) {
+                setFilterBarOpen(true)
+            }
         }
     }, [categoryQuery, productTypeQuery, benefitQuery])
 
@@ -380,10 +383,10 @@ function Page() {
                         <div className="lg:hidden">
                             <p className="font-medium text-sm mb-2">Category</p>
                             {loadingFilters ? (
-                                <div className="w-full h-10 rounded-lg bg-gray-200 animate-pulse"></div>
+                                <div className="w-full h-12 rounded-lg bg-gray-200 animate-pulse"></div>
                             ) : (
                                 <select
-                                    className='w-full py-2.5 px-3 rounded-lg border border-[#71BF45] bg-[#71BF4508] focus:outline-none text-sm'
+                                    className='w-full py-3.5 px-4 rounded-lg border-2 border-[#71BF45] bg-[#71BF4508] focus:outline-none text-base font-medium'
                                     value={selectedCategory}
                                     onChange={(e) => setSelectedCategory(e.target.value)}
                                 >
@@ -437,6 +440,8 @@ function Page() {
 
                         {/* DESKTOP: Original layout */}
                         <div className="hidden lg:flex flex-col gap-4 lg:flex-row items-center justify-between">
+                            
+
                             <div className="w-full lg:flex-1 flex justify-between lg:justify-end items-center gap-4">
                                 {/* FILTERS */}
                                 <label

@@ -43,12 +43,12 @@ function ShopLink() {
                             <Link
                                 key={idx}
                                 href={`/products?category=${encodeURIComponent(item.name)}`}
-                                className='p-2.5 space-y-1 md:space-y-2 rounded-xl transition-shadow duration-300 hover:shadow-xs hover:shadow-[#71BF45] group'
+                                className='p-2.5 space-y-1 md:space-y-2 rounded-xl transition-all duration-300 group'
                             >
                                 <div className='relative flex items-center gap-3'>
                                     {/* Need icon */}
                                     <div
-                                        className="w-5 h-5 [&>svg]:w-full [&>svg]:h-full [&>svg]:object-contain"
+                                        className="w-5 h-5 [&>svg]:w-full [&>svg]:h-full [&>svg]:object-contain [&>svg]:fill-[#71BF45] [&>svg]:transition-colors [&>svg]:duration-300 group-hover:[&>svg]:fill-gray-500"
                                         dangerouslySetInnerHTML={{ __html: item.icon }}
                                     />
                                     {/* Category title */}
@@ -85,12 +85,12 @@ function ShopLink() {
                                 <Link
                                     key={idx}
                                     href={`/products?benefits=${encodeURIComponent(item.name)}`}
-                                    className='p-2.5 space-y-1 md:space-y-2.5 rounded-xl transition-shadow duration-300 hover:shadow-xs hover:shadow-[#71BF45] group'
+                                    className='p-2.5 space-y-1 md:space-y-2.5 rounded-xl transition-all duration-300 group'
                                 >
                                     <div className='relative flex items-center gap-3'>
                                         {/* Need icon */}
                                         <div
-                                            className="w-5 h-5 [&>svg]:w-full [&>svg]:h-full [&>svg]:object-contain"
+                                            className="w-5 h-5 [&>svg]:w-full [&>svg]:h-full [&>svg]:object-contain [&>svg]:fill-[#71BF45] [&>svg]:transition-colors [&>svg]:duration-300 group-hover:[&>svg]:fill-gray-500"
                                             dangerouslySetInnerHTML={{ __html: item.icon }}
                                         />
                                         {/* Need title */}
@@ -117,12 +117,12 @@ function ShopLink() {
                                 <Link
                                     key={idx}
                                     href={`/products?benefits=${encodeURIComponent(item.name)}`}
-                                    className='p-2.5 space-y-2.5 rounded-xl transition-shadow duration-300 hover:shadow-xs hover:shadow-[#71BF45] group'
+                                    className='p-2.5 space-y-2.5 rounded-xl transition-all duration-300 group'
                                 >
                                     <div className='relative flex items-center gap-3'>
                                         {/* Need icon */}
                                         <div
-                                            className="w-5 h-5 [&>svg]:w-full [&>svg]:h-full [&>svg]:object-contain"
+                                            className="w-5 h-5 [&>svg]:w-full [&>svg]:h-full [&>svg]:object-contain [&>svg]:fill-[#71BF45] [&>svg]:transition-colors [&>svg]:duration-300 group-hover:[&>svg]:fill-gray-500"
                                             dangerouslySetInnerHTML={{ __html: item.icon }}
                                         />
                                         {/* Need title */}
