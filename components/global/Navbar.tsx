@@ -22,7 +22,6 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
 
 import { getItem, KEY_ACCESS_TOKEN, MERGE_DONE_KEY, removeItem, setItem } from "@/utils/localStorageManager";
 import { axiosClient } from "@/utils/axiosClient";
@@ -228,7 +227,6 @@ function Navbar() {
                 dispatch(removeMyInfo());
                 dispatch(resetCart())
                 dispatch(resetWishlist())
-                signOut({ redirect: false })
                 setItem(MERGE_DONE_KEY, "false")
                 toast.success(response.data.result)
             }

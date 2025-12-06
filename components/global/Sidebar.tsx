@@ -16,7 +16,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
-import { signOut } from "next-auth/react";
 import { BsCart2, BsSuitHeart } from 'react-icons/bs';
 import { CgProfile } from 'react-icons/cg';
 import { UserDetails } from '@/interfaces/user';
@@ -66,7 +65,6 @@ function Sidebar({
                 dispatch(removeMyInfo())
                 dispatch(resetCart())
                 dispatch(resetWishlist())
-                signOut({ redirect: false })
                 setItem(MERGE_DONE_KEY, "false")
                 toast.success(response.data.result)
             }

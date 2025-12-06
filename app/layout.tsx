@@ -21,8 +21,6 @@ import Navbar from "@/components/global/Navbar";
 import Footer from "@/components/global/Footer";
 import StoreProvider from "./StoreProvider";
 import { Toaster } from "react-hot-toast";
-import Providers from "./Providers";
-import { SessionProvider } from "next-auth/react";
 import Breadcrumbs from "@/components/global/Breadcrumbs";
 import { NavbarColorProvider } from "@/context/NavbarColorContext";
 
@@ -57,31 +55,26 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* Provide NextAuth session context */}
-        <SessionProvider>
-          {/* Provide Redux store context */}
-          <StoreProvider>
-            {/* Provide additional UI context/providers */}
-            <Providers />
-              <NavbarColorProvider>
-                {/* Render global navigation bar */}
-                <Navbar />
-                {/* Main content area with top padding for navbar */}
-                <div className="pt-24 sm:pt-28 lg:pt-36 bg-white text-black vertical-scrollbar-hide overflow-x-hidden">
-                  {/* React Hot Toast container */}
-                  <Toaster />
-                  {/* Breadcrumbs records the user navigation paths. */}
-                  <div className="pl-6 sm:pl-14">
-                    <Breadcrumbs />
-                  </div>
-                  {/* Render page content */}
-                  {children}
-                </div>
-                {/* Render global footer */}
-                <Footer />
-              </NavbarColorProvider>
-          </StoreProvider>
-        </SessionProvider>
+        {/* Provide Redux store context */}
+        <StoreProvider>
+          <NavbarColorProvider>
+            {/* Render global navigation bar */}
+            <Navbar />
+            {/* Main content area with top padding for navbar */}
+            <div className="pt-24 sm:pt-28 lg:pt-36 bg-white text-black vertical-scrollbar-hide overflow-x-hidden">
+              {/* React Hot Toast container */}
+              <Toaster />
+              {/* Breadcrumbs records the user navigation paths. */}
+              <div className="pl-6 sm:pl-14">
+                <Breadcrumbs />
+              </div>
+              {/* Render page content */}
+              {children}
+            </div>
+            {/* Render global footer */}
+            <Footer />
+          </NavbarColorProvider>
+        </StoreProvider>
       </body>
     </html>
   );
