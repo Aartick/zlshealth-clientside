@@ -22,7 +22,6 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react'
 import CartButton from './CartButton';
 import WishlistButton from './WishlistButton';
 import { product } from '@/interfaces/products';
@@ -37,16 +36,14 @@ function Product({ product }: ProductProps) {
 
     return (
         // Product card container
-        <div
-            className="rounded-[10px] sm:rounded-[22px] p-2.5 space-y-4"
-        >
+        <div className="rounded-3xl p-3 bg-white border border-[#71BF45] space-y-[18px]">
             {/* Product image section */}
             <div className="relative h-[150px] sm:h-[300px]">
                 <Image
                     src={product.productImg.url}
                     fill
                     alt={product.name}
-                    className="border-[3px] border-[#e3e3e3] rounded-[10px] sm:rounded-[20px] object-cover"
+                    className="rounded-[10px] sm:rounded-[20px] object-cover"
                 />
                 {/* Best Seller badge */}
                 {product.bestSeller && (<div className="absolute top-5 left-[3px] inline-block">

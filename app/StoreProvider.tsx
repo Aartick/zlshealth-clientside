@@ -15,6 +15,7 @@
 import { persistor, store } from '@/lib/store'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
+import { SessionProvider } from 'next-auth/react'
 
 export default function StoreProvider({
   children
@@ -23,10 +24,12 @@ export default function StoreProvider({
 }) {
   // Wrap children with Redux Provider to pass down the store
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        {children}
-      </PersistGate>
-    </Provider>
+    <SessionProvider>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          {children}
+        </PersistGate>
+      </Provider>
+    </SessionProvider>
   )
 }
