@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * StoreProvider Component
  * 
@@ -11,7 +13,6 @@
  * - Use this component at the root of your app to enable Redux state management.
  */
 
-'use client'
 import { persistor, store } from '@/lib/store'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
