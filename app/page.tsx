@@ -421,7 +421,7 @@ export default function Home() {
 
       {/* COMPARISION TABLE */}
       {/* COMPARISON SECTION */}
-      <div className="max-w-screen-2xl mx-auto pt-24 px-[30px] md:px-[60px]">
+      <div className="max-w-screen-2xl mx-auto -pt-[100px] px-[30px] md:px-[60px]">
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16 space-y-3">
           <p className="font-semibold text-2xl md:text-[32px] text-[#093C16]">

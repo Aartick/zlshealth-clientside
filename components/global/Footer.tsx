@@ -9,7 +9,6 @@
 
 // Import required modules and components
 "use client"
-import React from "react";
 import { MdOutlineCall } from "react-icons/md";
 import { LuInstagram } from "react-icons/lu";
 import { GrFacebookOption } from "react-icons/gr";
@@ -28,42 +27,40 @@ function Footer() {
     const path = `/login?redirect=${encodeURIComponent(currentPath)}`
 
     return (
-        <footer className={`${pathname === "/"
-            ? "bg-[#FBFFF9]"
-            : "bg-white"} text-black border-t border-[#000000] p-5 
-            sm:p-10 lg:py-20 lg:px-16
+        <footer
+            className={`bg-gradient-to-b from-[#0A3C16] to-[#71BF45] text-white border-t border-white/10 p-4 
+            sm:p-8 lg:py-16 lg:px-14
             ${pathname === "/science" && "hidden"}
-            `
-        }
+            `}
         >
             {/* Main footer layout: left and right sections */}
             <div className="max-w-screen-2xl mx-auto flex flex-col lg:flex-row 
             gap-6 md:gap-[50px] lg:justify-between"
             >
                 {/* LEFT SECTION: Logo, tagline, address, contact */}
-                <div className="space-y-6">
+                <div className="space-y-5">
                     {/* Company logo */}
                     <div className="relative w-[120px] h-[60px] sm:w-[140px] sm:h-[70px] md:w-[165px] md:h-[85px]">
                         <Image src="/logo.png" fill alt="logo" />
                     </div>
                     {/* Tagline text -> changes color based no route*/}
-                    <p className="text-[#36810B] text-sm sm:text-base md:text-lg lg:text-xl font-medium italic"
+                    <p className="text-white/80 text-xs sm:text-sm md:text-base lg:text-lg font-medium italic"
                     >
                         Herbal Solutions For Your Health
                     </p>
                     {/* Company Address */}
-                    <div className="text-sm sm:text-base md:text-lg lg::text-xl text-nowrap">
-                        <p >Sy.no.312, H.no.3-14/2, 2nd Floor Narsingi Village,</p>
-                        <p> Rajendra Nagar Mandal Hyderabad - 500089</p>
+                    <div className="text-xs sm:text-sm md:text-base lg:text-lg text-nowrap text-white/80">
+                        <p>Sy.no.312, H.no.3-14/2, 2nd Floor Narsingi Village,</p>
+                        <p>Rajendra Nagar Mandal Hyderabad - 500089</p>
                     </div>
                     {/* Contact number with phone icon -> changes color based on route */}
-                    <div className="flex items-center gap-1.5 sm:gap-5">
-                        <div className="bg-[#093C16] p-[3px] rounded-full text-white">
-                            <MdOutlineCall size={12} />
+                    <div className="flex items-center gap-2 sm:gap-4">
+                        <div className="bg-white/10 p-1.5 rounded-full text-white">
+                            <MdOutlineCall size={14} />
                         </div>
                         <a
                             href="tel:+919705868032"
-                            className="font-medium text-sm sm:text-base md:text-lg: lg:text-xl text-[#333333]"
+                            className="font-medium text-xs sm:text-sm md:text-base lg:text-lg text-white"
                         >
                             +91 9705868032
                         </a>
@@ -73,8 +70,8 @@ function Footer() {
                 {/* RIGHT SECTION: Quick links and social media */}
                 <div className="flex gap-10">
                     {/* Quick Links section */}
-                    <div className="space-y-4 text-xs sm:text-sm md:text-base">
-                        <p className="font-medium whitespace-nowrap">
+                    <div className="space-y-3 text-xs sm:text-sm md:text-base text-white">
+                        <p className="font-medium whitespace-nowrap text-white">
                             <span className="underline decoration-solid decoration-[#36810B]
                              decoration-[11%] underline-offset-[50%]"
                             >
@@ -84,21 +81,21 @@ function Footer() {
                         </p>
                         <Link
                             href={isUser ? `/profile?card=${encodeURIComponent("ordersAndReturns")}&activeSection=${encodeURIComponent("trackOrders")}` : path}
-                            className="flex whitespace-nowrap"
+                            className="flex whitespace-nowrap text-white/90"
                         >
                             Track Your Order
                         </Link>
-                        <Link href="/cancellationAndRefund" className="flex whitespace-nowrap">
+                        <Link href="/cancellationAndRefund" className="flex whitespace-nowrap text-white/90">
                             Cancellation & Refund
                         </Link>
-                        <Link href="/termsAndCondition" className="flex whitespace-nowrap">Terms & Conditions</Link>
-                        <Link href="/aboutUs" className="flex whitespace-nowrap">About Us</Link>
-                        <Link href="/contactUs" className="flex whitespace-nowrap">Contact Us</Link>
+                        <Link href="/termsAndCondition" className="flex whitespace-nowrap text-white/90">Terms & Conditions</Link>
+                        <Link href="/aboutUs" className="flex whitespace-nowrap text-white/90">About Us</Link>
+                        <Link href="/contactUs" className="flex whitespace-nowrap text-white/90">Contact Us</Link>
                     </div>
 
                     {/* Social Media section */}
-                    <div className="space-y-4 text-xs sm:text-sm md:text-base">
-                        <p className="font-medium whitespace-nowrap">
+                    <div className="space-y-3 text-xs sm:text-sm md:text-base text-white">
+                        <p className="font-medium whitespace-nowrap text-white">
                             <span className="underline decoration-solid 
                             decoration-[#36810B] decoration-[11%] underline-offset-[50%]"
                             >
@@ -110,8 +107,8 @@ function Footer() {
                         {/* Instagram */}
                         <Link
                             href="/"
-                            className="flex items-center gap-3">
-                            <LuInstagram className="text-[#36810B] sm:text-2xl"
+                            className="flex items-center gap-3 text-white/90">
+                            <LuInstagram className="text-[#70bf44] sm:text-2xl"
                             />
                             <p>Instagram</p>
                         </Link>
@@ -119,8 +116,8 @@ function Footer() {
                         {/* Facebook */}
                         <Link
                             href="/"
-                            className="flex items-center gap-3">
-                            <GrFacebookOption className="text-[#36810B] sm:text-2xl"
+                            className="flex items-center gap-3 text-white/90">
+                            <GrFacebookOption className="text-[#70bf44] sm:text-2xl"
                             />
                             <p>Facebook</p>
                         </Link>
@@ -128,9 +125,9 @@ function Footer() {
                         {/* LinkedIn */}
                         <Link
                             href="/"
-                            className="flex items-center gap-3"
+                            className="flex items-center gap-3 text-white/90"
                         >
-                            <BsLinkedin className="text-[#36810B] sm:text-2xl"
+                            <BsLinkedin className="text-[#70bf44] sm:text-2xl"
                             />
                             <p>LinkedIn</p>
                         </Link>
@@ -139,7 +136,7 @@ function Footer() {
             </div>
 
             {/* Divider line (changes color by route) */}
-            <hr className="border-black my-4 sm:my-8"
+            <hr className="border-white/25 my-4 sm:my-8"
             />
 
             {/* BOTTOM SECTION: Copyright and legal links */}
@@ -148,12 +145,12 @@ function Footer() {
                     gap-2 lg:justify-between items-center"
             >
                 {/* Copyright text */}
-                <p className="text-center md:text-left text-xs sm:text-sm lg:text-base">
+                <p className="text-center md:text-left text-[11px] sm:text-xs lg:text-sm text-white/80">
                     Copyrights © ZEALOUS HEALTH PRIVATE LIMITED | Powered by AfterMarkett
                 </p>
 
                 {/* Legal links */}
-                <div className="flex gap-12 sm:gap-6 items-center text-xs sm:text-sm lg:text-base">
+                <div className="flex gap-12 sm:gap-6 items-center text-[11px] sm:text-xs lg:text-sm text-white">
                     <Link href="/legalAndPrivacyPolicy">
                         <p className="underline decoration-solid">Privacy Policy</p>
                     </Link>

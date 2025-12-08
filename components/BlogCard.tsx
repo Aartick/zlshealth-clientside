@@ -17,18 +17,18 @@ import React from 'react'
 
 function BlogCard() {
     return (
-        <div className="border border-[#CDCDCD] rounded-[30px] p-4 space-y-4">
+        <div className="rounded-3xl bg-white border border-[#71BF45] shadow-2xl p-3 md:p-4 space-y-4 md:space-y-5">
             {/* ================ Blog Image Section ================ */}
             <div className="relative w-full h-[200px] md:h-[232px]">
                 <Image
                     src="/aboutUs/1.jpg"
                     alt='blog1-img'
                     fill
-                    className='rounded-2xl object-cover'
+                    className='rounded-[10px] md:rounded-[14px] object-cover'
                 />
 
                 {/* "Most Read" Badge -> shown at the top of the image */}
-                <div className="absolute top-5 inline-block">
+                <div className="absolute top-3 left-3 inline-block">
                     <div
                         className="bg-[#71BF45] text-white text-xs md:text-base font-semibold px-3 py-2"
                         style={{
@@ -47,7 +47,7 @@ function BlogCard() {
             </p>
 
             {/* ================ Blog Tags (scrollable row) ================ */}
-            <div className="flex items-center gap-2.5 overflow-x-scroll scrollbar-hide text-xs md:text-base">
+            <div className="flex items-center gap-2.5 overflow-x-auto scrollbar-hide text-xs md:text-base">
                 <p className="py-[5px] px-2.5 border border-[#D6D6D6] rounded-[30px]">Supplements</p>
                 <p className="py-[5px] px-2.5 border border-[#D6D6D6] rounded-[30px]">Wellness</p>
                 <p className="py-[5px] px-2.5 border border-[#D6D6D6] rounded-[30px]">Myths</p>
@@ -64,11 +64,16 @@ function BlogCard() {
             <Link
                 href={`/blogDescription`}
                 className="
-                border border-[#71BF45] 
-                px-2.5 md:px-5 py-[5px] md:py-2.5 
-                rounded-[5px] md:rounded-[10px]
-                text-[#36810B] font-semibold
-                text-xs md:text-base
+                inline-block
+                bg-[#71BF45]
+                text-white
+                px-3 py-1.5 md:px-5 md:py-2
+                rounded-[10px]
+                font-semibold
+                text-sm md:text-base
+                shadow-sm
+                hover:bg-[#5aa53a]
+                transition-colors
               "
             >
                 Read More

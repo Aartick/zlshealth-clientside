@@ -33,6 +33,7 @@ export default function ProcessSection() {
   const textRefs = useRef<HTMLDivElement[]>([])
 
   useEffect(() => {
+    ScrollTrigger.normalizeScroll(true)
     const ctx = gsap.context(() => {
       const container = divRef.current;
       const path = pathRef.current;
@@ -56,95 +57,92 @@ export default function ProcessSection() {
         }
       });
 
-      // Section subtle fade-in when entering
-      gsap.from(container, {
-        opacity: 0,
-        duration: 0.6,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: container,
-          start: "top bottom-=80",
-          end: "top center",
-          scrub: true,
-        },
-      });
+      
 
-      // Main timeline mapped to scroll (no pinning for smooth experience)
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: container,
-          start: "top 80%", // start animation when section is 80% down viewport
-          end: "bottom 20%", // end when bottom of section is 20% from top
-          scrub: isDesktop ? 0.8 : 0.5, // smooth scrubbing
-          toggleActions: "play none none reverse", // play forward on enter, reverse on leave
-          invalidateOnRefresh: true,
-        },
-      });
+      const buildTimeline = (startVal: string, endVal: string, initialY: string) => {
+        gsap.set(container, { y: initialY });
 
-      //Build timeline: each step gets a label at stepStart
-      processSteps.forEach((_, i) => {
-        const icon = iconRefs.current[i];
-        const text = textRefs.current[i];
-        if (!icon || !text) return;
-
-        const stepStart = i * STEP_DUR;
-        const stepLabel = `step${i}`;
-        tl.addLabel(stepLabel, stepStart);
-
-        // Ensure icon visible at start of its motion
-        tl.set(icon, { opacity: 1 }, stepLabel);
-
-        // ICON MOTION: move along entire path between 0->1, but we offset the start time so icons are spaced
-        tl.to(
-          icon,
-          {
-            motionPath: {
-              path,
-              align: path,
-              alignOrigin: [0.5, 0.5],
-              start: 0,
-              end: 1,
-            },
-            ease: "none",
-            duration: MOTION_DUR,
-            immediateRender: false,
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: container,
+            start: startVal,
+            end: endVal,
+            scrub: 1,
+            pin: true,
+            pinSpacing: false,
+            anticipatePin: 2,
+            fastScrollEnd: true,
+            invalidateOnRefresh: true,
           },
-          stepLabel // start moving at label
-        );
+        });
 
-        // ---- TEXT BEHAVIOUR ----
-        // Text fades in sooner (as icon enters visible region)
-        const fadeInStart = stepStart + MOTION_DUR * 0.1; // start earlier
-        const fadeInDur = MOTION_DUR * 0.25;
-        // const holdEnd = stepStart + MOTION_DUR * 0.58; // hold until about 60%
-        const fadeOutStart = stepStart + MOTION_DUR * 0.7;
-        const fadeOutDur = MOTION_DUR * 0.25;
+        tl.to(container, { y: 0, duration: 2, ease: "power2.out" }, 0);
 
-        // Fade in from bottom
-        tl.fromTo(
-          text,
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: fadeInDur, ease: "power2.out" },
-          fadeInStart
-        );
+        const BASE_DELAY = 1;
+        processSteps.forEach((_, i) => {
+          const icon = iconRefs.current[i];
+          const text = textRefs.current[i];
+          if (!icon || !text) return;
 
-        // Hold full visibility until near the exit phase
-        // tl.to(text, { opacity: 1, y: 0, duration: holdEnd - (fadeInStart + fadeInDur) }, fadeInStart + fadeInDur);
+          const stepStart = BASE_DELAY + i * STEP_DUR;
+          const stepLabel = `step${i}`;
+          tl.addLabel(stepLabel, stepStart);
 
-        // Fade out upward (not sideways)
-        if (i !== processSteps.length - 1) {
+          tl.set(icon, { opacity: 1 }, stepLabel);
+
           tl.to(
-            text,
-            { opacity: 0, y: -30, duration: fadeOutDur, ease: "power2.inOut" },
-            fadeOutStart
+            icon,
+            {
+              motionPath: {
+                path,
+                align: path,
+                alignOrigin: [0.5, 0.5],
+                start: 0,
+                end: 1,
+              },
+              ease: "none",
+              duration: MOTION_DUR,
+              immediateRender: false,
+            },
+            stepLabel
           );
-        } else {
-          // last stays visible
-          tl.to(text, { opacity: 1, y: 0, duration: 0.05 }, fadeOutStart);
-        }
+
+          const fadeInStart = stepStart + MOTION_DUR * 0.1;
+          const fadeInDur = MOTION_DUR * 0.25;
+          const fadeOutStart = stepStart + MOTION_DUR * 0.7;
+          const fadeOutDur = MOTION_DUR * 0.25;
+
+          tl.fromTo(
+            text,
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: fadeInDur, ease: "power2.out" },
+            fadeInStart
+          );
+
+          if (i !== processSteps.length - 1) {
+            tl.to(
+              text,
+              { opacity: 0, y: -30, duration: fadeOutDur, ease: "power2.inOut" },
+              fadeOutStart
+            );
+          } else {
+            tl.to(text, { opacity: 1, y: 0, duration: 0.05 }, fadeOutStart);
+          }
+        });
+
+        tl.to(container, { y: "-100vh", duration: 2, ease: "power2.in" }, 5);
+
+        return tl;
+      };
+
+      const mm = gsap.matchMedia();
+      mm.add("(min-width: 768px)", () => {
+        buildTimeline("top bottom", "+=300%", "100vh");
+      });
+      mm.add("(max-width: 767px)", () => {
+        buildTimeline("top 80%", "+=220%", "70vh");
       });
 
-      // refresh to ensure sizes & pin spacer are calculated
       ScrollTrigger.refresh();
     }, divRef);
 
@@ -158,7 +156,7 @@ export default function ProcessSection() {
   }, []);
 
   return (
-    <section ref={divRef} className="flex flex-col items-center justify-center h-screen relative w-full overflow-hidden md:pt-36">
+    <section ref={divRef} className="flex flex-col items-center justify-center h-screen relative w-full overflow-hidden md:-mt-[100px] -mt-[300px] md:pt-36 mb-[800px] md:mb-[1600px]" style={{ willChange: "transform, opacity" }}>
       <h3 className="text-center text-2xl sm:text-3xl md:text-4xl font-semibold text-[#093C16] mb-8">
         Our Process
       </h3>

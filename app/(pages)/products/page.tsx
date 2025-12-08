@@ -19,14 +19,12 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Range } from 'react-range'
 import { CiFilter } from "react-icons/ci";
 import { MdKeyboardArrowDown } from 'react-icons/md'
-import { IoSearchOutline } from 'react-icons/io5'
 import { product } from '@/interfaces/products'
 import { RxCross1 } from 'react-icons/rx'
 import NoProductsComponent from '@/components/NoProductsComponent'
 import { useSearchParams } from 'next/navigation'
 import { useAppSelector } from '@/lib/hooks'
 import { filters } from '@/interfaces/filters'
-import { RiArrowDropDownLine } from 'react-icons/ri'
 import { ChevronDown } from 'lucide-react'
 
 const placeholderTexts = [

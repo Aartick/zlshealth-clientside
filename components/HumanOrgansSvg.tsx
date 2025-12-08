@@ -1,5 +1,5 @@
 "use client"
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from "framer-motion"
 import { RiArrowRightSLine } from 'react-icons/ri';
 
@@ -7,6 +7,10 @@ type OrganData = {
     name: string;
     info: string[];
     position: { x: number; y: number };
+    containerWidth?: number;
+    containerHeight?: number;
+    dotWidth?: number;
+    dotHeight?: number;
 };
 
 const InfoBox = ({ organ }: { organ: OrganData }) => {
@@ -21,7 +25,7 @@ const InfoBox = ({ organ }: { organ: OrganData }) => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.2 }}
-            className={`absolute flex gap-3 text-white p-4 ${renderOnLeft ? "w-72" : "w-96"} z-50`}
+            className={`absolute hidden md:flex gap-3 text-white p-4 ${renderOnLeft ? "w-72" : "w-96"} z-50`}
             style={{
                 left: organ.position.x + horizontalOffset,
                 top: organ.position.y - 28,
@@ -70,6 +74,42 @@ const InfoBox = ({ organ }: { organ: OrganData }) => {
     );
 };
 
+const MobileInfoBox = ({ organ }: { organ: OrganData }) => {
+    const containerW = organ.containerWidth ?? (typeof window !== 'undefined' ? window.innerWidth : 360);
+    const containerH = organ.containerHeight ?? (typeof window !== 'undefined' ? window.innerHeight : 640);
+    const bubbleWidth = Math.min(240, Math.max(160, containerW - 16));
+    const bubbleHeight = 140;
+    const margin = 8;
+
+    const centerLeft = 100 ;
+
+    const rawTop = 30;
+    const safeLeft = Math.max(margin, Math.min(centerLeft, containerW - bubbleWidth - margin));
+    const safeTop = Math.max(margin, Math.min(rawTop, containerH - bubbleHeight - margin));
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className={`absolute md:hidden z-50`}
+            style={{ left: safeLeft, top: safeTop, width: bubbleWidth }}
+        >
+            <div className="rounded-2xl bg-black/80 backdrop-blur border border-[#71BF45] shadow-lg">
+                <div className="px-3 py-2 text-white space-y-1">
+                    <div className="text-sm font-medium">{organ.name}</div>
+                    <ul className="list-disc pl-4 text-xs text-[#A9A4A4] space-y-0.5">
+                        {organ.info.map((item, i) => (
+                            <li key={i}>{item}</li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+        </motion.div>
+    );
+};
+
 const lungsList =
     [
         "Supports clearer, smoother breathing",
@@ -108,6 +148,7 @@ const liverList =
 function HumanOrgansSvg() {
     const [hoveredOrgan, setHoveredOrgan] = useState<OrganData | null>(null);
     const currentOrganRef = useRef<string | null>(null)
+    const svgRef = useRef<SVGSVGElement | null>(null)
 
     // Map of organ names to their info
     const organInfoMap: Record<string, string[]> = {
@@ -179,6 +220,10 @@ function HumanOrgansSvg() {
                     name: organName,
                     info,
                     position,
+                    containerWidth: (organGroup.closest(".relative")?.getBoundingClientRect()?.width) || undefined,
+                    containerHeight: (organGroup.closest(".relative")?.getBoundingClientRect()?.height) || undefined,
+                    dotWidth: (dotGroup as SVGGraphicsElement | null)?.getBBox()?.width,
+                    dotHeight: (dotGroup as SVGGraphicsElement | null)?.getBBox()?.height,
                 });
             }
             // Same organ - do nothing, keep existing state
@@ -191,15 +236,142 @@ function HumanOrgansSvg() {
         }
     };
 
+    const handleTouchMove = (e: React.TouchEvent<SVGSVGElement>) => {
+        const target = e.target as unknown as SVGElement;
+
+        const organGroup = target.closest('[data-organ]') as SVGGElement | null;
+
+        if (organGroup) {
+            const organName = organGroup.getAttribute('data-organ');
+
+            if (organName && currentOrganRef.current !== organName) {
+                const info = organInfoMap[organName] || [];
+
+                let dotGroup = organGroup.querySelector(`.${organName.toLowerCase()}-dot-group`);
+
+                if (!dotGroup) {
+                    const svgElement = organGroup.ownerSVGElement;
+                    if (svgElement) {
+                        const allOrganGroups = svgElement.querySelectorAll(`[data-organ="${organName}"]`);
+                        for (const group of Array.from(allOrganGroups)) {
+                            dotGroup = group.querySelector(`.${organName.toLowerCase()}-dot-group`);
+                            if (dotGroup) break;
+                        }
+                    }
+                }
+
+                let position = { x: 0, y: 0 };
+
+                if (dotGroup) {
+                    const bbox = (dotGroup as SVGGraphicsElement).getBBox();
+                    const ctm = (dotGroup as SVGGraphicsElement).getScreenCTM();
+
+                    if (ctm) {
+                        const point = (dotGroup as SVGGraphicsElement).ownerSVGElement?.createSVGPoint();
+                        if (point) {
+                            point.x = bbox.x + bbox.width / 2;
+                            point.y = bbox.y + bbox.height / 2;
+                            const screenPoint = point.matrixTransform(ctm);
+
+                            const container = organGroup.closest(".relative");
+                            const containerRect = container?.getBoundingClientRect();
+
+                            if (containerRect) {
+                                position = {
+                                    x: screenPoint.x - containerRect.left,
+                                    y: screenPoint.y - containerRect.top,
+                                };
+                            } else {
+                                position = { x: screenPoint.x, y: screenPoint.y };
+                            }
+                        }
+                    }
+                }
+
+                currentOrganRef.current = organName;
+                setHoveredOrgan({
+                    name: organName,
+                    info,
+                    position,
+                    containerWidth: (organGroup.closest(".relative")?.getBoundingClientRect()?.width) || undefined,
+                    containerHeight: (organGroup.closest(".relative")?.getBoundingClientRect()?.height) || undefined,
+                    dotWidth: (dotGroup as SVGGraphicsElement | null)?.getBBox()?.width,
+                    dotHeight: (dotGroup as SVGGraphicsElement | null)?.getBBox()?.height,
+                });
+            }
+        } else {
+            if (currentOrganRef.current !== null) {
+                currentOrganRef.current = null;
+                setHoveredOrgan(null);
+            }
+        }
+    };
+
+    useEffect(() => {
+        const svg = svgRef.current;
+        const organName = 'Brain';
+        if (!svg) return;
+
+        const info = {
+            'Brain': [
+                "Boosts focus and clarity",
+                "Supports memory-signaling pathways",
+                "Helps maintain calm mood"
+            ],
+        }[organName] || [];
+
+        let organGroup = svg.querySelector(`[data-organ="${organName}"]`) as SVGGElement | null;
+        let dotGroup = organGroup?.querySelector(`.${organName.toLowerCase()}-dot-group`) as SVGGraphicsElement | null;
+        if (!dotGroup && organGroup?.ownerSVGElement) {
+            const allGroups = organGroup.ownerSVGElement.querySelectorAll(`[data-organ="${organName}"]`);
+            for (const group of Array.from(allGroups)) {
+                const dg = group.querySelector(`.${organName.toLowerCase()}-dot-group`) as SVGGraphicsElement | null;
+                if (dg) { dotGroup = dg; organGroup = group as SVGGElement; break; }
+            }
+        }
+
+        let position = { x: 0, y: 0 };
+        if (dotGroup) {
+            const bbox = dotGroup.getBBox();
+            const ctm = dotGroup.getScreenCTM();
+            if (ctm && dotGroup.ownerSVGElement) {
+                const point = dotGroup.ownerSVGElement.createSVGPoint();
+                point.x = bbox.x + bbox.width / 2;
+                point.y = bbox.y + bbox.height / 2;
+                const screenPoint = point.matrixTransform(ctm);
+                const container = organGroup?.closest('.relative');
+                const rect = container?.getBoundingClientRect();
+                if (rect) {
+                    position = { x: screenPoint.x - rect.left, y: screenPoint.y - rect.top };
+                } else {
+                    position = { x: screenPoint.x, y: screenPoint.y };
+                }
+            }
+        }
+
+        currentOrganRef.current = organName;
+        setHoveredOrgan({
+            name: organName,
+            info,
+            position,
+            containerWidth: (organGroup?.closest('.relative')?.getBoundingClientRect()?.width) || undefined,
+            containerHeight: (organGroup?.closest('.relative')?.getBoundingClientRect()?.height) || undefined,
+            dotWidth: dotGroup?.getBBox()?.width,
+            dotHeight: dotGroup?.getBBox()?.height,
+        });
+    }, []);
+
     return (
-        <div className='relative flex items-center justify-center py-20 md:pt-10 md:px-72'>
+        <div className='relative flex items-center justify-start py-20 md:pt-10 md:px-72'>
             {/* HUMAN ORGANS SVG */}
             <svg
-                className='w-[190px] h-[420px] xl:w-[230px] xl:h-[510px] 2xl:h-screen 2xl:w-auto'
+                className='w-[150px] h-[420px] xl:w-[230px] xl:h-[510px] 2xl:h-screen 2xl:w-auto'
                 viewBox="0 0 190 627"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
+                ref={svgRef}
                 onMouseMove={handleMouseMove}
+                onTouchMove={handleTouchMove}
             >
                 <g opacity="0.5">
                     <path opacity="0.5" d="M187.02 326.086C187.036 323.394 187.515 320.46 187.709 317.761C187.879 315.381 187.115 312.846 187.008 310.479C186.52 299.588 186.627 287.927 186.366 276.653C186.089 264.671 186.864 251.868 184.953 240.243C184.054 234.776 181.882 229.231 180.841 223.797C177.728 207.535 179.317 166.603 179.3 149.742C179.288 138.603 177.271 125.737 171.077 116.311C166.74 109.709 158.592 105.81 151.034 104.129C144.85 102.396 138.697 100.54 132.596 98.5344C127.443 96.8403 115.239 94.4804 113.195 89.877C110.946 84.8132 111.869 78.5866 112.027 72.2196C114.975 68.249 117.083 63.8482 118.097 60.2753C121.398 60.0334 120.734 54.2584 121.208 52.7916C121.682 51.3248 124.337 42.7997 123.484 41.6081C122.63 40.4164 121.641 41.569 121.641 41.569C121.641 41.569 123.463 25.9545 119.958 16.8632C117.219 9.75572 108.75 0 93.5076 0C93.5025 0 93.4974 0.000678239 93.4919 0.000678239C93.4865 0.000678239 93.4818 0 93.4763 0C78.234 0 69.7653 9.75572 67.0257 16.8632C63.5214 25.9545 65.3431 41.569 65.3431 41.569C65.3431 41.569 64.3537 40.4164 63.5003 41.6081C62.647 42.7997 65.3017 51.3251 65.7757 52.7916C66.2497 54.2584 65.5861 60.0334 68.8872 60.2753C70.0493 64.3704 72.6494 69.5519 76.3044 73.9283C76.4211 79.7301 76.982 85.2516 74.9075 89.8774C72.8767 94.4047 61.0753 96.8162 55.9752 98.5358C50.0319 100.54 44.0344 102.395 38.0066 104.129C30.4492 105.81 22.3008 109.709 17.9638 116.311C11.7701 125.738 9.7526 138.603 9.74106 149.742C9.72342 166.602 11.3134 207.535 8.19925 223.797C7.1586 229.231 4.9867 234.776 4.08788 240.243C2.17691 251.868 2.95189 264.671 2.67468 276.653C2.41375 287.927 2.52097 299.588 2.03237 310.479C1.92617 312.846 1.16172 315.381 1.33205 317.761C1.52511 320.46 2.00523 323.394 2.02084 326.086C2.06563 333.823 -0.854781 342.912 0.24966 350.394C1.07349 355.974 5.12311 365.768 9.10452 369.154C12.6279 372.151 19.9325 376.888 23.5674 377.096C23.845 377.112 24.7333 374.4 23.8626 372.585C22.4905 369.723 17.8131 367.563 16.5821 365.409C15.0034 362.646 15.0383 356.772 14.5161 352.517C14.4126 351.674 17.3693 347.428 17.6645 347.428C17.9597 347.428 19.6658 349.042 19.829 350.289C20.1123 352.452 19.9453 354.852 20.1242 356.981C20.3464 359.626 22.0161 365.007 24.6498 365.409C26.7148 365.724 26.8143 365.088 27.3063 364.126C27.7982 363.164 26.7159 359.11 27.1094 357.726C27.503 356.342 27.0731 353.708 26.8143 352.516C26.1207 349.327 27.0558 345.243 26.6175 341.827C26.1611 338.271 24.681 333.731 22.5838 330.791C20.8275 328.328 18.258 325.713 17.4677 322.854C16.5394 319.497 16.7627 314.849 17.7629 311.346C21.6514 297.729 26.8696 283.494 29.2186 269.219C31.5642 254.964 33.6228 240.337 35.3532 226.176C36.0675 220.33 37.6273 199.13 38.7134 193.258C37.479 194.762 40.5741 214.952 43.7337 227.043C45.5355 233.938 43.9794 252.139 41.5428 267.703C39.0947 283.343 31.6992 294.817 30.2952 320.298C29.1772 340.59 30.9484 361.552 32.7793 381.916C34.1545 397.212 37.0345 412.566 40.2284 427.429C41.4343 433.042 40.9128 439.278 40.6664 445.048C40.4401 450.355 41.21 455.769 40.8856 460.969C40.2498 471.166 36.5113 481.458 36.6636 491.813C36.9978 514.522 41.5649 538.386 44.8294 561.166C45.7306 567.456 48.8634 575.857 47.2836 581.142C45.8782 585.843 40.5616 590.809 37.9218 595.906C36.1489 599.329 31.3073 601.593 28.2519 603.658C26.3094 604.971 24.5837 606.732 22.7721 608.173C21.988 608.797 19.284 610.396 18.4687 611.61C17.3391 613.292 18.1385 614.067 18.3594 614.091C17.2302 615.119 17.2594 616.954 18.2322 617.07C17.6225 618.719 18.5508 619.687 19.5572 619.496C18.8806 620.855 20.3237 622.287 21.6765 621.859C22.4291 624.681 26.3687 624.066 28.313 623.077C28.6048 626.181 32.8861 626.853 35.2647 626.428C38.1033 625.92 40.7821 625.066 43.1355 623.242C44.1385 622.465 45.4544 620.18 46.0373 619.688C47.8794 618.135 50.5887 617.373 52.4356 615.711C54.1128 614.201 54.6567 611.635 55.7767 609.969C56.9002 608.297 59.3591 606.383 61.4876 606.05C64.4226 605.591 68.3171 604.552 69.7103 601.451C71.0635 598.438 70.6051 594.275 69.8515 591.124C69.2988 588.813 68.2954 586.34 68.3331 584.038C68.346 583.253 68.9598 581.215 68.6347 579.01C68.2754 576.574 67.0617 574.729 66.7139 572.882C66.1561 569.921 66.1324 566.825 66.096 563.8C65.9953 555.378 68.517 546.598 70.0598 538.344C72.0716 527.58 74.3619 516.625 74.8444 505.731C75.147 498.897 74.9258 492.038 74.1593 485.195C73.7457 481.503 72.8757 477.591 73.3107 473.95C74.5356 463.699 80.3954 453.729 81.8242 443.333C83.2072 433.271 81.4222 422.894 82.2935 412.777C83.2921 401.182 85.1342 389.446 86.9491 377.865C88.0061 371.121 89.0996 364.359 90.6119 357.698C91.1253 355.437 91.8545 346.145 93.4146 344.752C93.4896 344.685 93.9286 344.88 94.3779 344.87C94.857 344.86 95.3479 344.65 95.4219 344.711C97.035 346.04 97.7424 355.402 98.2636 357.698C99.7755 364.359 100.87 371.121 101.926 377.865C103.739 389.445 105.54 401.133 106.582 412.777C107.491 422.935 105.668 433.268 107.051 443.333C108.48 453.728 114.338 463.699 115.565 473.95C116.001 477.594 115.13 481.498 114.716 485.195C113.949 492.039 113.729 498.897 114.031 505.731C114.513 516.625 116.804 527.58 118.816 538.344C120.358 546.598 122.88 555.378 122.779 563.8C122.743 566.824 122.719 569.921 122.162 572.882C121.813 574.729 120.6 576.574 120.241 579.01C119.916 581.215 120.53 583.253 120.542 584.038C120.58 586.34 119.546 588.833 119.024 591.124C118.296 594.325 117.733 598.539 119.165 601.451C120.636 604.441 124.266 605.555 127.388 606.05C129.52 606.388 131.975 608.297 133.099 609.969C134.219 611.636 134.763 614.201 136.44 615.711C138.287 617.373 140.996 618.135 142.838 619.688C143.421 620.18 144.737 622.465 145.74 623.242C148.093 625.066 150.841 626.013 153.611 626.428C155.968 626.781 160.247 626.29 160.562 623.077C162.522 624.083 166.43 624.669 167.199 621.859C168.552 622.287 169.995 620.855 169.318 619.496C170.324 619.687 171.253 618.719 170.643 617.07C171.616 616.954 171.645 615.119 170.516 614.091C170.737 614.067 171.536 613.292 170.407 611.61C169.591 610.396 166.888 608.797 166.103 608.173C164.292 606.732 162.566 604.971 160.624 603.658C157.474 601.529 152.783 599.226 150.954 595.906C148.26 591.016 142.978 585.832 141.592 581.142C140.041 575.893 143.15 567.424 144.046 561.166C147.309 538.4 151.907 514.54 152.212 491.813C152.351 481.436 148.626 471.174 147.99 460.969C147.666 455.768 148.414 450.338 148.209 445.048C147.986 439.299 147.443 433.044 148.647 427.429C151.838 412.56 154.721 397.214 156.096 381.916C157.928 361.543 159.015 340.604 158.58 320.298C157.965 291.555 149.879 283.278 147.333 267.703C144.801 252.219 143.962 234.242 145.142 227.043C147.051 215.397 149.091 199.636 148.209 192.851C148.857 195.722 152.988 220.168 153.687 226.175C155.348 240.459 157.475 254.961 159.821 269.218C162.171 283.495 167.517 297.802 171.277 311.346C172.242 314.823 172.537 319.474 171.572 322.854C170.751 325.731 168.212 328.328 166.456 330.79C164.359 333.731 162.879 338.271 162.422 341.827C161.984 345.243 162.918 349.326 162.225 352.516C161.966 353.708 161.536 356.342 161.93 357.726C162.324 359.11 161.241 363.164 161.733 364.126C162.225 365.087 163.42 365.802 164.39 365.408C166.984 364.355 168.692 359.774 168.915 356.981C169.087 354.842 168.927 352.451 169.21 350.288C169.374 349.041 171.08 347.428 171.375 347.428C171.67 347.428 174.627 351.674 174.523 352.516C174.002 356.75 174.068 362.648 172.457 365.409C171.188 367.584 166.549 369.723 165.177 372.585C164.306 374.4 165.196 377.111 165.472 377.095C169.128 376.886 176.416 372.147 179.935 369.154C183.918 365.766 187.968 355.972 188.79 350.394C189.893 342.914 186.974 333.822 187.02 326.086Z" fill="white" />
@@ -586,7 +758,12 @@ function HumanOrgansSvg() {
             </svg>
 
             <AnimatePresence>
-                {hoveredOrgan && <InfoBox organ={hoveredOrgan} />}
+                {hoveredOrgan && (
+                    <>
+                        <InfoBox organ={hoveredOrgan} />
+                        <MobileInfoBox organ={hoveredOrgan} />
+                    </>
+                )}
             </AnimatePresence>
         </div >
     )
