@@ -66,8 +66,8 @@ function Product({ product }: ProductProps) {
 
             {/* Product title and about, links to product description */}
             <Link href={`/productDescription/${product._id}`}>
-                <p className="font-medium text-base sm:text-2xl">{product.name}</p>
-                <p className="font-medium text-xs sm:text-base text-[#848484]">
+                <p className="font-medium text-base sm:text-2xl h-[50px] md:h-[64px] line-clamp-2">{product.name}</p>
+                <p className="font-medium text-xs sm:text-base text-[#848484] line-clamp-2">
                     {product.about}
                 </p>
             </Link>
