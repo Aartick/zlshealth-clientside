@@ -21,8 +21,8 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 function Page() {
     // State for password visibility toggle
     const [togglePassword, setTogglePassword] = useState<boolean>(false)
-    // State for email input
-    const [email, setEmail] = useState("")
+    // State for email/phone input
+    const [emailOrPhone, setEmailOrPhone] = useState("")
     // State for password input
     const [password, setPassword] = useState("")
     // State for terms and conditions checkbox
@@ -34,15 +34,31 @@ function Page() {
     const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        // Validate email presence
-        if (!email) {
-            return toast.error("Email is required.")
+        // Validate email/phone presence
+        if (!emailOrPhone) {
+            return toast.error("Email or Phone number is required.")
         }
 
-        // Validate email format
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            return toast.error("Please enter a valid email address.")
+        // Determine if input is email or phone
+        const isEmail = emailOrPhone.includes("@");
+
+        let email = "";
+        let phone = "";
+
+        if (isEmail) {
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailOrPhone)) {
+                return toast.error("Please enter a valid email address.")
+            }
+            email = emailOrPhone;
+        } else {
+            // Validate phone number format (10 digits)
+            const phoneRegex = /^[0-9]{10}$/;
+            if (!phoneRegex.test(emailOrPhone)) {
+                return toast.error("Please enter a valid 10-digit phone number.")
+            }
+            phone = emailOrPhone;
         }
 
         // Validate password presence
@@ -75,12 +91,13 @@ function Page() {
             setLoading(true)
             // Send signup request to backend
             const response = await axiosClient.post("/api/auth?type=register", {
-                email,
+                ...(email && { email }),
+                ...(phone && { phone }),
                 password
             })
 
             // Reset form fields
-            setEmail("")
+            setEmailOrPhone("")
             setPassword("")
             // Show success message
             toast.success(response.data.result)
@@ -98,17 +115,17 @@ function Page() {
                 <form onSubmit={handleSignUp} className='space-y-[30px]'>
                     <p className="text-center font-semibold text-2xl">Sign Up</p>
 
-                    {/* Email input field */}
+                    {/* Email/Phone input field */}
                     <div className='space-y-2.5'>
                         <input
                             type="text"
-                            value={email}
+                            value={emailOrPhone}
                             disabled={loading}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => setEmailOrPhone(e.target.value)}
                             placeholder='Enter mobile No. or Email'
                             className={`py-2.5 px-4 rounded-[10px] border border-[#cdcdcd] w-full focus:outline-none ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
                         />
-                        <p className='font-normal text-[#676767] text-xs'>*You will receive a code for confirmation.</p>
+                        
                     </div>
 
                     {/* Password input field with toggle visibility */}

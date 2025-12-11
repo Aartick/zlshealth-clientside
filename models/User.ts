@@ -110,8 +110,8 @@ const userSchema: Schema<IUser> = new Schema(
   {
     email: {
       type: String,
-      required: [true, "Email is required"], // Email must be provided
       unique: true, // Ensure uniqueness
+      sparse: true, // Allows multiple null values but enforces uniqueness for non-null values
       lowercase: true, // Store email in lowercase
       trim: true, // Trim whitespace
       match: [/^\S+@\S+\.\S+$/, "Please use a valid email address"], // Validate format
@@ -141,6 +141,8 @@ const userSchema: Schema<IUser> = new Schema(
     },
     phone: {
       type: String,
+      unique: true,
+      sparse: true, // Allows multiple null values but enforces uniqueness for non-null values
     },
     gender: {
       type: String,
