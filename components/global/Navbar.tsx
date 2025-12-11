@@ -268,12 +268,12 @@ function Navbar() {
         <nav className="z-40 fixed w-full">
 
             {/* ================ Navbar Section ================ */}
-            <section className={`py-[10px] sm:py-2 px-4 sm:px-10 drop-shadow-[0px_4px_15.8px_rgba(0,0,0,0.06)] 
+            <section className={`py-[10px] sm:py-2 px-4 sm:px-10 drop-shadow-[0px_4px_15.8px_rgba(0,0,0,0.06)]
             transition-all duration-300 ease-in-out
                  ${pathname === "/"
                     ? (dark ? "bg-white text-black" : "bg-transparent backdrop-blur-md text-white")
                     : (pathname === "/science"
-                        ? "bg-white text-black md:bg-transparent md:text-white md:backdrop-blur-md"
+                        ? (dark ? "bg-black/80 backdrop-blur-3xl text-white md:text-white" : "bg-black/30 backdrop-blur-3xl text-white")
                         : "bg-white text-black")
                 }`}
             >
@@ -318,7 +318,7 @@ function Navbar() {
 
                     {/* ====== Search bar section (desktop only) ====== */}
                     <div ref={desktopSearchRef} className="hidden lg:flex-1 lg:flex flex-col relative z-50">
-                        <div className="flex justify-between items-center border-[0.5px] border-[#71BF45] rounded-[50px] py-2 px-2.5">
+                        <div className="flex justify-between items-center border-[0.5px] border-[#71BF45] rounded-[50px] py-3 px-3">
                             <div className="flex items-center gap-2.5 relative w-full">
                                 <div className="relative w-full">
                                     {/* Search input */}
@@ -330,11 +330,11 @@ function Navbar() {
                                             setInputValue(e.target.value)
                                             setShowResults(true)
                                         }}
-                                        className={`${dark ? "text-black" : "text-white"} text-xs w-full focus:outline-none`}
+                                        className={`${dark ? "text-black" : "text-white"} text w-full focus:outline-none`}
                                     />
                                     {/* Animated Placeholder */}
                                     {inputValue === "" && (
-                                        <div className="absolute left-0 top-0 w-full h-full pointer-events-none flex items-center text-[#a3a3a3] text-xs overflow-hidden">
+                                        <div className="absolute left-0 top-0 w-full h-full pointer-events-none flex items-center text-[#a3a3a3] text overflow-hidden">
                                             <p>Search for&nbsp; </p>
                                             <div
                                                 className={`transition-transform duration-500 ${isAnimating
@@ -527,7 +527,7 @@ function Navbar() {
 
                 {/* SEARCH BAR (Mobile Only) */}
                 <div ref={mobileSearchRef} className="mt-2 lg:hidden relative">
-                    <div className="w-full flex justify-between items-center border-[0.5px] border-[#71BF45] rounded-[50px] py-2 px-2.5">
+                    <div className="w-full flex justify-between items-center border-[0.5px] border-[#71BF45] rounded-[50px] py-3 px-3">
                         <div className="flex items-center gap-2.5 relative w-full">
                             <div className="relative w-full">
                                 {/* Search input */}
@@ -539,11 +539,11 @@ function Navbar() {
                                         setInputValue(e.target.value)
                                         setShowResults(true)
                                     }}
-                                    className={`${dark ? "text-black" : "text-white"} text-xs w-full focus:outline-none`}
+                                    className={`${dark ? "text-black" : "text-white"} text w-full focus:outline-none`}
                                 />
                                 {/* Animated Placeholder */}
                                 {inputValue === "" && (
-                                    <div className="absolute left-0 top-0 w-full h-full pointer-events-none flex items-center text-[#a3a3a3] text-xs overflow-hidden">
+                                    <div className="absolute left-0 top-0 w-full h-full pointer-events-none flex items-center text-[#a3a3a3] text overflow-hidden">
                                         <p>Search for&nbsp; </p>
                                         <div
                                             className={`transition-transform duration-500 ${isAnimating
@@ -652,8 +652,8 @@ function Navbar() {
                 ${isVisible ? "translate-y-0" : "-translate-y-full"}
                 `}>
                 <div className="mx-4 sm:mx-0 sm:flex justify-center">
-                    <div className={`flex items-center justify-around sm:gap-10 rounded-br-xl rounded-bl-xl
-                         ${(pathname === "/" && !dark) ? "bg-transparent backdrop-blur-md" : "bg-[#71BF45]/10"} 
+                    <div className={`flex items-center justify-around sm:gap-10 rounded-br-xl rounded-bl-xl backdrop-blur-md
+                         ${(pathname === "/" && !dark) ? "bg-transparent" : "bg-[#71BF45]/10"}
                          py-5 px-2.5`
                     }>
                         <Link

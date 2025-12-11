@@ -501,7 +501,66 @@ function Page() {
     return (
         <div className='flex flex-col items-center m-10'>
 
-            {orderSuccessful ? (
+            {isCartEmpty && !orderSuccessful ? (
+                <>
+                    {/* Empty Cart Message */}
+                    <div className="flex flex-col items-center justify-center space-y-5 my-20">
+                        
+                        <div className="text-center">
+                            <p className="text-xl text-[#848484] mb-3">
+                                Your cart is empty.
+                            </p>
+                            <Link
+                                href="/products"
+                                className='text-lg underline decoration-[#71BF45] text-[#71BF45] font-medium'
+                            >
+                                Add Products
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* SUGGESTED PRODUCTS */}
+                    <div className="space-y-[30px] w-full">
+                        {/* Similar products heading and scrolling buttons */}
+                        <div className="flex items-center justify-between">
+                            {isCartEmpty ? <h2 className="text-2xl font-semibold">Suggested Products</h2> : <h2 className="text-2xl font-semibold">Others Also Buy</h2>}
+                            <div className="flex items-center gap-3">
+                                {/* Left Button */}
+                                <div
+                                    onClick={scrollLeft}
+                                    className='border-2 border-[#093C16] text-[#093C16] hover:text-white hover:bg-[#093C16] rounded-full p-[5px] md:p-2.5 cursor-pointer'
+                                >
+                                    <SlArrowLeft />
+                                </div>
+
+                                {/* Right Button */}
+                                <div
+                                    onClick={scrollRight}
+                                    className='border-2 border-[#093C16] text-[#093C16] hover:text-white hover:bg-[#093C16] rounded-full p-[5px] md:p-2.5 cursor-pointer'
+                                >
+                                    <SlArrowRight />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Similar Products */}
+                        <div
+                            ref={scrollRef}
+                            className="flex scroll-smooth
+                            overflow-x-auto gap-2.5 sm:gap-5 scrollbar-hide"
+                        >
+                            {similarProducts.map((product) => (
+                                <div
+                                    className='w-[200px] sm:w-[250px] md:w-[300px] shrink-0'
+                                    key={product?._id}
+                                >
+                                    <Product product={product} />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </>
+            ) : orderSuccessful ? (
                 <div className='w-full flex flex-col md:flex-row items-center space-y-10 md:space-y-0 md:justify-between mb-10 md:mb-3.5 max-w-screen-2xl mx-auto'>
                     {/* ============ Thankyou Message / Billing Address ============ */}
                     <div className="space-y-6 md:py-10 text-wrap max-w-xs lg:max-w-lg">
@@ -773,20 +832,7 @@ function Page() {
                                             </div>
 
                                             {/* Sample Products */}
-                                            {isCartEmpty ?
-                                                <div className="text-center border-t border-[#e3e3e3] pt-5 pb-4">
-                                                    <p className="text-[#848484]">
-                                                        Cart is empty.
-                                                    </p>
-                                                    <Link
-                                                        href="/products"
-                                                        className='text-sm underline decoration-[#71BF45] text-[#71BF45]'
-                                                    >
-                                                        Add Products
-                                                    </Link>
-                                                </div>
-                                                :
-                                                cart?.map((product, idx) => (
+                                            {cart?.map((product, idx) => (
                                                     <div key={product?._id}>
                                                         {/* Border */}
                                                         <div className="border border-[#e3e3e3] mx-3" />
@@ -877,7 +923,8 @@ function Page() {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                ))}
+                                                ))
+                                            }
 
                                         </div>
 
@@ -1556,50 +1603,51 @@ function Page() {
                             </div>
                         </div>
                     </div>
+
+                    {/* SUGGESTED PRODUCTS - For non-empty cart */}
+                    {!isCartEmpty && (
+                        <div className="space-y-[30px] w-full mt-10">
+                            {/* Similar products heading and scrolling buttons */}
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-2xl font-semibold">Others Also Buy</h2>
+                                <div className="flex items-center gap-3">
+                                    {/* Left Button */}
+                                    <div
+                                        onClick={scrollLeft}
+                                        className='border-2 border-[#093C16] text-[#093C16] hover:text-white hover:bg-[#093C16] rounded-full p-[5px] md:p-2.5 cursor-pointer'
+                                    >
+                                        <SlArrowLeft />
+                                    </div>
+
+                                    {/* Right Button */}
+                                    <div
+                                        onClick={scrollRight}
+                                        className='border-2 border-[#093C16] text-[#093C16] hover:text-white hover:bg-[#093C16] rounded-full p-[5px] md:p-2.5 cursor-pointer'
+                                    >
+                                        <SlArrowRight />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Similar Products */}
+                            <div
+                                ref={scrollRef}
+                                className="flex scroll-smooth
+                                overflow-x-auto gap-2.5 sm:gap-5 scrollbar-hide"
+                            >
+                                {similarProducts.map((product) => (
+                                    <div
+                                        className='w-[200px] sm:w-[250px] md:w-[300px] shrink-0'
+                                        key={product?._id}
+                                    >
+                                        <Product product={product} />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </>
             )}
-
-
-            {/* SUGGESTED PRODUCTS */}
-            <div className="space-y-[30px] w-full">
-                {/* Similar products heading and scrolling buttons */}
-                <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-semibold">Others Also Buy</h2>
-                    <div className="flex items-center gap-3">
-                        {/* Left Button */}
-                        <div
-                            onClick={scrollLeft}
-                            className='border-2 border-[#093C16] text-[#093C16] hover:text-white hover:bg-[#093C16] rounded-full p-[5px] md:p-2.5 cursor-pointer'
-                        >
-                            <SlArrowLeft />
-                        </div>
-
-                        {/* Right Button */}
-                        <div
-                            onClick={scrollRight}
-                            className='border-2 border-[#093C16] text-[#093C16] hover:text-white hover:bg-[#093C16] rounded-full p-[5px] md:p-2.5 cursor-pointer'
-                        >
-                            <SlArrowRight />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Similar Products */}
-                <div
-                    ref={scrollRef}
-                    className="flex scroll-smooth
-                    overflow-x-auto gap-2.5 sm:gap-5 scrollbar-hide"
-                >
-                    {similarProducts.map((product) => (
-                        <div
-                            className='w-[20 0px] sm:w-[250px] md:w-[300px] shrink-0'
-                            key={product?._id}
-                        >
-                            <Product product={product} />
-                        </div>
-                    ))}
-                </div>
-            </div>
         </div>
     )
 }
