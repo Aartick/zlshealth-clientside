@@ -109,6 +109,25 @@ export const getCart = createAsyncThunk("cart/getCart", async () => {
   }
 });
 
+// Update quantity of a product in the cart (backend)
+export const updateQuantity = createAsyncThunk(
+  "cart/updateQuantity",
+  async ({ productId, quantity }: { productId: string; quantity: number }, thunkAPI) => {
+    try {
+      const response = await axiosClient.patch("/api/cart/items", {
+        productId,
+        quantity,
+      });
+      // Return updated cart from backend
+      return response.data.result;
+    } catch {
+      // If update fails, refresh cart to get current state
+      thunkAPI.dispatch(getCart());
+      return [];
+    }
+  }
+);
+
 // Delete a product from the cart (backend)
 export const deleteFromCart = createAsyncThunk(
   "cart/deleteFromCart",
