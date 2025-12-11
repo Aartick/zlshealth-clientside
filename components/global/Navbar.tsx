@@ -188,6 +188,75 @@ function Navbar() {
     const myAddress = useAppSelector((state) => state.appConfig.myAddress)
     const address = myAddress?.find((adrs) => adrs.isDefault)
 
+    // State to store user's current location
+    const [userLocation, setUserLocation] = useState<{
+        city: string;
+        pincode: string;
+    } | null>(null);
+
+    // Fetch user's current location
+    useEffect(() => {
+        // Check if user has saved address, if yes, don't fetch location
+        if (address?.cityTown && address?.pinCode) {
+            return;
+        }
+
+        // Get user's current location from browser
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    console.log("Latitude:", latitude);
+                    console.log("Longitude:", longitude);
+
+                    // Fetch city and pincode using reverse geocoding (Nominatim - free API)
+                    try {
+                        const response = await fetch(
+                            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`,
+                            {
+                                headers: {
+                                    'User-Agent': 'ZLSHealth App' // Required by Nominatim
+                                }
+                            }
+                        );
+
+                        const data = await response.json();
+
+                        if (data && data.address) {
+                            const city = data.address.city ||
+                                        data.address.town ||
+                                        data.address.village ||
+                                        data.address.suburb ||
+                                        "Suryapet";
+                            const pincode = data.address.postcode || "508206";
+
+                            setUserLocation({ city, pincode });
+                            console.log("Fetched location:", { city, pincode });
+                        } else {
+                            // Fallback to default location
+                            setUserLocation({ city: "Suryapet", pincode: "508206" });
+                        }
+                    } catch (error) {
+                        console.error("Error fetching address:", error);
+                        // Fallback to default location
+                        setUserLocation({ city: "Suryapet", pincode: "508206" });
+                    }
+                },
+                (error) => {
+                    console.error("Error getting location:", error);
+                    // User denied permission or error occurred, use default location
+                    setUserLocation({ city: "Suryapet", pincode: "508206" });
+                }
+            );
+        } else {
+            // Geolocation not supported, use default location
+            setUserLocation({ city: "Suryapet", pincode: "508206" });
+        }
+    }, [address]);
+
+
     // Sync user info, address, cart and wishlist with backend
     useEffect(() => {
         let bootstrapped = false;
@@ -309,7 +378,10 @@ function Navbar() {
                                         ? "text-[#f9f9f9]" : "text-[#36810B]")
                                     }`}
                                 >
-                                    <p>{address?.cityTown || "Suryapet"} {address?.pinCode || "508206"}</p>
+                                    <p>
+                                        {address?.cityTown || userLocation?.city || "Suryapet"}{" "}
+                                        {address?.pinCode || userLocation?.pincode || "508206"}
+                                    </p>
                                     <IoIosArrowDown size={12} />
                                 </div>
                             </div>

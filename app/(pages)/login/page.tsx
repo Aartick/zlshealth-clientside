@@ -25,9 +25,9 @@ import toast from 'react-hot-toast';
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 function Page() {
-    // State variables for password visibility, email, password, and loading status
+    // State variables for password visibility, email/phone, password, and loading status
     const [togglePassword, setTogglePassword] = useState<boolean>(false)
-    const [email, setEmail] = useState("")
+    const [emailOrPhone, setEmailOrPhone] = useState("")
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
     const dispatch = useAppDispatch()
@@ -39,16 +39,26 @@ function Page() {
     const handleLogIn = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        // Validate email input
-        if (!email) {
-            return toast.error("Email is required.")
+        // Validate email/phone input
+        if (!emailOrPhone) {
+            return toast.error("Email or Phone number is required.")
         }
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // Determine if input is email or phone
+        const isEmail = emailOrPhone.includes("@");
 
-        // Validate email format
-        if (!emailRegex.test(email)) {
-            return toast.error("Please enter a valid email address.")
+        if (isEmail) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            // Validate email format
+            if (!emailRegex.test(emailOrPhone)) {
+                return toast.error("Please enter a valid email address.")
+            }
+        } else {
+            // Validate phone number format (10 digits)
+            const phoneRegex = /^[0-9]{10}$/;
+            if (!phoneRegex.test(emailOrPhone)) {
+                return toast.error("Please enter a valid 10-digit phone number.")
+            }
         }
 
         // Validate password input
@@ -60,16 +70,16 @@ function Page() {
             setLoading(true)
             // Send login request to backend
             const response = await axiosClient.post("/api/auth?type=login", {
-                email,
+                emailOrPhone,
                 password
             })
             // Store access token in local storage
             setItem(KEY_ACCESS_TOKEN, response.data.result.accessToken)
             // Reset form fields
-            setEmail("")
+            setEmailOrPhone("")
             setPassword("")
 
-            // Merge guest cart and guest wishlist to db 
+            // Merge guest cart and guest wishlist to db
             dispatch(mergeGuestCart());
             dispatch(mergeGuestWishlist())
 
@@ -89,17 +99,17 @@ function Page() {
                 <form onSubmit={handleLogIn} className='space-y-[30px]'>
                     <p className="text-center font-semibold text-2xl">Log In</p>
 
-                    {/* Email input field */}
+                    {/* Email/Phone input field */}
                     <div className='space-y-2.5'>
                         <input
                             type="text"
-                            value={email}
+                            value={emailOrPhone}
                             disabled={loading}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => setEmailOrPhone(e.target.value)}
                             placeholder='Enter mobile No. or Email'
                             className={`py-2.5 px-4 rounded-[10px] border border-[#cdcdcd] w-full focus:outline-none ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
                         />
-                        <p className='font-normal text-[#676767] text-xs'>*You will receive a code for confirmation.</p>
+                       
                     </div>
 
                     {/* Password input field with toggle visibility */}

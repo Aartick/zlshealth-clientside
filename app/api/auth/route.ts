@@ -33,18 +33,24 @@ export async function POST(req: NextRequest) {
     await dbConnect(); // Ensure MongoDB connection is established
     if (type === "register") {
       // Registration flow
-      const { email, password } = await req.json();
+      const { email, phone, password } = await req.json();
 
-      // Validate required fields
-      if (!email || !password) {
-        return error(400, "Email and Password are required");
+      // Validate required fields - either email or phone must be provided
+      if ((!email && !phone) || !password) {
+        return error(400, "Email or Phone number and Password are required");
       }
 
-      const oldUser = await User.findOne({ email });
+      // Check if user already exists with email or phone
+      const oldUser = await User.findOne({
+        $or: [
+          ...(email ? [{ email }] : []),
+          ...(phone ? [{ phone }] : [])
+        ]
+      });
 
       // Prevent duplicate registration
       if (oldUser) {
-        return error(409, "User is already registered.");
+        return error(409, "User is already registered with this email or phone number.");
       }
 
       // Hash password for security
@@ -52,23 +58,30 @@ export async function POST(req: NextRequest) {
 
       // Create new user in the database
       await User.create({
-        email,
+        ...(email && { email }),
+        ...(phone && { phone }),
         password: hashedPassword,
+        hasAgreedToPrivacyPolicy: true,
       });
 
       // Registration success response
       return success(201, "Sign in successfully.");
     } else if (type === "login") {
       // Login flow
-      const { email, password } = await req.json();
+      const { emailOrPhone, password } = await req.json();
 
       // Validate required fields
-      if (!email || !password) {
-        return error(400, "Email and Password are required.");
+      if (!emailOrPhone || !password) {
+        return error(400, "Email/Phone and Password are required.");
       }
 
+      // Determine if input is email or phone
+      const isEmail = emailOrPhone.includes("@");
+
       // Fetch user and include password field
-      const user = await User.findOne({ email }).select("+password");
+      const user = await User.findOne(
+        isEmail ? { email: emailOrPhone } : { phone: emailOrPhone }
+      ).select("+password");
 
       // User does not exist
       if (!user) {
