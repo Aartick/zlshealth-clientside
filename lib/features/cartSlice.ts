@@ -22,7 +22,7 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { addToCart, getCart, removeFromCart } from "../thunks/cartThunks";
+import { addToCart, getCart, removeFromCart, updateQuantity } from "../thunks/cartThunks";
 import { productType } from "@/interfaces/cartWish";
 
 // Cart state definition
@@ -69,6 +69,14 @@ const groceryCartSlice = createSlice({
     },
     deleteFromCartGuest: (state, action: PayloadAction<string>) => {
       state.cart = state.cart.filter((item) => item._id !== action.payload);
+    },
+    // Update quantity for guest users
+    updateQuantityGuest: (state, action: PayloadAction<{ productId: string; quantity: number }>) => {
+      const { productId, quantity } = action.payload;
+      const product = state.cart.find((item) => item._id === productId);
+      if (product) {
+        product.quantity = quantity;
+      }
     },
     // Reset/clear the cart
     resetCart: (state) => {
@@ -154,6 +162,31 @@ const groceryCartSlice = createSlice({
         if (product) product.loading = false;
       });
 
+    // ====== UPDATE QUANTITY ======
+    builder
+      .addCase(updateQuantity.pending, (state, action) => {
+        const { productId } = action.meta.arg;
+        const product = state.cart.find((item) => item._id === productId);
+        if (product && !product.loading) {
+          product.loading = true;
+        }
+      })
+      .addCase(updateQuantity.fulfilled, (state, action) => {
+        // Make sure action.payload always be an array
+        const updatedCart = Array.isArray(action.payload)
+          ? action.payload
+          : [action.payload];
+        state.cart = updatedCart.map((p) => ({
+          ...p,
+          loading: false,
+        }));
+      })
+      .addCase(updateQuantity.rejected, (state, action) => {
+        const { productId } = action.meta.arg;
+        const product = state.cart.find((item) => item._id === productId);
+        if (product) product.loading = false;
+      });
+
     // Update cart state from backend (returns all the items)
     builder.addCase(getCart.fulfilled, (state, action) => {
       // Make sure action.payload always be an array
@@ -173,5 +206,6 @@ export const {
   addToCartGuest,
   removeFromCartGuest,
   deleteFromCartGuest,
+  updateQuantityGuest,
   resetCart,
 } = groceryCartSlice.actions;
