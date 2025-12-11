@@ -81,7 +81,7 @@ const MobileInfoBox = ({ organ }: { organ: OrganData }) => {
     const bubbleHeight = 140;
     const margin = 8;
 
-    const centerLeft = 100 ;
+    const centerLeft = 100;
 
     const rawTop = 30;
     const safeLeft = Math.max(margin, Math.min(centerLeft, containerW - bubbleWidth - margin));
@@ -365,7 +365,7 @@ function HumanOrgansSvg() {
         <div className='relative flex items-center justify-start py-20 md:pt-10 md:px-72'>
             {/* HUMAN ORGANS SVG */}
             <svg
-                className='w-[150px] h-[420px] xl:w-[230px] xl:h-[510px] 2xl:h-screen 2xl:w-auto'
+                className='w-[150px] h-[420px] md:w-[180px] md:h-[480px] lg:w-[200px] lg:h-[530px] xl:w-[220px] xl:h-[580px] 2xl:w-[240px] 2xl:h-[630px]'
                 viewBox="0 0 190 627"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
