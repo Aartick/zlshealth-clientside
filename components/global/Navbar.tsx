@@ -273,7 +273,7 @@ function Navbar() {
                  ${pathname === "/"
                     ? (dark ? "bg-white text-black" : "bg-transparent backdrop-blur-md text-white")
                     : (pathname === "/science"
-                        ? "bg-transparent backdrop-blur-md text-white"
+                        ? "bg-white text-black md:bg-transparent md:text-white md:backdrop-blur-md"
                         : "bg-white text-black")
                 }`}
             >
