@@ -71,13 +71,13 @@ function Page() {
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {Array.from({ length: 4 }).map((_, idx) => (
-            <BlogCard key={idx} />
-          ))}
+          
+            <BlogCard />
+       
         </div>
       </div>
 
-      <div className="flex flex-col gap-2.5 md:gap-0 md:flex-row justify-between items-center px-3">
+      {/* <div className="flex flex-col gap-2.5 md:gap-0 md:flex-row justify-between items-center px-3">
         <div className='hidden md:block flex-1' />
 
         <div className="flex-1 flex items-center justify-center gap-5 font-medium">
@@ -112,7 +112,7 @@ function Page() {
             <MdKeyboardArrowRight />
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

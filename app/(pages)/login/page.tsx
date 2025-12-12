@@ -135,7 +135,9 @@ function Page() {
                         </div>
 
                         {/* Forgot password link */}
-                        <p className="text-center text-[#71BF45] font-medium text-sm sm:text-base cursor-pointer">Forgot password?</p>
+                        <Link href="/forgot-password" className="block text-center text-[#71BF45] font-medium text-sm sm:text-base cursor-pointer">
+                            Forgot password?
+                        </Link>
                     </div>
 
                     {/* Submit button and sign up page link */}
