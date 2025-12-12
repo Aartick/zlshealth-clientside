@@ -178,7 +178,16 @@ function Page() {
     }
 
     useEffect(() => {
-        setFormData(myProfile!)
+        if (myProfile) {
+            setFormData({
+                fullName: myProfile.fullName || "",
+                dob: myProfile.dob || "",
+                phone: myProfile.phone || "",
+                gender: myProfile.gender || "",
+                email: myProfile.email || "",
+                img: myProfile.img || "",
+            })
+        }
     }, [myProfile])
 
 
