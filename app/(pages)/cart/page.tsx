@@ -1608,7 +1608,7 @@ function Page() {
 
                     {/* SUGGESTED PRODUCTS - For non-empty cart */}
                     {!isCartEmpty && (
-                        <div className="space-y-[30px] w-full mt-10">
+                        <div className="space-y-[30px] w-full mt-6 md:mt-8">
                             {/* Similar products heading and scrolling buttons */}
                             <div className="flex items-center justify-between">
                                 <h2 className="text-2xl font-semibold">Others Also Buy</h2>

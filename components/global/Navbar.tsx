@@ -60,6 +60,7 @@ function Navbar() {
     const desktopSearchRef = useRef<HTMLDivElement>(null);
     const mobileSearchRef = useRef<HTMLDivElement>(null);
     const [showResults, setShowResults] = useState(false);
+    const [isSearching, setIsSearching] = useState(false);
 
     // Animated placeholder effect for search bar
     useEffect(() => {
@@ -78,13 +79,22 @@ function Navbar() {
     useEffect(() => {
         const fetchSearchResults = async () => {
             if (inputValue.trim() === "") {
-                return setShowResults(false)
+                setShowResults(false);
+                setIsSearching(false);
+                return;
             };
+
+            setIsSearching(true);
+            setShowResults(true);
 
             try {
                 const response = await axiosClient.get(`/api/products/search?keyword=${inputValue}`)
                 setSearchResults(response.data.result);
-            } catch { }
+            } catch {
+                setSearchResults([]);
+            } finally {
+                setIsSearching(false);
+            }
         }
 
         // Debounce the search input to avoid excessive API calls
@@ -361,8 +371,23 @@ function Navbar() {
                             </div>
                         </div>
 
+                        {/* Loading state */}
+                        {showResults && inputValue && isSearching && (
+                            <div
+                                className="absolute top-[105%] left-0 w-full bg-white/95 backdrop-blur-xl border-2 border-[#71BF45]/30 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.15)] p-6 z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
+                            >
+                                <div className="flex flex-col items-center justify-center gap-3">
+                                    <div className="relative w-12 h-12">
+                                        <div className="absolute inset-0 border-4 border-[#71BF45]/20 rounded-full"></div>
+                                        <div className="absolute inset-0 border-4 border-transparent border-t-[#71BF45] rounded-full animate-spin"></div>
+                                    </div>
+                                    <p className="text-sm text-gray-600 font-medium">Searching products...</p>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Search Results */}
-                        {showResults && inputValue && searchResults.length > 0 && (
+                        {showResults && inputValue && !isSearching && searchResults.length > 0 && (
                             <div
                                 className="absolute top-[105%] left-0 w-full bg-white/95 backdrop-blur-xl border-2 border-[#71BF45]/30 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.15)] max-h-96 overflow-y-auto scrollbar-hide z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
                             >
@@ -421,7 +446,7 @@ function Navbar() {
                         )}
 
                         {/* No products found message */}
-                        {showResults && inputValue && searchResults.length === 0 && (
+                        {showResults && inputValue && !isSearching && searchResults.length === 0 && (
                             <div
                                 className="absolute top-[105%] left-0 w-full bg-white/95 backdrop-blur-xl border-2 border-[#71BF45]/30 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.15)] p-4 text-center z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
                             >
@@ -570,8 +595,23 @@ function Navbar() {
                         </div>
                     </div>
 
+                    {/* Loading state */}
+                    {showResults && inputValue && isSearching && (
+                        <div
+                            className="absolute top-[105%] left-0 w-full bg-white/95 backdrop-blur-xl border-2 border-[#71BF45]/30 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.15)] p-6 z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
+                        >
+                            <div className="flex flex-col items-center justify-center gap-3">
+                                <div className="relative w-12 h-12">
+                                    <div className="absolute inset-0 border-4 border-[#71BF45]/20 rounded-full"></div>
+                                    <div className="absolute inset-0 border-4 border-transparent border-t-[#71BF45] rounded-full animate-spin"></div>
+                                </div>
+                                <p className="text-sm text-gray-600 font-medium">Searching products...</p>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Search Results */}
-                    {showResults && inputValue && searchResults.length > 0 && (
+                    {showResults && inputValue && !isSearching && searchResults.length > 0 && (
                         <div
                             className="absolute top-[105%] left-0 w-full bg-white/95 backdrop-blur-xl border-2 border-[#71BF45]/30 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.15)] max-h-96 overflow-y-auto scrollbar-hide z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
                         >
@@ -630,7 +670,7 @@ function Navbar() {
                     )}
 
                     {/* No products found message */}
-                    {showResults && inputValue && searchResults.length === 0 && (
+                    {showResults && inputValue && !isSearching && searchResults.length === 0 && (
                         <div
                             className="absolute top-[105%] left-0 w-full bg-white/95 backdrop-blur-xl border-2 border-[#71BF45]/30 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.15)] p-4 text-center z-50 transition-all duration-200 ease-out animate-fadeInSearchResults"
                         >
